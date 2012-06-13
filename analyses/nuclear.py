@@ -1,6 +1,6 @@
 import supy,samples,calculables,steps,ROOT as r
 
-class displook(supy.analysis) :
+class nuclear(supy.analysis) :
     
     def listOfSteps(self,config) :
         return [
@@ -9,20 +9,18 @@ class displook(supy.analysis) :
 	    supy.steps.filters.value('PfHt',min=250),
 	    supy.calculables.other.Ratio("nPV",binning = (50,-0.5,49.5),thisSample=config['baseSample'],target=('data',[]), groups=[('qcd',[])]),
 	    steps.counts.counts('countsSingle'),
-	    steps.counts.counts('countsDouble'),
-	    steps.plotjets.general("dispSingle"),
-	    steps.plotjets.fractions("dispSingle"),
-	    steps.plotjets.tracks("dispSingle"),
-	    steps.plotjets.vertices("dispSingle"),
-	    steps.plotjets.general("dispDouble"),
-	    steps.plotjets.fractions("dispDouble"),
-	    steps.plotjets.tracks("dispDouble"),
-	    steps.plotjets.vertices("dispDouble"),
+            steps.counts.counts('countsDouble'),
+	    steps.plotjets.general("nuclSingle"),
+	    steps.plotjets.tracks("nuclSingle"),
+	    steps.plotjets.vertices("nuclSingle"),
+	    steps.plotjets.tracks("nuclDouble"),
+	    steps.plotjets.general("nuclDouble"),
+	    steps.plotjets.vertices("nuclDouble"),
             ]
     
     def listOfCalculables(self,config) :
         return ( supy.calculables.zeroArgs(supy.calculables) +
-		 supy.calculables.zeroArgs(calculables)
+		 supy.calculables.zeroArgs(calculables) 
                  )
     
     def listOfSampleDictionaries(self) :
