@@ -11,13 +11,18 @@ class displook(supy.analysis) :
 	    steps.counts.counts('countsSingle'),
 	    steps.counts.counts('countsDouble'),
 	    steps.plotjets.general("dispSingle"),
-	    steps.plotjets.fractions("dispSingle"),
+	    #steps.plotjets.fractions("dispSingle"),
 	    steps.plotjets.tracks("dispSingle"),
+	    steps.plotjets.disptracks("dispSingle"),
 	    steps.plotjets.vertices("dispSingle"),
+	    #steps.plotjets.vertexmap("dispSingle"),
 	    steps.plotjets.general("dispDouble"),
-	    steps.plotjets.fractions("dispDouble"),
+	    steps.plotjets.double("dispDouble"),
+	    #steps.plotjets.fractions("dispDouble"),
 	    steps.plotjets.tracks("dispDouble"),
+	    steps.plotjets.disptracks("dispDouble"),
 	    steps.plotjets.vertices("dispDouble"),
+	    #steps.plotjets.vertexmap("dispDouble"),
             ]
     
     def listOfCalculables(self,config) :
@@ -29,21 +34,29 @@ class displook(supy.analysis) :
         return [samples.qcd,samples.data,samples.sigmc]
     
     def listOfSamples(self,config) :
-	nFiles = 2 # or None for all
+	nFiles = 1 # or None for all
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600]]
-        return (supy.samples.specify(names = "data", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, overrideLumi=0.5725) +
-		supy.samples.specify(names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])], nFilesMax = nFiles, weights = 'nPVRatio') + 
-		supy.samples.specify(names = "H_400_X_150", nFilesMax = nFiles, color = r.kRed))
+	qcd_samples = []
+	for i in range(len(qcd_bins)-1):
+		name = "qcd_%s_%s" %(qcd_bins[i],qcd_bins[i+1])
+		qcd_samples+=(supy.samples.specify(names = name ,nFilesMax = nFiles, color = i+3, weights='nPVRatio'))
+
+        return (supy.samples.specify(names = "dataA", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, overrideLumi=9.0456) +
+		#supy.samples.specify(names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])], nFilesMax = nFiles, weights = 'nPVRatio') + 
+		qcd_samples 
+		#supy.samples.specify(names = "H_400_X_150", nFilesMax = nFiles, color = r.kRed)+
+		#supy.samples.specify(names = "H_1000_X_20", nFilesMax = nFiles, color = r.kGreen)
+		)
     
     def conclude(self,pars) :
         #make a pdf file with plots from the histograms created above
         org = self.organizer(pars)
-	org.mergeSamples(targetSpec = {"name":"qcd", "color":r.kBlue}, allWithPrefix = "qcd")
+	#org.mergeSamples(targetSpec = {"name":"qcd", "color":r.kBlue}, allWithPrefix = "qcd")
         org.scale()
         supy.plotter( org,
                       pdfFileName = self.pdfFileName(org.tag),
-                      samplesForRatios = ("data","qcd"),
-                      sampleLabelsForRatios = ("data","qcd"),
+                      #samplesForRatios = ("dataA","qcd"),
+                      #sampleLabelsForRatios = ("data","qcd"),
 		      doLog=True,
 		      blackList = ["lumiHisto","xsHisto","nJobsHisto"],
                       ).plotAll()

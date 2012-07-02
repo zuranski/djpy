@@ -1,45 +1,72 @@
 from supy import wrappedChain
+from calcUtils import *
+from candUtils import *
 
 class candsSingle (wrappedChain.calculable):
 	def extra(self,cand):
 		cand.hasVtx = False
-		if cand.lxy != -1 and cand.vtxchi2 < 10 :
+		if cand.lxy != -1 and cand.vtxchi2 < 5 :
 			cand.hasVtx = True
-		cand.trksInVtx = 0
-		cand.hasNuclearInt = False
-		cand.hasV0 = False
-                for t in cand.disptracks:
-                        if t.vtxweight > 0.1: cand.trksInVtx+=1
-		if cand.trksInVtx == 2 and ((cand.vtxmass < 0.6 and cand.vtxmass>0.4) or (cand.vtxmass>0.9 and cand.vtxmass<1.3)):
-			cand.hasV0 = True
-		if cand.trksInVtx <= 3 and cand.vtxmass > 0.6 and cand.vtxmass < 3 and not cand.hasV0: 
-			cand.hasNuclearInt = True
-
-	def passes(self,cand,cuts):
-		cand.passes = []
-		for i in range(len(cuts)):
-	                cut = cuts[i]
-                        value = getattr(cand,cut.name)
-                        if value > cut.min and value < cut.max:
-				cand.passes.append(cut.name)
-			else:
-				cand.passes.append('-'+cut.name)
+		cand.vtxSameSign = False
+		if cand.vtxN == abs(cand.vtxCharge):
+			cand.vtxSameSign = True
+		cand.vtxNRatio = -1
+		if (cand.nPrompt + cand.nDispTracks)>0:
+			cand.vtxNRatio = cand.vtxN/float(cand.nPrompt + cand.nDispTracks)
 
 	def update(self,ignored):		
 		candsSingle = []
 		for cand in self.source['pfjets']:
+			if len(self.source['gjets'])>0:
+				if cand.truelxy < 0 : continue
 			self.extra(cand)
-			self.passes(cand,self.source['cutsSingle'])
+			trackextra(cand)
+			passes(cand,self.source['cutsSingle'])
 			candsSingle.append(cand)
 		self.value = candsSingle
 
 class candsDouble (candsSingle):
+
+	def groupTrks(self,cand):
+		cand.vtxN1 = 0
+		cand.vtxN2 = 0
+		if not cand.hasVtx:
+			return
+		trks1 = self.source['pfjets'][cand.idx1].disptracks
+		trks2 = self.source['pfjets'][cand.idx2].disptracks
+		trks = cand.disptracks
+		for trk in trks:
+			if trk.vtxweight < 0.5 : continue	
+			for trk1 in trks1:
+				if abs(trk1.chi2-trk.chi2)<1e-5:
+					cand.vtxN1 +=1
+					break
+			for trk2 in trks2:
+				if abs(trk2.chi2-trk.chi2)<1e-5:
+					cand.vtxN2 +=1
+					break
+		if cand.vtxN1 == 0 or cand.vtxN2 == 0:
+			cand.hasVtx = False
+
+	def extraDouble(self,cand):
+		jet1 = self.source['pfjets'][cand.idx1]
+		jet2 = self.source['pfjets'][cand.idx2]
+		cand.dR = DeltaR(jet1,jet2)
+		cand.dPhi = DeltaPhi(jet1,jet2)
+		cand.nPrompt1 = jet1.nPrompt
+		cand.nPrompt2 = jet2.nPrompt
+		cand.PromptEnergyFrac1 = jet1.PromptEnergyFrac
+		cand.PromptEnergyFrac2 = jet2.PromptEnergyFrac
+
 	def update (self,ignored):
 		candsDouble = []
  		for cand in self.source['pfjetpairs']:
-			cand.nPrompt1 = self.source['pfjets'][cand.idx1].nPrompt
-			cand.nPrompt2 = self.source['pfjets'][cand.idx2].nPrompt
+			if len(self.source['gjets'])>0:
+				if cand.truelxy < 0 : continue
 			self.extra(cand)
-			self.passes(cand,self.source['cutsDouble'])
+			self.extraDouble(cand)
+			self.groupTrks(cand)
+			trackextra(cand)
+			passes(cand,self.source['cutsDouble'])
 			candsDouble.append(cand)
 		self.value = candsDouble

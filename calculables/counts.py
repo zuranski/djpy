@@ -11,7 +11,8 @@ class countsSingle (wrappedChain.calculable):
 					counts[i]+=1
 				except ValueError: 
 					break
-                counts = [(cut.name+'('+str(cut.min)+','+str(cut.max)+')',count) for cut,count in zip(cuts,counts)]
+
+                counts = [(cut.name+'('+cut.rangeName()+')',count) for cut,count in zip(cuts,counts)]
                 return counts
 	
 	def update(self,ignored):
@@ -20,5 +21,3 @@ class countsSingle (wrappedChain.calculable):
 class countsDouble (countsSingle):
 	def update(self,ignored):
 		self.value = self.getCounts(self.source['cutsDouble'],self.source['candsDouble'])
-		
-			

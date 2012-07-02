@@ -14,8 +14,9 @@ struct genjet {
 
 struct track {
 
-   double pt,eta,phi,chi2,ip2d,ip3d,ip2dsig,ip3dsig,lxy,vtxweight;
-   int nHits,nPixHits,algo;
+   double pt,eta,phi,chi2,ip2d,ip3d,ip2dsig,ip3dsig,lxy,vtxweight,guesslxy;
+   int nHits,nPixHits,algo,charge;
+   double vtxpt,vtxeta,vtxphi;
 
 };
 
@@ -24,7 +25,8 @@ struct pfjet {
    double energy,pt,eta,phi,mass;
    double phFrac,neuHadFrac,chgHadFrac,eleFrac,muFrac,PromptEnergyFrac;
    int phN,neuHadN,chgHadN,eleN,muN,nPrompt;
-   double lxy,lxysig,vtxmass,vtxpt,vtxchi2;
+   double lxy,lxysig,vtxmass,vtxpt,vtxchi2,vtxCharge,vtxN,vtxdR,vtxX,vtxY,vtxZ;
+   double truelxy;
    int nDispTracks;
    std::vector<track> disptracks;
 
