@@ -14,23 +14,23 @@ def selected(cutNames,collection):
 		if passed(cutNames,cand): selected.append(cand)
 	return selected
 
-class dispSingle(wrappedChain.calculable,analysisStep):
-	cuts = ['nPrompt','PromptEnergyFrac','hasVtx','vtxSameSign']#,'vtxNRatio','lxysig']
+class singleTight(wrappedChain.calculable,analysisStep):
+	cuts = ['nPrompt','PromptEnergyFrac','hasVtx','vtxSameSign']
 	def update(self,ignored):
 		self.value = selected(self.cuts,self.source['candsSingle'])
 
-class dispDouble(wrappedChain.calculable):
+class doubleTight(wrappedChain.calculable):
 	cuts = ['nPrompt1','nPrompt2','PromptEnergyFrac1','PromptEnergyFrac2','hasVtx','vtxSameSign','posip2dFrac','posip3dFrac','guessedFrac','guesslxyrms','vtxNRatio','vtxN','vtxpt','lxysig']
 	def update(self,ignored):
 		self.value = selected(self.cuts,self.source['candsDouble'])
 
-class nuclSingle(wrappedChain.calculable):
-	cuts = ['nPrompt','PromptEnergyFrac','hasVtx','hasV0']
+class singleLoose(wrappedChain.calculable):
+	cuts = ['nPrompt','PromptEnergyFrac','hasVtx','vtxSameSign']
 	def update(self,ignored):
 		self.value = selected(self.cuts,self.source['candsSingle'])
 
-class nuclDouble(wrappedChain.calculable):
-	cuts = ['nPrompt1','nPrompt2','PromptEnergyFrac','hasVtx','hasV0']
+class doubleLoose(wrappedChain.calculable):
+	cuts = ['nPrompt1','nPrompt2','PromptEnergyFrac1','PromptEnergyFrac2','hasVtx','vtxSameSign']
 	def update(self,ignored):
 		self.value = selected(self.cuts,self.source['candsDouble'])
 
