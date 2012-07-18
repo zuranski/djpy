@@ -1,6 +1,6 @@
 import supy,samples,calculables,steps,ROOT as r
 
-class displook(supy.analysis) :
+class abcd(supy.analysis) :
     
     def listOfSteps(self,config) :
         return [
@@ -9,18 +9,14 @@ class displook(supy.analysis) :
 	    supy.steps.filters.value('PfHt',min=250),
 	    supy.calculables.other.Ratio("nPV",binning = (50,-0.5,49.5),thisSample=config['baseSample'],target=('data',[]), groups=[('qcd',[])]),
 	    steps.counts.counts('countsDouble'),
-	    steps.pfjetplots.general("doubleTight"),
-	    steps.pfjetplots.double("doubleTight"),
-	    steps.pfjetplots.tracks("doubleTight"),
-	    steps.trackplots.disptracks("doubleTight"),
-	    steps.vertexplots.vertices("doubleTight"),
-	    steps.trackplots.clusters("doubleTight"),
-	    steps.pfjetplots.general("doubleLoose"),
-	    steps.pfjetplots.double("doubleLoose"),
-	    steps.pfjetplots.tracks("doubleLoose"),
-	    steps.trackplots.disptracks("doubleLoose"),
-	    steps.vertexplots.vertices("doubleLoose"),
-	    steps.trackplots.clusters("doubleLoose")
+	    steps.abcdplots.abcd_histo("abcd_lxysig_vtxpt",binning1=(50,0,50),binning2=(50,0,100)),
+	    steps.abcdplots.abcd_histo("abcd_vtxNRatio_vtxpt",binning1=(50,0,1),binning2=(50,0,100)),
+	    steps.abcdplots.abcd_histo("abcd_vtxN_vtxpt",binning1=(15,0.5,15.5),binning2=(50,0,100)),
+	    steps.abcdplots.abcd_histo("abcd_posip2dFrac_vtxpt",binning1=(50,0.,1.),binning2=(50,0,100)),
+	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_lxysig",binning1=(50,0.,1.),binning2=(50,0.,50.)),
+	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxpt",binning1=(50,0.,1.),binning2=(50,0.,100.)),
+	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxNRatio",binning1=(50,0.,1.),binning2=(50,0.,1.)),
+	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_glxydistvtx",binning1=(50,0.,1.),binning2=(50,0.,1.5)),
             ]
     
     def listOfCalculables(self,config) :

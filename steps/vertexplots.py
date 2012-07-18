@@ -7,7 +7,12 @@ class vertices(analysisStep):
 	def uponAcceptance(self,e):
 		for cand in e[self.collection]:
 			self.book.fill(cand.lxy,"pfjlxy",100,0,100,w=None,title="%s ; lxy ;pfjets / bin" %self.collection)
-			self.book.fill(cand.guesslxyrms,"pfjguesslxyrms",100,0,5,w=None,title="%s ; guesslxyrms ;pfjets / bin" %self.collection)
+			self.book.fill(cand.glxyrmsall,"pfjglxyrms_all",100,0,2.5,w=None,title="%s ; glxyrms_all ;pfjets / bin" %self.collection)
+			self.book.fill(cand.glxyrmsvtx,"pfjglxyrms_vtx",100,0,2.5,w=None,title="%s ; glxyrms_vtx ;pfjets / bin" %self.collection)
+			self.book.fill(cand.glxyrmsclr,"pfjglxyrms_clr",100,0,2.5,w=None,title="%s ; glxyrms_clr ;pfjets / bin" %self.collection)
+			self.book.fill(cand.glxydistall,"pfjglxydist_all",100,0,2.5,w=None,title="%s ; glxydist_all ;pfjets / bin" %self.collection)
+			self.book.fill(cand.glxydistvtx,"pfjglxydist_vtx",100,0,2.5,w=None,title="%s ; glxydist_vtx ;pfjets / bin" %self.collection)
+			self.book.fill(cand.glxydistclr,"pfjglxydist_clr",100,0,2.5,w=None,title="%s ; glxydist_clr ;pfjets / bin" %self.collection)
 			self.book.fill(cand.guessedFrac,"pfjguessedFrac",30,0,1,w=None,title="%s ; guessed Fraction ;pfjets / bin" %self.collection)
 			self.book.fill(cand.posip2dFrac,"pfjposip2dFrac",30,0,1,w=None,title="%s ; posip2d Fraction ;pfjets / bin" %self.collection)
 			self.book.fill(cand.posip3dFrac,"pfjposip3dFrac",30,0,1,w=None,title="%s ; posip3d Fraction ;pfjets / bin" %self.collection)

@@ -29,25 +29,22 @@ class cutsSingle(wrappedChain.calculable):
 	cuts.append(cut('nPrompt',max=5))
 	cuts.append(cut('PromptEnergyFrac',max=0.2))
 	cuts.append(cut('hasVtx',value=True))
-	cuts.append(cut('vtxSameSign',value=False))
 
 	def update(self,ignored):
 		self.value = self.cuts
 
 class cutsDouble(wrappedChain.calculable):
 	cuts = []
-	cuts.append(cut('nPrompt1',max=5))
-	cuts.append(cut('nPrompt2',max=5))
-	cuts.append(cut('PromptEnergyFrac1',max=0.2))
-	cuts.append(cut('PromptEnergyFrac2',max=0.2))
+	#cuts.append(cut('nPrompt1',max=5))
+	#cuts.append(cut('nPrompt2',max=5))
+	#cuts.append(cut('PromptEnergyFrac1',max=0.2))
+	#cuts.append(cut('PromptEnergyFrac2',max=0.2))
+	cuts.append(cut('PromptEnergyFrac',max=0.15))
 	cuts.append(cut('hasVtx',value=True))
-	cuts.append(cut('vtxSameSign',value=False))
-	cuts.append(cut('posip2dFrac',min=0.6))
-	cuts.append(cut('posip3dFrac',min=0.6))
-	cuts.append(cut('guessedFrac',min=0.01))
-	cuts.append(cut('guesslxyrms',max=0.5))
-	cuts.append(cut('vtxNRatio',min=0.34))
 	cuts.append(cut('vtxN',min=2.5))
+	cuts.append(cut('posip2dFrac',min=0.6))
+	cuts.append(cut('vtxNRatio',min=0.34))
+	cuts.append(cut('glxydistvtx',max=0.2))
 	cuts.append(cut('vtxpt',min=5.))
 	cuts.append(cut('lxysig',min=8.))
 

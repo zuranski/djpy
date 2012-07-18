@@ -10,6 +10,7 @@ class candsSingle (wrappedChain.calculable):
 				if cand.truelxy < 0 : continue
 			vtxFeatures(cand)
 			tracksFeatures(cand)
+			tracksClusters(cand)
 			passes(cand,self.source['cutsSingle'])
 			candsSingle.append(cand)
 		self.value = candsSingle

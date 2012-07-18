@@ -19,3 +19,13 @@ class disptracks(analysisStep):
           			self.book.fill(t.guesslxy/cand.lxy,'guesslxy',100,-5,5,w=None,title="Displaced Tracks; guesslxy ; tracks / bin")
           			self.book.fill(t.ip3d,'tip3d',100,-30,30,w=None,title="Displaced Tracks; IP 3D ; tracks / bin")
 
+class clusters(analysisStep):
+	def __init__(self,collection):
+		self.collection = "%s" %collection
+		
+	def uponAcceptance(self,e):
+		for cand in e[self.collection]:
+			clusters = cand.clusters
+			self.book.fill(len(clusters),'nClusters',6,-0.5,5.5,w=None,title="Displaced Tracks; nClusters; cands / bin")
+			self.book.fill(cand.maxclusterN,'maxclusterN',15,-0.5,14.5,w=None,title="Displaced Tracks; maxclusterN; cands / bin")
+			self.book.fill(cand.maxclusterlxy/cand.lxy,'maxclusterlxy',100,0,3,w=None,title="Displaced Tracks; maxclusterlxy; cands / bin")

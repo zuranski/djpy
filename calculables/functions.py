@@ -1,5 +1,19 @@
 from utils import *
 
+def passed(cutNames,cand):
+	for cutName in cutNames:
+		try:
+			cand.passes.index(cutName)
+		except ValueError:
+			return False
+	return True
+
+def selected(cutNames,collection):
+	selected = []
+	for cand in collection:
+		if passed(cutNames,cand): selected.append(cand)
+	return selected
+
 def passes(cand,cuts):
 	cand.passes = []
 	for i in range(len(cuts)):
@@ -50,6 +64,9 @@ def doubleFeatures(cand,jet1,jet2):
 	cand.nPrompt2 = jet2.nPrompt
 	cand.PromptEnergyFrac1 = jet1.PromptEnergyFrac
 	cand.PromptEnergyFrac2 = jet2.PromptEnergyFrac
+	cand.Prompt = True
+	if cand.PromptEnergyFrac1<0.2 and cand.PromptEnergyFrac2<0.2 and cand.nPrompt1<5 and cand.nPrompt2<5:
+		cand.Prompt=False
 
 def vtxFeatures(cand):
 	# good vertex
@@ -67,35 +84,93 @@ def vtxFeatures(cand):
 		cand.vtxSameSign = True
 	# vertexed ratio
 	cand.vtxNRatio = -1
-	if (cand.nPrompt + cand.nDispTracks)>0:
-		cand.vtxNRatio = cand.vtxN/float(cand.nPrompt + cand.nDispTracks)
+	if (cand.nDispTracks+cand.nPrompt)>0:
+		cand.vtxNRatio = cand.vtxN/float(cand.nDispTracks+cand.nPrompt)
 
-def tracksFeatures(cand):
+def tracksIPs(cand):
 	import math
-	cand.guesslxyrms = -1
-	cand.nguessed = 0
-	cand.guessedFrac = 0
 	cand.nposip2d = 0
 	cand.posip2dFrac = 0
 	cand.nposip3d = 0
 	cand.posip3dFrac = 0
-	stdevXY = 0
-	n = 0
 	for t in cand.disptracks:
-		if abs(t.guesslxy) < 1.2*cand.lxy and abs(t.guesslxy)>0.8*cand.lxy:
-			cand.nguessed += 1
 		if t.ip2d > 0:
 			cand.nposip2d += 1
 		if t.ip3d > 0:
 			cand.nposip3d += 1
-
-		if t.vtxweight < 0.5: continue
-		stdevXY += pow((abs(t.guesslxy) - cand.lxy)/cand.lxy,2)
-		n+=1
-	if n>1:
-		cand.guesslxyrms = math.sqrt(stdevXY/n)/float(n)
-	if len(cand.disptracks)>1:
-		cand.guessedFrac = cand.nguessed/float(len(cand.disptracks))
+	if len(cand.disptracks)>0:
 		cand.posip2dFrac = cand.nposip2d/float(len(cand.disptracks))
 		cand.posip3dFrac = cand.nposip3d/float(len(cand.disptracks))
-			
+
+def tracksLxys(cand):
+	cand.nguessed = 0
+	cand.guessedFrac = 0
+	for t in cand.disptracks:
+		if abs(t.guesslxy) < 1.4*cand.lxy and abs(t.guesslxy) > 0.6*cand.lxy:
+			cand.nguessed+=1
+	if len(cand.disptracks)>0:
+		cand.guessedFrac = cand.nguessed/float(len(cand.disptracks))
+	all_lxys = [abs(t.guesslxy) for t in cand.disptracks]
+	all_pts = [t.pt for t in cand.disptracks]
+	vtx_lxys = [abs(t.guesslxy) for t in cand.disptracks if t.vtxweight>0.5]
+	vtx_pts = [t.pt for t in cand.disptracks if t.vtxweight>0.5]
+	cand.glxyrmsall = StDev(all_lxys,center=cand.lxy)
+	cand.glxydistall = AvgDistance(all_lxys,weights=all_pts,center=cand.lxy)
+	cand.glxyrmsvtx = StDev(vtx_lxys,center=cand.lxy)
+	cand.glxydistvtx = AvgDistance(vtx_lxys,weights=vtx_pts,center=cand.lxy)
+	
+def tracksClusters(cand):
+	# sort tracks based on guesslxy in ascending order
+	def abslxy(t):
+		return abs(t.guesslxy)
+	tracks = [t for t in cand.disptracks]
+	tracks.sort(key=abslxy)
+
+	# make clusters
+	clusters = []
+	cluster = []
+	for i in range(len(tracks)-1):
+		a = (tracks[i].guesslxy)
+		b = (tracks[i+1].guesslxy)
+		dist = (b-a)*2/(b+a)
+	        if dist < 0.15:
+        	        if len(cluster) == 0:
+                	        cluster.append(i)
+                        	cluster.append(i+1)
+	                else:
+        	                cluster.append(i+1)
+	        else:
+			if len(cluster)>0: clusters.append(cluster)
+                	cluster = []
+	if len(cluster)>0: clusters.append(cluster)
+	cand.clusters = clusters
+
+	maxcluster = []
+	length = 0
+	for cluster in clusters:
+		if len(cluster)>length:
+			length = len(cluster)
+			maxcluster = cluster		
+	cand.maxclusterN = len(maxcluster)
+	if len(maxcluster) == 0 :
+		cand.maxclusterlxy = -1
+		cand.glxyrmsclr = -1
+		cand.glxydistclr = -1
+	else:
+		clr_lxys = []
+		clr_pts = []
+		lxy = 0
+		pt = 0
+		for i in maxcluster:
+			clr_lxys.append(abs(tracks[i].guesslxy))
+			clr_pts.append(tracks[i].pt)
+			lxy += abs(tracks[i].guesslxy)*tracks[i].pt
+			pt += tracks[i].pt
+		cand.maxclusterlxy = lxy/pt
+		cand.glxyrmsclr = StDev(clr_lxys,center=cand.lxy)
+		cand.glxydistclr = AvgDistance(clr_lxys,weights=clr_pts,center=cand.lxy)
+
+def tracksFeatures(cand):
+	tracksClusters(cand)
+	tracksIPs(cand)
+	tracksLxys(cand)
