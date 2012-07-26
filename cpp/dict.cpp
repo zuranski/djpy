@@ -17,6 +17,7 @@ struct track {
    double pt,eta,phi,chi2,ip2d,ip3d,ip2dsig,ip3dsig,lxy,vtxweight,guesslxy;
    int nHits,nPixHits,algo,charge;
    double vtxpt,vtxeta,vtxphi;
+   int nHitsInFrontOfVert,nMissHitsAfterVert;
 
 };
 

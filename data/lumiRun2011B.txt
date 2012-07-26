@@ -1,0 +1,5 @@
+|                                       HLTPath | SelectedLS |   Recorded |    Effective |
+------------------------------------------------------------------------------------------
+| HLT_HT250_DoubleDisplacedJet60_PromptTrack_v6 |      35083 | 1.828(/fb) |   1.828(/fb) |
+|             HLT_HT250_DoubleDisplacedJet60_v8 |      35083 | 1.828(/fb) | 120.612(/pb) |
+|                                  HLT_HT250_v8 |      35083 | 1.828(/fb) |   1.913(/pb) |

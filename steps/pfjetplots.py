@@ -8,7 +8,7 @@ class general(analysisStep):
 		for cand in e[self.collection]:
 			self.book.fill(cand.pt,"pfjpt",100,0,200,None,"%s ; pt[GeV] ;pfjets / bin" %self.collection)
 			self.book.fill(cand.eta,"pfjeta",50,-3,3,w=None,title="%s ; eta ;pfjets / bin" %self.collection)
-			self.book.fill(cand.phi,"pfjphi",50,-4,4,w=None,title="%s ; phi ;pfjets / bin" %self.collection)
+			#self.book.fill(cand.phi,"pfjphi_%s"%self.collection,50,-4,4,w=None,title="%s ; phi ;pfjets / bin" %self.collection)
 			self.book.fill(cand.energy,"pfjenergy",50,40,500,w=None,title="%s ; energy ;pfjets / bin" %self.collection)
 			self.book.fill(cand.mass,"pfjmass",250,0,250,w=None,title="%s ; mass ;pfjets / bin" %self.collection)
 

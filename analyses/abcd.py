@@ -9,14 +9,11 @@ class abcd(supy.analysis) :
 	    supy.steps.filters.value('PfHt',min=250),
 	    supy.calculables.other.Ratio("nPV",binning = (50,-0.5,49.5),thisSample=config['baseSample'],target=('data',[]), groups=[('qcd',[])]),
 	    steps.counts.counts('countsDouble'),
-	    steps.abcdplots.abcd_histo("abcd_lxysig_vtxpt",binning1=(50,0,50),binning2=(50,0,100)),
-	    steps.abcdplots.abcd_histo("abcd_vtxNRatio_vtxpt",binning1=(50,0,1),binning2=(50,0,100)),
-	    steps.abcdplots.abcd_histo("abcd_vtxN_vtxpt",binning1=(15,0.5,15.5),binning2=(50,0,100)),
-	    steps.abcdplots.abcd_histo("abcd_posip2dFrac_vtxpt",binning1=(50,0.,1.),binning2=(50,0,100)),
+	    steps.abcdplots.abcd_histo("abcd_vtxNRatio_lxysig",binning1=(50,0,1),binning2=(50,0,100)),
+	    steps.abcdplots.abcd_histo("abcd_posip2dFrac_lxysig",binning1=(50,0.,1.),binning2=(50,0,100)),
 	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_lxysig",binning1=(50,0.,1.),binning2=(50,0.,50.)),
-	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxpt",binning1=(50,0.,1.),binning2=(50,0.,100.)),
 	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxNRatio",binning1=(50,0.,1.),binning2=(50,0.,1.)),
-	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_glxydistvtx",binning1=(50,0.,1.),binning2=(50,0.,1.5)),
+	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_bestclusterlxy",binning1=(50,0.,1.),binning2=(50,0.,1.5)),
             ]
     
     def listOfCalculables(self,config) :
@@ -30,7 +27,7 @@ class abcd(supy.analysis) :
     def listOfSamples(self,config) :
 	nFiles = None # or None for all
 	nEvents = None # or None for all
-	qcd_bins = [str(q) for q in [80,120,170,300,470,600]]
+	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_samples = []
 	for i in range(len(qcd_bins)-1):
 		name = "qcd_%s_%s" %(qcd_bins[i],qcd_bins[i+1])

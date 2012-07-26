@@ -12,13 +12,11 @@ class displook(supy.analysis) :
 	    steps.pfjetplots.general("doubleTight"),
 	    steps.pfjetplots.double("doubleTight"),
 	    steps.pfjetplots.tracks("doubleTight"),
-	    steps.trackplots.disptracks("doubleTight"),
 	    steps.vertexplots.vertices("doubleTight"),
 	    steps.trackplots.clusters("doubleTight"),
 	    steps.pfjetplots.general("doubleLoose"),
 	    steps.pfjetplots.double("doubleLoose"),
 	    steps.pfjetplots.tracks("doubleLoose"),
-	    steps.trackplots.disptracks("doubleLoose"),
 	    steps.vertexplots.vertices("doubleLoose"),
 	    steps.trackplots.clusters("doubleLoose")
             ]
@@ -34,7 +32,7 @@ class displook(supy.analysis) :
     def listOfSamples(self,config) :
 	nFiles = None # or None for all
 	nEvents = None # or None for all
-	qcd_bins = [str(q) for q in [80,120,170,300,470,600]]
+	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_samples = []
 	for i in range(len(qcd_bins)-1):
 		name = "qcd_%s_%s" %(qcd_bins[i],qcd_bins[i+1])
@@ -42,8 +40,7 @@ class displook(supy.analysis) :
 
         return (supy.samples.specify(names = "dataA", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=9.0456) +
 		qcd_samples +
-		supy.samples.specify(names = "H_400_X_150", nFilesMax = nFiles, nEventsMax = nEvents, color = r.kRed)+
-		supy.samples.specify(names = "H_1000_X_20", nFilesMax = nFiles, nEventsMax = nEvents, color = r.kGreen)
+		supy.samples.specify(names = "H_400_X_150", color = r.kRed)
 		)
     
     def conclude(self,pars) :

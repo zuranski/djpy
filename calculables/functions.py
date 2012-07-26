@@ -24,14 +24,14 @@ def passes(cand,cuts):
 		passedMin = False
 		passedMax = False
 
+		if cut.value is None: passed = passedValue = True
+		if cut.min is None: passed = passedMin = True
+		if cut.max is None: passed = passedMax = True
+
 		if cut.value is not None and value == cut.value: passedValue = True
 		if cut.min is not None and value > cut.min: passedMin = True
 		if cut.max is not None and value < cut.max: passedMax = True
 
-		if cut.value is None: passed = passedValue = True
-		if cut.min is None: passed = passedMin = True
-		if cut.max is None: passed = passedMax = True
-		
 		passed = passedValue and passedMin and passedMax
 		
                 if passed:
@@ -64,11 +64,11 @@ def doubleFeatures(cand,jet1,jet2):
 	cand.nPrompt2 = jet2.nPrompt
 	cand.PromptEnergyFrac1 = jet1.PromptEnergyFrac
 	cand.PromptEnergyFrac2 = jet2.PromptEnergyFrac
-	cand.Prompt = True
-	if cand.PromptEnergyFrac1<0.2 and cand.PromptEnergyFrac2<0.2 and cand.nPrompt1<5 and cand.nPrompt2<5:
-		cand.Prompt=False
+	cand.pt1 = jet1.pt
+	cand.pt2 = jet2.pt
 
 def vtxFeatures(cand):
+
 	# good vertex
 	cand.hasVtx = False
 	if cand.lxy != -1 and cand.vtxchi2 < 5 :
@@ -83,11 +83,15 @@ def vtxFeatures(cand):
 	if cand.vtxN == abs(cand.vtxCharge):
 		cand.vtxSameSign = True
 	# vertexed ratio
+	cand.vtxNTotRatio = -1
 	cand.vtxNRatio = -1
 	if (cand.nDispTracks+cand.nPrompt)>0:
-		cand.vtxNRatio = cand.vtxN/float(cand.nDispTracks+cand.nPrompt)
+		cand.vtxNTotRatio = cand.vtxN/float(cand.nDispTracks+cand.nPrompt)
+	if cand.nDispTracks>0:
+		cand.vtxNRatio = cand.vtxN/float(cand.nDispTracks)
 
 def tracksIPs(cand):
+
 	import math
 	cand.nposip2d = 0
 	cand.posip2dFrac = 0
@@ -103,6 +107,7 @@ def tracksIPs(cand):
 		cand.posip3dFrac = cand.nposip3d/float(len(cand.disptracks))
 
 def tracksLxys(cand):
+
 	cand.nguessed = 0
 	cand.guessedFrac = 0
 	for t in cand.disptracks:
@@ -110,67 +115,51 @@ def tracksLxys(cand):
 			cand.nguessed+=1
 	if len(cand.disptracks)>0:
 		cand.guessedFrac = cand.nguessed/float(len(cand.disptracks))
+
 	all_lxys = [abs(t.guesslxy) for t in cand.disptracks]
-	all_pts = [t.pt for t in cand.disptracks]
+	all_chi2s = [1/t.chi2 for t in cand.disptracks]
 	vtx_lxys = [abs(t.guesslxy) for t in cand.disptracks if t.vtxweight>0.5]
-	vtx_pts = [t.pt for t in cand.disptracks if t.vtxweight>0.5]
+	vtx_chi2s = [1/t.chi2 for t in cand.disptracks if t.vtxweight>0.5]
+
 	cand.glxyrmsall = StDev(all_lxys,center=cand.lxy)
-	cand.glxydistall = AvgDistance(all_lxys,weights=all_pts,center=cand.lxy)
+	cand.glxydistall = AvgDistance(all_lxys,weights=all_chi2s,center=cand.lxy)
 	cand.glxyrmsvtx = StDev(vtx_lxys,center=cand.lxy)
-	cand.glxydistvtx = AvgDistance(vtx_lxys,weights=vtx_pts,center=cand.lxy)
-	
+	cand.glxydistvtx = AvgDistance(vtx_lxys,weights=vtx_chi2s,center=cand.lxy)
+
+def tracksHits(cand):
+	cand.nHitsBefVert = 0
+	cand.nMissHitsAfterVert = 0
+	cand.nAvgHitsBefVert = 1e10
+	cand.nAvgMissHitsAfterVert = 1e10
+	for t in cand.disptracks:
+		if t.vtxweight<0.5: continue
+		cand.nHitsBefVert += t.nHitsInFrontOfVert
+		cand.nMissHitsAfterVert += t.nMissHitsAfterVert
+	if cand.hasVtx:
+		cand.nAvgHitsBefVert = cand.nHitsBefVert/float(cand.vtxN)
+		cand.nAvgMissHitsAfterVert = cand.nMissHitsAfterVert/float(cand.vtxN)
+
 def tracksClusters(cand):
-	# sort tracks based on guesslxy in ascending order
-	def abslxy(t):
-		return abs(t.guesslxy)
-	tracks = [t for t in cand.disptracks]
-	tracks.sort(key=abslxy)
+	glxys = [abs(t.guesslxy) for t in cand.disptracks]
+	cand.clusters = MakeClusters(glxys,0.15*cand.lxy)
 
-	# make clusters
-	clusters = []
-	cluster = []
-	for i in range(len(tracks)-1):
-		a = (tracks[i].guesslxy)
-		b = (tracks[i+1].guesslxy)
-		dist = (b-a)*2/(b+a)
-	        if dist < 0.15:
-        	        if len(cluster) == 0:
-                	        cluster.append(i)
-                        	cluster.append(i+1)
-	                else:
-        	                cluster.append(i+1)
-	        else:
-			if len(cluster)>0: clusters.append(cluster)
-                	cluster = []
-	if len(cluster)>0: clusters.append(cluster)
-	cand.clusters = clusters
+	cand.bestclusterN = 0
+	cand.bestclusterlxy = 1e10
+	cand.glxyrmsclr = 1e10
+	cand.glxydistclr = 1e10
 
-	maxcluster = []
-	length = 0
-	for cluster in clusters:
-		if len(cluster)>length:
-			length = len(cluster)
-			maxcluster = cluster		
-	cand.maxclusterN = len(maxcluster)
-	if len(maxcluster) == 0 :
-		cand.maxclusterlxy = -1
-		cand.glxyrmsclr = -1
-		cand.glxydistclr = -1
-	else:
-		clr_lxys = []
-		clr_pts = []
-		lxy = 0
-		pt = 0
-		for i in maxcluster:
-			clr_lxys.append(abs(tracks[i].guesslxy))
-			clr_pts.append(tracks[i].pt)
-			lxy += abs(tracks[i].guesslxy)*tracks[i].pt
-			pt += tracks[i].pt
-		cand.maxclusterlxy = lxy/pt
-		cand.glxyrmsclr = StDev(clr_lxys,center=cand.lxy)
-		cand.glxydistclr = AvgDistance(clr_lxys,weights=clr_pts,center=cand.lxy)
+	for cluster in cand.clusters:
+		lxys = [abs(cand.disptracks[i].guesslxy) for i in cluster]
+		chi2s = [1/cand.disptracks[i].chi2 for i in cluster]
+		dist = abs(Avg(lxys,chi2s) - cand.lxy)/cand.lxy
+		if dist < cand.bestclusterlxy:
+			cand.bestclusterN = len(cluster)
+			cand.bestclusterlxy = dist
+			cand.glxyrmsclr = StDev(lxys,center=cand.lxy)
+			cand.glxydistclr = AvgDistance(lxys,weights=chi2s,center=cand.lxy)
 
 def tracksFeatures(cand):
 	tracksClusters(cand)
 	tracksIPs(cand)
 	tracksLxys(cand)
+	tracksHits(cand)

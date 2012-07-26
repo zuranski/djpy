@@ -1,13 +1,33 @@
-from supy import wrappedChain,analysisStep
+from supy import wrappedChain
 from functions import selected
 
-class singleTight(wrappedChain.calculable,analysisStep):
-	cuts = ['nPrompt','PromptEnergyFrac','hasVtx','vtxSameSign']
+class doubleAll(wrappedChain.calculable):
+	cuts = ['hasVtx']
 	def update(self,ignored):
-		self.value = selected(self.cuts,self.source['candsSingle'])
+		self.value = selected(self.cuts,self.source['candsDouble'])
+
+class doubleLoose(wrappedChain.calculable):
+	cuts = [
+	'hasVtx',
+	'bestclusterlxy',
+	'nAvgMissHitsAfterVert',
+	'posip2dFrac',
+	'vtxpt',
+	'vtxNTotRatio',
+	]
+	def update(self,ignored):
+		self.value = selected(self.cuts,self.source['candsDouble'])
 
 class doubleTight(wrappedChain.calculable):
-	cuts = ['PromptEnergyFrac','hasVtx','vtxN','posip2dFrac','vtxNRatio','glxydistvtx','vtxN','vtxpt','lxysig']
+	cuts = [
+	'hasVtx',
+	'bestclusterlxy',
+	'nAvgMissHitsAfterVert',
+	'posip2dFrac',
+	'vtxpt',
+	'vtxNTotRatio',
+	'PromptEnergyFrac',
+	]
 	def update(self,ignored):
 		self.value = selected(self.cuts,self.source['candsDouble'])
 
@@ -16,8 +36,7 @@ class singleLoose(wrappedChain.calculable):
 	def update(self,ignored):
 		self.value = selected(self.cuts,self.source['candsSingle'])
 
-class doubleLoose(wrappedChain.calculable):
-	cuts = ['PromptEnergyFrac','hasVtx','vtxN','posip2dFrac']
+class singleTight(wrappedChain.calculable):
+	cuts = ['nPrompt','PromptEnergyFrac','hasVtx','vtxSameSign']
 	def update(self,ignored):
-		self.value = selected(self.cuts,self.source['candsDouble'])
-
+		self.value = selected(self.cuts,self.source['candsSingle'])
