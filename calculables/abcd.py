@@ -33,11 +33,11 @@ class abcd(wrappedChain.calculable):
 		abcdObj.counts = countsABCD(cuts,self.source['candsDouble']) 
 		self.value = abcdObj
 
-class abcd_vtxNRatio_lxysig(abcd):
-	cutpair = ['vtxNRatio','lxysig']
+class abcd_PromptEnergyFrac_glxyrmsclr(abcd):
+	cutpair = ['PromptEnergyFrac','glxyrmsclr']
 		
-class abcd_posip2dFrac_lxysig(abcd):
-	cutpair = ['posip2dFrac','lxysig']
+class abcd_PromptEnergyFrac_posip2dFrac(abcd):
+	cutpair = ['PromptEnergyFrac','posip2dFrac']
 
 class abcd_PromptEnergyFrac_lxysig(abcd):
 	cutpair = ['PromptEnergyFrac','lxysig']
@@ -45,5 +45,8 @@ class abcd_PromptEnergyFrac_lxysig(abcd):
 class abcd_PromptEnergyFrac_vtxNRatio(abcd):
 	cutpair = ['PromptEnergyFrac','vtxNRatio']
 
-class abcd_PromptEnergyFrac_bestclusterlxy(abcd):
-	cutpair = ['PromptEnergyFrac','bestclusterlxy']
+class abcd_PromptEnergyFrac_vtxpt(abcd):
+	cutpair = ['PromptEnergyFrac','vtxpt']
+
+class abcd_PromptEnergyFrac_vtxmass(abcd):
+	cutpair = ['PromptEnergyFrac','vtxmass']

@@ -6,11 +6,11 @@ class general(analysisStep):
 
 	def uponAcceptance(self,e):
 		for cand in e[self.collection]:
-			self.book.fill(cand.pt,"pfjpt",100,0,200,None,"%s ; pt[GeV] ;pfjets / bin" %self.collection)
+			self.book.fill(cand.pt,"pfjpt",100,0,300,None,"%s ; pt[GeV] ;pfjets / bin" %self.collection)
 			self.book.fill(cand.eta,"pfjeta",50,-3,3,w=None,title="%s ; eta ;pfjets / bin" %self.collection)
 			#self.book.fill(cand.phi,"pfjphi_%s"%self.collection,50,-4,4,w=None,title="%s ; phi ;pfjets / bin" %self.collection)
 			self.book.fill(cand.energy,"pfjenergy",50,40,500,w=None,title="%s ; energy ;pfjets / bin" %self.collection)
-			self.book.fill(cand.mass,"pfjmass",250,0,250,w=None,title="%s ; mass ;pfjets / bin" %self.collection)
+			self.book.fill(cand.mass,"pfjmass",100,0,500,w=None,title="%s ; mass ;pfjets / bin" %self.collection)
 
 class fractions(analysisStep):
 	def __init__(self,collection):
@@ -35,8 +35,8 @@ class tracks(analysisStep):
 	
 	def uponAcceptance(self,e):
 		for cand in e[self.collection]:
-			self.book.fill(cand.nPrompt,"pfjNPromptTrks",100,0,50,w=None,title="%s ; N Prompt Tracks ;pfjets / bin" %self.collection)
-			self.book.fill(cand.nDispTracks,"pfjNDispTrks",100,0,50,w=None,title="%s ; NDisplaced Tracks ;pfjets / bin" %self.collection)
+			self.book.fill(cand.nPrompt,"pfjNPromptTrks",50,-0.5,49.5,w=None,title="%s ; N Prompt Tracks ;pfjets / bin" %self.collection)
+			self.book.fill(cand.nDispTracks,"pfjNDispTrks",50,-0.5,49.5,w=None,title="%s ; NDisplaced Tracks ;pfjets / bin" %self.collection)
 			self.book.fill(cand.PromptEnergyFrac,"pfjPromptEnergyFrac",50,0,1,w=None,title="%s ; Prompt Energy Fraction ;pfjets / bin" %self.collection)
 
 class double(analysisStep):

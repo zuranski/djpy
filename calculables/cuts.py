@@ -38,13 +38,17 @@ class cutsDouble(wrappedChain.calculable):
 	cuts.append(cut('pt1',min=40))
 	cuts.append(cut('pt2',min=40))
 	cuts.append(cut('hasVtx',value=True))
-	cuts.append(cut('bestclusterlxy',max=0.5))
+	cuts.append(cut('glxyrmsclr',max=0.4))
+	#cuts.append(cut('glxyrmsvtx',max=0.6))
 	cuts.append(cut('nAvgMissHitsAfterVert',max=2))
 	cuts.append(cut('posip2dFrac',min=0.6))
-	cuts.append(cut('vtxpt',min=10))
+	cuts.append(cut('vtxptRatio',min=0.1))
+	#cuts.append(cut('vtxmass',min=5))
+	cuts.append(cut('vtxN',min=2.5))
+	#cuts.append(cut('vtxNRatio',min=0.334))
+	cuts.append(cut('PromptEnergyFrac',max=0.15))
+	cuts.append(cut('nPrompt',max=9.5))
 	cuts.append(cut('lxysig',min=8.))
-	cuts.append(cut('PromptEnergyFrac',max=0.2))
-	cuts.append(cut('vtxNTotRatio',min=0.34))
 
 	def update(self,ignored):
 		self.value = self.cuts

@@ -89,6 +89,7 @@ def vtxFeatures(cand):
 		cand.vtxNTotRatio = cand.vtxN/float(cand.nDispTracks+cand.nPrompt)
 	if cand.nDispTracks>0:
 		cand.vtxNRatio = cand.vtxN/float(cand.nDispTracks)
+	cand.vtxptRatio = cand.vtxpt/float(cand.pt)
 
 def tracksIPs(cand):
 

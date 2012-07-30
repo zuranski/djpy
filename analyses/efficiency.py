@@ -5,10 +5,10 @@ class efficiency(supy.analysis) :
     def listOfSteps(self,config) :
         return [
             supy.steps.printer.progressPrinter(),
-	    steps.effplots.histos('candsDouble'),
-	    supy.steps.filters.value('trigHTdj',min=0.5),
-	    supy.steps.filters.value('PfHt',min=250),
-	    steps.effplots.histos("doubleTight"),
+	    #steps.effplots.histos('candsDouble'),
+	    #supy.steps.filters.value('trigHTdj',min=0.5),
+	    #supy.steps.filters.value('PfHt',min=250),
+	    #steps.effplots.histos("doubleTight"),
 	    steps.counts.counts('countsDouble'),
 	    steps.pfjetplots.general("doubleAll"),
 	    steps.pfjetplots.double("doubleAll"),
@@ -51,9 +51,9 @@ class efficiency(supy.analysis) :
 		      doLog=True,
 		      blackList = ["lumiHisto","xsHisto","nJobsHisto"],
                       )
-	#plotter.plotAll()
+	plotter.plotAll()
 	
-	self.makeEfficiencyPlots(org,"candsDouble","doubleTight", plotter)
+	#self.makeEfficiencyPlots(org,"candsDouble","doubleTight", plotter)
 
     def makeEfficiencyPlots(self, org, denomName, numName, plotter):
 	plotter.doLog = False

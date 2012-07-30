@@ -5,15 +5,16 @@ class abcd(supy.analysis) :
     def listOfSteps(self,config) :
         return [
             supy.steps.printer.progressPrinter(),
-	    supy.steps.filters.value('trigHT',min=0.5),
+	    supy.steps.filters.value('trigHTdj',min=0.5),
 	    supy.steps.filters.value('PfHt',min=250),
 	    supy.calculables.other.Ratio("nPV",binning = (50,-0.5,49.5),thisSample=config['baseSample'],target=('data',[]), groups=[('qcd',[])]),
 	    steps.counts.counts('countsDouble'),
-	    steps.abcdplots.abcd_histo("abcd_vtxNRatio_lxysig",binning1=(50,0,1),binning2=(50,0,100)),
-	    steps.abcdplots.abcd_histo("abcd_posip2dFrac_lxysig",binning1=(50,0.,1.),binning2=(50,0,100)),
 	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_lxysig",binning1=(50,0.,1.),binning2=(50,0.,50.)),
 	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxNRatio",binning1=(50,0.,1.),binning2=(50,0.,1.)),
-	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_bestclusterlxy",binning1=(50,0.,1.),binning2=(50,0.,1.5)),
+	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_glxyrmsclr",binning1=(50,0.,1.),binning2=(50,0.,2.5)),
+	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_posip2dFrac",binning1=(50,0.,1.),binning2=(50,0.,1.)),
+	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxpt",binning1=(50,0.,1.),binning2=(100,0.,100.)),
+	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxmass",binning1=(50,0.,1.),binning2=(100,0.,100.)),
             ]
     
     def listOfCalculables(self,config) :
@@ -35,8 +36,7 @@ class abcd(supy.analysis) :
 
         return (supy.samples.specify(names = "dataA", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=9.0456) +
 		qcd_samples +
-		supy.samples.specify(names = "H_400_X_150", nFilesMax = nFiles, nEventsMax = nEvents, color = r.kRed)+
-		supy.samples.specify(names = "H_1000_X_20", nFilesMax = nFiles, nEventsMax = nEvents, color = r.kGreen)
+		supy.samples.specify(names = "H_400_X_150", nFilesMax = nFiles, nEventsMax = nEvents, color = r.kRed)
 		)
     
     def conclude(self,pars) :
