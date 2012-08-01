@@ -6,15 +6,15 @@ class efficiency(supy.analysis) :
         return [
             supy.steps.printer.progressPrinter(),
 	    #steps.effplots.histos('candsDouble'),
-	    #supy.steps.filters.value('trigHTdj',min=0.5),
-	    #supy.steps.filters.value('PfHt',min=250),
+	    supy.steps.filters.value('trigHTdj',min=0.5),
+	    supy.steps.filters.value('PfHt',min=250),
 	    #steps.effplots.histos("doubleTight"),
-	    steps.counts.counts('countsDouble'),
-	    steps.pfjetplots.general("doubleAll"),
-	    steps.pfjetplots.double("doubleAll"),
-	    steps.pfjetplots.tracks("doubleAll"),
-	    steps.vertexplots.vertices("doubleAll"),
-	    steps.trackplots.clusters("doubleAll"),
+	    steps.counts.histos('countsDouble'),
+	    steps.pfjetplots.general("doubleTight"),
+	    steps.pfjetplots.double("doubleTight"),
+	    steps.pfjetplots.tracks("doubleTight"),
+	    steps.vertexplots.vertices("doubleTight"),
+	    steps.trackplots.clusters("doubleTight"),
             ]
     
     def listOfCalculables(self,config) :

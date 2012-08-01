@@ -8,6 +8,7 @@ class candsSingle (wrappedChain.calculable):
 		for cand in self.source['pfjets']:
 			if len(self.source['gjets'])>0:
 				if cand.truelxy < 0 : continue
+			cand.Promptness = cand.nPrompt*cand.PromptEnergyFrac
 			vtxFeatures(cand)
 			tracksFeatures(cand)
 			tracksClusters(cand)
@@ -21,6 +22,7 @@ class candsDouble (wrappedChain.calculable):
  		for cand in self.source['pfjetpairs']:
 			if len(self.source['gjets'])>0:
 				if cand.truelxy < 0 : continue
+			cand.Promptness = cand.nPrompt*cand.PromptEnergyFrac
 			jet1 = self.source['pfjets'][cand.idx1]
 			jet2 = self.source['pfjets'][cand.idx2]
 			doubleFeatures(cand,jet1,jet2)

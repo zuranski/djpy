@@ -5,17 +5,21 @@ class abcd(supy.analysis) :
     def listOfSteps(self,config) :
         return [
             supy.steps.printer.progressPrinter(),
-	    supy.steps.filters.value('trigHTdj',min=0.5),
+	    supy.steps.filters.value('trigHT',min=0.5),
 	    supy.steps.filters.value('PfHt',min=250),
 	    supy.calculables.other.Ratio("nPV",binning = (50,-0.5,49.5),thisSample=config['baseSample'],target=('data',[]), groups=[('qcd',[])]),
-	    steps.counts.counts('countsDouble'),
-	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_lxysig",binning1=(50,0.,1.),binning2=(50,0.,50.)),
-	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxNRatio",binning1=(50,0.,1.),binning2=(50,0.,1.)),
-	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_glxyrmsclr",binning1=(50,0.,1.),binning2=(50,0.,2.5)),
-	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_posip2dFrac",binning1=(50,0.,1.),binning2=(50,0.,1.)),
-	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxpt",binning1=(50,0.,1.),binning2=(100,0.,100.)),
-	    steps.abcdplots.abcd_histo("abcd_PromptEnergyFrac_vtxmass",binning1=(50,0.,1.),binning2=(100,0.,100.)),
-            ]
+	    steps.counts.histos('countsDouble'),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_glxyrmsvtx",binning1=(50,0.,5.),binning2=(50,0.,2.5)),
+	    steps.abcdplots.abcd_counts("abcd_Promptness_glxyrmsvtx"),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_posip2dFrac",binning1=(50,0.,5.),binning2=(50,0.,1.)),
+	    steps.abcdplots.abcd_counts("abcd_Promptness_posip2dFrac"),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_vtxpt",binning1=(50,0.,5.),binning2=(100,0.,100.)),
+	    steps.abcdplots.abcd_counts("abcd_Promptness_vtxpt"),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_vtxN",binning1=(50,0.,5.),binning2=(15,0.5,15.5)),
+	    steps.abcdplots.abcd_counts("abcd_Promptness_vtxN"),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_nAvgMissHitsAfterVert",binning1=(50,0.,5.),binning2=(12,0.,6.)),
+	    steps.abcdplots.abcd_counts("abcd_Promptness_nAvgMissHitsAfterVert"),
+	    ]
     
     def listOfCalculables(self,config) :
         return ( supy.calculables.zeroArgs(supy.calculables) +

@@ -33,20 +33,21 @@ class abcd(wrappedChain.calculable):
 		abcdObj.counts = countsABCD(cuts,self.source['candsDouble']) 
 		self.value = abcdObj
 
-class abcd_PromptEnergyFrac_glxyrmsclr(abcd):
-	cutpair = ['PromptEnergyFrac','glxyrmsclr']
 		
-class abcd_PromptEnergyFrac_posip2dFrac(abcd):
-	cutpair = ['PromptEnergyFrac','posip2dFrac']
+class abcd_Promptness_glxyrmsvtx(abcd):
+	cutpair = ['Promptness','glxyrmsvtx']
 
-class abcd_PromptEnergyFrac_lxysig(abcd):
-	cutpair = ['PromptEnergyFrac','lxysig']
+class abcd_Promptness_posip2dFrac(abcd):
+	cutpair = ['Promptness','posip2dFrac']
 
-class abcd_PromptEnergyFrac_vtxNRatio(abcd):
-	cutpair = ['PromptEnergyFrac','vtxNRatio']
+#class abcd_Promptness_vtxpt(abcd):
+#	cutpair = ['Promptness','vtxpt']
 
-class abcd_PromptEnergyFrac_vtxpt(abcd):
-	cutpair = ['PromptEnergyFrac','vtxpt']
+class abcd_Promptness_vtxmass(abcd):
+	cutpair = ['Promptness','vtxmass']
 
-class abcd_PromptEnergyFrac_vtxmass(abcd):
-	cutpair = ['PromptEnergyFrac','vtxmass']
+class abcd_Promptness_vtxN(abcd):
+	cutpair = ['Promptness','vtxN']
+
+class abcd_Promptness_nAvgMissHitsAfterVert(abcd):
+	cutpair = ['Promptness','nAvgMissHitsAfterVert']

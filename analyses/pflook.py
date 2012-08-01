@@ -27,8 +27,8 @@ class pflook(supy.analysis) :
         return [samples.qcd,samples.data,samples.sigmc]
     
     def listOfSamples(self,config) :
-	nFiles = 1 # or None for all
-	nEvents = 4000 # or None for all
+	nFiles = None # or None for all
+	nEvents = None # or None for all
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
         return (supy.samples.specify(names = "dataA", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=9.0456) +
 		supy.samples.specify(names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])], nFilesMax = nFiles, nEventsMax = nEvents, weights = 'nPVRatio') + 

@@ -1,6 +1,6 @@
 from supy import analysisStep
 
-class counts(analysisStep):
+class histos(analysisStep):
 	def __init__(self,collection):
 		self.collection = "%s" %collection
 	def uponAcceptance(self,e):

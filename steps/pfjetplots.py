@@ -38,6 +38,7 @@ class tracks(analysisStep):
 			self.book.fill(cand.nPrompt,"pfjNPromptTrks",50,-0.5,49.5,w=None,title="%s ; N Prompt Tracks ;pfjets / bin" %self.collection)
 			self.book.fill(cand.nDispTracks,"pfjNDispTrks",50,-0.5,49.5,w=None,title="%s ; NDisplaced Tracks ;pfjets / bin" %self.collection)
 			self.book.fill(cand.PromptEnergyFrac,"pfjPromptEnergyFrac",50,0,1,w=None,title="%s ; Prompt Energy Fraction ;pfjets / bin" %self.collection)
+			self.book.fill(cand.Promptness,"pfjPromptness",100,0,3,w=None,title="%s ; Promptness ;pfjets / bin" %self.collection)
 
 class double(analysisStep):
 	def __init__(self,collection):
