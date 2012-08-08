@@ -18,7 +18,8 @@ class displook(supy.analysis) :
 	    steps.pfjetplots.double("doubleLoose"),
 	    steps.pfjetplots.tracks("doubleLoose"),
 	    steps.vertexplots.vertices("doubleLoose"),
-	    steps.trackplots.clusters("doubleLoose")
+	    steps.trackplots.clusters("doubleLoose"),
+	    steps.trackplots.disptracks("doubleLoose"),
             ]
     
     def listOfCalculables(self,config) :

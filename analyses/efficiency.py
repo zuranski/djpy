@@ -8,13 +8,14 @@ class efficiency(supy.analysis) :
 	    #steps.effplots.histos('candsDouble'),
 	    supy.steps.filters.value('trigHTdj',min=0.5),
 	    supy.steps.filters.value('PfHt',min=250),
-	    #steps.effplots.histos("doubleTight"),
+	    #steps.effplots.histos("doubleLoose"),
 	    steps.counts.histos('countsDouble'),
-	    steps.pfjetplots.general("doubleTight"),
-	    steps.pfjetplots.double("doubleTight"),
-	    steps.pfjetplots.tracks("doubleTight"),
-	    steps.vertexplots.vertices("doubleTight"),
-	    steps.trackplots.clusters("doubleTight"),
+	    steps.pfjetplots.general("doubleLoose"),
+	    steps.pfjetplots.double("doubleLoose"),
+	    steps.pfjetplots.tracks("doubleLoose"),
+	    steps.vertexplots.vertices("doubleLoose"),
+	    steps.trackplots.clusters("doubleLoose"),
+	    steps.trackplots.disptracks("doubleLoose"),
             ]
     
     def listOfCalculables(self,config) :
@@ -53,7 +54,7 @@ class efficiency(supy.analysis) :
                       )
 	plotter.plotAll()
 	
-	#self.makeEfficiencyPlots(org,"candsDouble","doubleTight", plotter)
+	#self.makeEfficiencyPlots(org,"candsDouble","doubleLoose", plotter)
 
     def makeEfficiencyPlots(self, org, denomName, numName, plotter):
 	plotter.doLog = False

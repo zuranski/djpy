@@ -14,7 +14,7 @@ class abcdA(supy.analysis) :
 	    #steps.abcdplots.abcd_histo("abcd_Promptness_posip2dFrac",binning1=(50,0.,5.),binning2=(50,0.,1.)),
 	    steps.abcdplots.abcd_counts("abcd_Promptness_posip2dFrac"),
 	    #steps.abcdplots.abcd_histo("abcd_Promptness_vtxpt",binning1=(50,0.,5.),binning2=(100,0.,100.)),
-	    #steps.abcdplots.abcd_counts("abcd_Promptness_vtxpt"),
+	    steps.abcdplots.abcd_counts("abcd_Promptness_vtxpt"),
 	    #steps.abcdplots.abcd_histo("abcd_Promptness_vtxmass",binning1=(50,0.,5.),binning2=(100,0.,50.)),
 	    steps.abcdplots.abcd_counts("abcd_Promptness_vtxmass"),
 	    #steps.abcdplots.abcd_histo("abcd_Promptness_vtxN",binning1=(50,0.,5.),binning2=(15,0.5,15.5)),
@@ -56,4 +56,5 @@ class abcdA(supy.analysis) :
                       sampleLabelsForRatios = ("data","qcd"),
 		      doLog=True,
 		      blackList = ["lumiHisto","xsHisto","nJobsHisto","allweighted","logMyValue","meweighted","unweighted"],
+		      dependence2D = True,
                       ).plotAll()

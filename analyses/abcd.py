@@ -9,15 +9,15 @@ class abcd(supy.analysis) :
 	    supy.steps.filters.value('PfHt',min=250),
 	    supy.calculables.other.Ratio("nPV",binning = (50,-0.5,49.5),thisSample=config['baseSample'],target=('data',[]), groups=[('qcd',[])]),
 	    steps.counts.histos('countsDouble'),
-	    steps.abcdplots.abcd_histo("abcd_Promptness_glxyrmsvtx",binning1=(50,0.,5.),binning2=(50,0.,2.5)),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_glxyrmsvtx",binning1=(10,0.,5.),binning2=(10,0.,2.5)),
 	    steps.abcdplots.abcd_counts("abcd_Promptness_glxyrmsvtx"),
-	    steps.abcdplots.abcd_histo("abcd_Promptness_posip2dFrac",binning1=(50,0.,5.),binning2=(50,0.,1.)),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_posip2dFrac",binning1=(10,0.,5.),binning2=(10,0.,1.)),
 	    steps.abcdplots.abcd_counts("abcd_Promptness_posip2dFrac"),
-	    steps.abcdplots.abcd_histo("abcd_Promptness_vtxpt",binning1=(50,0.,5.),binning2=(100,0.,100.)),
-	    steps.abcdplots.abcd_counts("abcd_Promptness_vtxpt"),
-	    steps.abcdplots.abcd_histo("abcd_Promptness_vtxN",binning1=(50,0.,5.),binning2=(15,0.5,15.5)),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_vtxmass",binning1=(10,0.,5.),binning2=(20,0.,50.)),
+	    steps.abcdplots.abcd_counts("abcd_Promptness_vtxmass"),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_vtxN",binning1=(10,0.,5.),binning2=(15,0.5,15.5)),
 	    steps.abcdplots.abcd_counts("abcd_Promptness_vtxN"),
-	    steps.abcdplots.abcd_histo("abcd_Promptness_nAvgMissHitsAfterVert",binning1=(50,0.,5.),binning2=(12,0.,6.)),
+	    steps.abcdplots.abcd_histo("abcd_Promptness_nAvgMissHitsAfterVert",binning1=(10,0.,5.),binning2=(6,0.,6.)),
 	    steps.abcdplots.abcd_counts("abcd_Promptness_nAvgMissHitsAfterVert"),
 	    ]
     
@@ -54,4 +54,5 @@ class abcd(supy.analysis) :
                       sampleLabelsForRatios = ("data","qcd"),
 		      doLog=True,
 		      blackList = ["lumiHisto","xsHisto","nJobsHisto"],
+		      dependence2D = True,
                       ).plotAll()
