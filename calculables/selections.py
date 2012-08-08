@@ -11,13 +11,14 @@ class doubleLoose(wrappedChain.calculable):
 	'pt1',
 	'pt2',
 	'hasVtx',
-	'glxyrmsvtx',
+	#'glxyrmsvtx',
 	'nAvgMissHitsAfterVert',
 	'posip2dFrac',
 	'vtxpt',
-	#'vtxmass',
+	'vtxmass',
 	'vtxN',
-	'lxysig',
+	'vtxSameSign',
+	#'lxysig',
 	]
 	def update(self,ignored):
 		self.value = selected(self.cuts,self.source['candsDouble'])
@@ -31,8 +32,9 @@ class doubleTight(wrappedChain.calculable):
 	'nAvgMissHitsAfterVert',
 	'posip2dFrac',
 	'vtxpt',
-	#'vtxmass',
+	'vtxmass',
 	'vtxN',
+	'vtxSameSign',
 	'Promptness',
 	'lxysig',
 	]

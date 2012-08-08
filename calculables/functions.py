@@ -107,6 +107,19 @@ def tracksIPs(cand):
 		cand.posip2dFrac = cand.nposip2d/float(len(cand.disptracks))
 		cand.posip3dFrac = cand.nposip3d/float(len(cand.disptracks))
 
+def guesslxys(cand):
+	import math
+	for t in cand.disptracks:
+		dphi = t.phi - cand.phi
+		r = 330*t.pt/3.8
+		d = abs(t.ip2d)
+		a1 = -1 + (3*math.pow(math.sin(dphi),2)-1)/2*math.pow(math.sin(dphi),3)
+		a2 = (3*math.pow(math.sin(dphi),2)-1)/2*math.pow(math.sin(dphi),3)
+		if (dphi*t.charge)>0:
+			t.guesslxy = t.ip2d/math.sin(dphi)*(1+a1*d/r + a2*d*d/r/r)
+		else:
+			t.guesslxy = t.ip2d/math.sin(dphi)*(1-a1*d/r - a2*d*d/r/r)
+
 def tracksLxys(cand):
 
 	cand.nguessed = 0
@@ -160,6 +173,7 @@ def tracksClusters(cand):
 			cand.glxydistclr = AvgDistance(lxys,weights=chi2s,center=cand.lxy)
 
 def tracksFeatures(cand):
+	guesslxys(cand)
 	tracksClusters(cand)
 	tracksIPs(cand)
 	tracksLxys(cand)

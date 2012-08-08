@@ -40,8 +40,8 @@ class abcd_Promptness_glxyrmsvtx(abcd):
 class abcd_Promptness_posip2dFrac(abcd):
 	cutpair = ['Promptness','posip2dFrac']
 
-#class abcd_Promptness_vtxpt(abcd):
-#	cutpair = ['Promptness','vtxpt']
+class abcd_Promptness_vtxpt(abcd):
+	cutpair = ['Promptness','vtxpt']
 
 class abcd_Promptness_vtxmass(abcd):
 	cutpair = ['Promptness','vtxmass']

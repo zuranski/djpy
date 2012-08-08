@@ -33,9 +33,9 @@ class vertices(analysisStep):
 			#self.book.fill((cand.vtxCharge,cand.vtxmass),"VtxChargeMass",(11,300),(-5.5,0),(5.5,30),w=None,title="%s ; vtx Charge ; vtx mass" %self.collection)	
 			#self.book.fill((cand.vtxN,cand.vtxCharge),"VtxChargeNTrk",(15,11),(0.5,-5.5),(15.5,5.5),w=None,title="%s ; N Tracks used in Vtx ; vtx Charge" %self.collection)	
 			#self.book.fill(cand.nHitsBefVert,"nHitsBefVert",10,-0.5,9.5,w=None,title="%s ; nHitsBefVert ; pfjets / bin" %self.collection)	
-			self.book.fill(cand.nAvgHitsBefVert,"nAvgHitsBefVert",24,0.,6.,w=None,title="%s ; nAvgHitsBefVert ; pfjets / bin" %self.collection)	
+			self.book.fill(cand.nAvgHitsBefVert,"nAvgHitsBefVert",12,0.,6.,w=None,title="%s ; nAvgHitsBefVert ; pfjets / bin" %self.collection)	
 			#self.book.fill(cand.nMissHitsAfterVert,"nMissHitsAfterVert",20,-0.5,19.5,w=None,title="%s ; nMissHitsAfterVert ; pfjets / bin" %self.collection)	
-			self.book.fill(cand.nAvgMissHitsAfterVert,"nAvgMissHitsAfterVert",24,0.,6,w=None,title="%s ; nAvgMissHitsAfterVert ; pfjets / bin" %self.collection)	
+			self.book.fill(cand.nAvgMissHitsAfterVert,"nAvgMissHitsAfterVert",12,0.,6,w=None,title="%s ; nAvgMissHitsAfterVert ; pfjets / bin" %self.collection)	
 
 class vertexmap(analysisStep):
 	def __init__(self,collection):

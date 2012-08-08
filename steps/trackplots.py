@@ -16,7 +16,12 @@ class disptracks(analysisStep):
           			self.book.fill(t.algo,'talgo',11,-0.5,10.5,w=None,title="Displaced Tracks; algo ; tracks / bin")
           			self.book.fill(t.vtxweight,'tvtxw',50,0,1,w=None,title="Displaced Tracks; vtx weight ; tracks / bin")
           			self.book.fill(t.ip2d,'tip2d',100,-10,10,w=None,title="Displaced Tracks; IP 2D ; tracks / bin")
-          			self.book.fill(t.guesslxy/cand.lxy,'guesslxy',100,-5,5,w=None,title="Displaced Tracks; guesslxy ; tracks / bin")
+          			self.book.fill(abs(t.guesslxy)/cand.lxy,'guesslxy',100,0,10,w=None,title="Displaced Tracks; guesslxy ; tracks / bin")
+          			self.book.fill((t.phi-cand.phi,abs(t.guesslxy)/cand.lxy),'guesslxydphi',(50,100),(-5,0),(5,10),w=None,title="Displaced Tracks; guesslxy ; tracks / bin")
+          			self.book.fill((t.charge,abs(t.guesslxy)/cand.lxy),'guesslxycharge',(2,100),(-1.5,0),(1.5,10),w=None,title="Displaced Tracks; guesslxy ; tracks / bin")
+          			self.book.fill((t.ip2d,abs(t.guesslxy)/cand.lxy),'guesslxyip2d',(100,100),(-50,0),(50,10),w=None,title="Displaced Tracks; guesslxy ; tracks / bin")
+          			self.book.fill((330*t.pt/3.8,abs(t.guesslxy)/cand.lxy),'guesslxyR',(100,100),(0,0),(3000,10),w=None,title="Displaced Tracks; guesslxy ; tracks / bin")
+          			self.book.fill((cand.lxy,abs(t.guesslxy)/cand.lxy),'guesslxylxy',(100,100),(0,0),(100,10),w=None,title="Displaced Tracks; guesslxy ; tracks / bin")
           			self.book.fill(t.ip3d,'tip3d',100,-30,30,w=None,title="Displaced Tracks; IP 3D ; tracks / bin")
 
 class clusters(analysisStep):
