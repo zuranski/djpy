@@ -1,7 +1,7 @@
 from supy.defaults import *
 
 def mainTree():
-	return ("djtuple","tree")
+	return ("djTree","tree")
 
 def experiment():
 	return "cms"
