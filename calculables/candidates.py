@@ -5,7 +5,7 @@ from functions import *
 class candsSingle (wrappedChain.calculable):
 	def update(self,ignored):		
 		candsSingle = []
-		for cand in self.source['pfjets']:
+		for cand in self.source['singlejets']:
 			mcmatch(cand)
 			if len(self.source['gjets'])>0:
 				if cand.ExoVtxFrac < 0.95 or cand.truelxy < 0 : continue
@@ -20,13 +20,13 @@ class candsSingle (wrappedChain.calculable):
 class candsDouble (wrappedChain.calculable):
 	def update (self,ignored):
 		candsDouble = []
- 		for cand in self.source['pfjetpairs']:
+ 		for cand in self.source['doublejets']:
 			mcmatch(cand)
 			if len(self.source['gjets'])>0:
 				if cand.ExoVtxFrac < 0.95 or cand.truelxy < 0 : continue
 			cand.Promptness = cand.nPrompt*cand.PromptEnergyFrac
-			jet1 = self.source['pfjets'][cand.idx1]
-			jet2 = self.source['pfjets'][cand.idx2]
+			jet1 = self.source['singlejets'][cand.idx1]
+			jet2 = self.source['singlejets'][cand.idx2]
 			doubleFeatures(cand,jet1,jet2)
 			groupTracks(cand,jet1,jet2)
 			vtxFeatures(cand)
