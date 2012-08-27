@@ -38,7 +38,7 @@ class tracks(analysisStep):
 			self.book.fill(cand.nPrompt,"pfjNPromptTrks",50,-0.5,49.5,w=None,title="%s ; N Prompt Tracks ;pfjets / bin" %self.collection)
 			self.book.fill(cand.nDispTracks,"pfjNDispTrks",50,-0.5,49.5,w=None,title="%s ; NDisplaced Tracks ;pfjets / bin" %self.collection)
 			self.book.fill(cand.PromptEnergyFrac,"pfjPromptEnergyFrac",50,0,1,w=None,title="%s ; Prompt Energy Fraction ;pfjets / bin" %self.collection)
-			self.book.fill(cand.Promptness,"pfjPromptness",100,0,3,w=None,title="%s ; Promptness ;pfjets / bin" %self.collection)
+			self.book.fill(cand.nPrompt*cand.PromptEnergyFrac,"pfjPromptness",100,0,3,w=None,title="%s ; Promptness ;pfjets / bin" %self.collection)
 
 class double(analysisStep):
 	def __init__(self,collection):
@@ -48,3 +48,17 @@ class double(analysisStep):
 		for cand in e[self.collection]:
 			self.book.fill(cand.dR,"dR",50,0,6,w=None,title="%s; dR ;pfjets / bin" %self.collection )
 			self.book.fill(cand.dPhi,"dPhi",50,-4,4,w=None,title="%s ; dPhi ;pfjets / bin" %self.collection)
+
+class discs(analysisStep):
+	def __init__(self,collection):
+		self.collection = "%s" %collection
+
+	def uponAcceptance(self,e):
+		for cand in e[self.collection]:
+			self.book.fill(cand.discpromptness,"discpromptness",100,0.98,1.001,None,"%s ; promptness ;cands / bin" %self.collection)
+			self.book.fill(cand.discvtxQual,"discvtxQual",100,0.98,1.001,None,"%s ; vtxQual ;cands / bin" %self.collection)
+			self.book.fill(cand.disckin,"disckin",100,0.96,1.001,None,"%s ; kin ;cands / bin" %self.collection)
+			self.book.fill((cand.discpromptness,cand.discvtxQual),"discpromptnessvtxQual",(15,15),(0.96,0.96),(1.01,1.01),None,"%s ; promptness ; vtxQual" %self.collection)
+			self.book.fill((cand.discpromptness,cand.disckin),"discpromptnesskin",(15,15),(0.96,0.96),(1.01,1.01),None,"%s ; promptness ; kin" %self.collection)
+			self.book.fill((cand.disckin,cand.discvtxQual),"disckinvtxQual",(15,15),(0.96,0.96),(1.01,1.01),None,"%s ; kin ; vtxQual" %self.collection)
+		

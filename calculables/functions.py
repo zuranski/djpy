@@ -91,6 +91,13 @@ def vtxFeatures(cand):
 		cand.vtxNRatio = cand.vtxN/float(cand.nDispTracks)
 	cand.vtxptRatio = cand.vtxpt/float(cand.pt)
 
+def mcmatch(cand):
+	nFromExo = 0
+	for t in cand.disptracks:
+		if t.vtxweight<0.5 : continue
+		if t.exo == 6000111 or t.exo == 6000112: nFromExo+=1
+	cand.ExoVtxFrac = nFromExo/float(cand.vtxN) if cand.vtxN>0 else 0
+
 def tracksIPs(cand):
 
 	import math
@@ -99,13 +106,13 @@ def tracksIPs(cand):
 	cand.nposip3d = 0
 	cand.posip3dFrac = 0
 	for t in cand.disptracks:
-		if t.ip2d > 0:
+		if t.ip2d > 0 and t.vtxweight>0.5:
 			cand.nposip2d += 1
-		if t.ip3d > 0:
+		if t.ip3d > 0 and t.vtxweight>0.5:
 			cand.nposip3d += 1
-	if len(cand.disptracks)>0:
-		cand.posip2dFrac = cand.nposip2d/float(len(cand.disptracks))
-		cand.posip3dFrac = cand.nposip3d/float(len(cand.disptracks))
+	if len(cand.disptracks)>0 and cand.hasVtx:
+		cand.posip2dFrac = cand.nposip2d/float(cand.vtxN)
+		cand.posip3dFrac = cand.nposip3d/float(cand.vtxN)
 
 def guesslxys(cand):
 	import math

@@ -6,6 +6,7 @@ class vertices(analysisStep):
 	
 	def uponAcceptance(self,e):
 		for cand in e[self.collection]:
+			self.book.fill(cand.ExoVtxFrac,"pfjExoVtxFrac",20,0,1,w=None,title="%s ; ExoVtxFrac ;pfjets / bin" %self.collection)
 			self.book.fill(cand.lxy,"pfjlxy",100,0,100,w=None,title="%s ; lxy ;pfjets / bin" %self.collection)
 			self.book.fill(cand.glxyrmsall,"pfjglxyrmsall",100,0,2.5,w=None,title="%s ; glxyrms_all ;pfjets / bin" %self.collection)
 			self.book.fill(cand.glxyrmsvtx,"pfjglxyrmsvtx",100,0,2.5,w=None,title="%s ; glxyrms_vtx ;pfjets / bin" %self.collection)
@@ -32,9 +33,7 @@ class vertices(analysisStep):
 			#self.book.fill((cand.vtxdR,cand.vtxmass),"VtxdRMass",(50,300),(0,0),(4,30),w=None,title="%s ; vtx dR ; vtx mass" %self.collection)	
 			#self.book.fill((cand.vtxCharge,cand.vtxmass),"VtxChargeMass",(11,300),(-5.5,0),(5.5,30),w=None,title="%s ; vtx Charge ; vtx mass" %self.collection)	
 			#self.book.fill((cand.vtxN,cand.vtxCharge),"VtxChargeNTrk",(15,11),(0.5,-5.5),(15.5,5.5),w=None,title="%s ; N Tracks used in Vtx ; vtx Charge" %self.collection)	
-			#self.book.fill(cand.nHitsBefVert,"nHitsBefVert",10,-0.5,9.5,w=None,title="%s ; nHitsBefVert ; pfjets / bin" %self.collection)	
 			self.book.fill(cand.nAvgHitsBefVert,"nAvgHitsBefVert",12,0.,6.,w=None,title="%s ; nAvgHitsBefVert ; pfjets / bin" %self.collection)	
-			#self.book.fill(cand.nMissHitsAfterVert,"nMissHitsAfterVert",20,-0.5,19.5,w=None,title="%s ; nMissHitsAfterVert ; pfjets / bin" %self.collection)	
 			self.book.fill(cand.nAvgMissHitsAfterVert,"nAvgMissHitsAfterVert",12,0.,6,w=None,title="%s ; nAvgMissHitsAfterVert ; pfjets / bin" %self.collection)	
 
 class vertexmap(analysisStep):

@@ -5,14 +5,13 @@ class countsSingle (wrappedChain.calculable):
 		counts = [0]*len(cuts)
                 for cand in collection:
                         for i in range(len(cuts)):
-				cutname = cuts[i].name
 				try:
-					cand.passes.index(cutname)
+					cand.passes.index(cuts[i].name)
 					counts[i]+=1
 				except ValueError: 
 					break
 
-                counts = [(cut.name+'('+cut.rangeName()+')',count) for cut,count in zip(cuts,counts)]
+                counts = [(cut,count) for cut,count in zip(cuts,counts)]
                 return counts
 	
 	def update(self,ignored):
@@ -21,3 +20,7 @@ class countsSingle (wrappedChain.calculable):
 class countsDouble (countsSingle):
 	def update(self,ignored):
 		self.value = self.getCounts(self.source['cutsDouble'],self.source['candsDouble'])
+
+class countsDoubleDisc (countsSingle):
+	def update(self,ignored):
+		self.value = self.getCounts(self.source['cutsDoubleDisc'],self.source['candsDoubleDisc'])

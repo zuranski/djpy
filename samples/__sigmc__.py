@@ -35,7 +35,7 @@ sigmc.add('H_120_X_20b','%s/%s/%s")'%(pnfs,loc,"MH_120_MX_20_Ctau_130b/") ,xs=50
 '''
 
 # PU
-loc='/tigress-hsm/zuranski/work/cms/data/DJTuple44x_PROD/'
+loc='/tigress-hsm/zuranski/work/cms/data/DJTuple44x_DEV/'
 # u-d-s quark samples
 sigmc.add('H_1000_X_350','%s'%(fileListFromDisk(loc+"MH_1000_MX_350_Ctau_350/")) ,xs=500) #/pb
 sigmc.add('H_1000_X_150','%s'%(fileListFromDisk(loc+"MH_1000_MX_150_Ctau_100/")) ,xs=500) #/pb
