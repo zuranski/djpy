@@ -1,28 +1,17 @@
 from supy import wrappedChain
 
-class CaloHt (wrappedChain.calculable):
-	def update(self,ignored):
-		ht = 0
-		for pt in self.source["jpt"]:
-			ht += pt		
-		self.value = ht
-
-class nCaloJets (wrappedChain.calculable):
-	def update(self,ignored):
-		self.value = len(self.source["jpt"])
-
 class PfHt (wrappedChain.calculable):
 	def update(self,ignored):
 		ht = 0
                 try:
-	 		for pfjet in self.source["pfjets"]:
-				ht += pfjet.pt	
+	 		for jet in self.source["singlejets"]:
+				ht += jet.pt	
                 except KeyError: pass
 		self.value = ht
 
 class nPfJets (wrappedChain.calculable):
 	def update(self,ignored):
 		try:
-			self.value = len(self.source["pfjets"])
+			self.value = len(self.source["singlejets"])
 		except KeyError:
 			self.value = 0
