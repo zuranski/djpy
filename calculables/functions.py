@@ -39,6 +39,12 @@ def passes(cand,cuts):
 		else:
 			cand.passes.append('-'+cut.name)
 
+def myJetID(jet):
+	if jet.PromptEnergyFrac > 1: return False
+	if jet.muFrac>0.8: return False
+	if jet.eleFrac>0.9: return False
+	return True
+
 def groupTracks(cand,jet1,jet2):
 	cand.vtxN1 = 0
 	cand.vtxN2 = 0
@@ -71,7 +77,7 @@ def vtxFeatures(cand):
 
 	# good vertex
 	cand.hasVtx = False
-	if cand.lxy != -1 and cand.vtxchi2 < 5 :
+	if cand.lxy != -1 and cand.vtxchi2 < 5 and cand.vtxN >= 2:
 		cand.hasVtx = True
 	try:
 		if cand.vtxN1 == 0 or cand.vtxN2 == 0 :
@@ -91,12 +97,35 @@ def vtxFeatures(cand):
 		cand.vtxNRatio = cand.vtxN/float(cand.nDispTracks)
 	cand.vtxptRatio = cand.vtxpt/float(cand.pt)
 
-def mcmatch(cand):
+def mcdRSingle(cand,gjets):
+	dR=1e5
+	truelxy = -1
+	for gjet in gjets:
+	    dR_i = DeltaR(gjet,cand)
+	    if dR_i < dR and dR_i < 0.3:
+		dR = dR_i
+		truelxy = gjet.lxy
+	return truelxy
+	
+def mcdRDouble(cand1,cand2,gjets):
+	truelxy1 = mcdRSingle(cand1,gjets)
+	truelxy2 = mcdRSingle(cand2,gjets)
+	return truelxy1 if truelxy1==truelxy2 else -1
+
+def mcTracksFromExo(cand):
 	nFromExo = 0
 	for t in cand.disptracks:
 		if t.vtxweight<0.5 : continue
 		if t.exo == 6000111 or t.exo == 6000112: nFromExo+=1
-	cand.ExoVtxFrac = nFromExo/float(cand.vtxN) if cand.vtxN>0 else 0
+	return nFromExo/float(cand.vtxN) if cand.vtxN>0 else 0
+
+def mcmatchSingle(cand,gjets):
+	cand.truelxy = mcdRSingle(cand,gjets)
+	cand.ExoVtxFrac = mcTracksFromExo(cand)
+
+def mcmatchDouble(cand,cand1,cand2,gjets):
+	cand.truelxy = mcdRDouble(cand1,cand2,gjets)
+	cand.ExoVtxFrac = mcTracksFromExo(cand)
 
 def tracksIPs(cand):
 

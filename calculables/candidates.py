@@ -6,9 +6,12 @@ class candsSingle (wrappedChain.calculable):
 	def update(self,ignored):		
 		candsSingle = []
 		for cand in self.source['singlejets']:
-			mcmatch(cand)
-			if len(self.source['gjets'])>0:
-				if cand.ExoVtxFrac < 0.95 or cand.truelxy < 0 : continue
+			if not myJetID(cand) : continue
+			if not self.source['isRealData']:	
+ 				gjets = self.source['gjets']
+				if len(gjets) > 0:
+					mcmatchSingle(cand,self.source['gjets'])
+					if cand.ExoVtxFrac < 0.95 or cand.truelxy < 0 : continue
 			cand.Promptness = cand.nPrompt*cand.PromptEnergyFrac
 			vtxFeatures(cand)
 			tracksFeatures(cand)
@@ -21,12 +24,16 @@ class candsDouble (wrappedChain.calculable):
 	def update (self,ignored):
 		candsDouble = []
  		for cand in self.source['doublejets']:
-			mcmatch(cand)
-			if len(self.source['gjets'])>0:
-				if cand.ExoVtxFrac < 0.95 or cand.truelxy < 0 : continue
-			cand.Promptness = cand.nPrompt*cand.PromptEnergyFrac
 			jet1 = self.source['singlejets'][cand.idx1]
 			jet2 = self.source['singlejets'][cand.idx2]
+			if not myJetID(jet1) : continue
+			if not myJetID(jet2) : continue
+			if not self.source['isRealData']:	
+ 				gjets = self.source['gjets']
+				if len(gjets) > 0:
+					mcmatchDouble(cand,jet1,jet2,self.source['gjets'])
+					if cand.ExoVtxFrac < 0.95 or cand.truelxy < 0 : continue
+			cand.Promptness = cand.nPrompt*cand.PromptEnergyFrac
 			doubleFeatures(cand,jet1,jet2)
 			groupTracks(cand,jet1,jet2)
 			vtxFeatures(cand)
