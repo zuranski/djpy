@@ -11,6 +11,7 @@ class general(analysisStep):
 			#self.book.fill(cand.phi,"phi_%s"%self.collection,50,-4,4,w=None,title="%s ; phi ;candidates / bin" %self.collection)
 			self.book.fill(cand.energy,"energy",50,40,500,w=None,title="%s ; energy ;candidates / bin" %self.collection)
 			self.book.fill(cand.mass,"mass",100,0,500,w=None,title="%s ; mass ;candidates / bin" %self.collection)
+			self.book.fill(cand.nConstituents,"nConstituents",100,0.5,100.5,w=None,title="%s ; nConstituents ;candidates / bin" %self.collection)
 
 class fractions(analysisStep):
 	def __init__(self,collection):
