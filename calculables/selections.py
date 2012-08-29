@@ -3,7 +3,7 @@ from functions import selected
 
 # DOUBLE CANDIDATES
 class doubleVeryLooseCuts(wrappedChain.calculable):
-	cuts = ['hasVtx','glxydistclr']
+	cuts = ['hasVtx','pt1','pt2']
 	def update(self,ignored):
 		self.value = self.cuts
 
@@ -41,7 +41,7 @@ class doubleTightCuts(wrappedChain.calculable):
 		self.value = self.cuts
 
 class doubleDiscCuts(wrappedChain.calculable):
-	cuts = ['discvtxQual','discpromptness','disckin'] 
+	cuts = ['discvtxQual','discpromptness','disckin','glxyrmsclr','posip2dFrac','lxysig'] 
 	def update(self,ignored):
 		self.value = self.cuts
 

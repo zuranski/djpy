@@ -46,7 +46,7 @@ class cutsDouble(wrappedChain.calculable):
 	cuts.append(cut('bestclusterN',min=1.5))
 	cuts.append(cut('vtxpt',min=10))
 	cuts.append(cut('vtxmass',min=8))
-	cuts.append(cut('glxydistclr',max=0.5))
+	cuts.append(cut('glxyrmsclr',max=0.4))
 	cuts.append(cut('PromptEnergyFrac',max=0.5))
 	cuts.append(cut('nPrompt',max=15.5))
 	cuts.append(cut('lxysig',min=8.))
@@ -59,6 +59,8 @@ class cutsDoubleDisc(wrappedChain.calculable):
 	cuts.append(cut('discvtxQual',min=0.99))
 	cuts.append(cut('disckin',min=0.99))
 	cuts.append(cut('discpromptness',min=0.99))
+	cuts.append(cut('glxyrmsclr',max=0.4))
+	cuts.append(cut('posip2dFrac',min=0.6))
 	cuts.append(cut('lxysig',min=8.))
 
 	def update(self,ignored):
