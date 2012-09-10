@@ -9,10 +9,6 @@ class DijetVar(wrappedChain.calculable):
 		for idx in self.source[self.indices]:
 			self.value[idx] = self.calculate(idx)
 
-class dijetVtxNRatio(DijetVar):
-	def calculate(self,idx):
-		return self.source['dijetVtxN'][idx]/float(self.source['dijetNDispTracks'][idx])
-
 class dijetVtxNTotRatio(DijetVar):
 	def calculate(self,idx):
 		return self.source['dijetVtxN'][idx]/float(self.source['dijetNDispTracks'][idx]
