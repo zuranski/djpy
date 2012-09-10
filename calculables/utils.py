@@ -1,58 +1,30 @@
 import math
-from scipy.cluster.hierarchy import *
-import numpy as np
 
-def MakeClusters(list,dist):
-	if len(list)<2: return []
-        X = np.array([[a] for a in list])
-        T = fclusterdata(X,dist,criterion='distance')
-        N = max(T)
-        clusters = [[] for i in range(N)]
-        for i in range(len(T)):
-                clusters[T[i]-1].append(i)
-        return [clr for clr in clusters if len(clr)>1]
-
-
-def DeltaPhi(obj1,obj2):
-	dphi = obj1.phi - obj2.phi
-        while (dphi > math.pi ): dphi -= 2*math.pi
-        while (dphi <= -math.pi ): dphi += 2*math.pi
+def DeltaPhi(phi1,phi2):
+	dphi = phi1 - phi2
+	while (dphi > math.pi ): dphi -= 2*math.pi
+	while (dphi <= -math.pi ): dphi += 2*math.pi
 	return dphi
 
-def DeltaR(obj1,obj2):
+def DeltaR(eta1,phi1,eta2,phi2):
 
-        deta = obj1.eta - obj2.eta
-	dphi = DeltaPhi(obj1,obj2)
-        return math.sqrt(deta*deta + dphi*dphi)
+	deta = eta1 - eta2
+	dphi = DeltaPhi(phi1,phi2)
+	return math.sqrt(deta*deta + dphi*dphi)
 
 def Theta(eta):
 	return 2*math.atan(math.exp(-eta))
 
-def StDev(list,center=None):
-	if len(list) == 0: return 1e10
-	if center is None: center = sum(list)/float(len(list))
-	stdev = 0
-	for item in list:
-		stdev += math.pow((item-center)/center,2)
-	return math.sqrt(stdev/float(len(list)))
+def MatchByDR(eta1_v,phi1_v,eta2_v,phi2_v,DRmax):
+	matched = [None for i in range(len(eta1_v))]
+	for i in range(len(eta1_v)):
+		bestDR = 1e5
+		bestMatchIdx = None 
+		for j in range(len(eta2_v)):
+			DR = DeltaR(eta1_v[i],phi1_v[i],eta2_v[j],phi2_v[j])
+			if (DR < bestDR) and (DR < DRmax) : 
+				bestMatchIdx = j
+				bestDR = DR
+		matched[i] = bestMatchIdx
+	return matched
 
-def AvgDistance(list,weights=None,center=None):
-	if len(list) == 0 : return 1e10
-	if weights is None : weights = [1]*len(list)
-	if center is None: center = sum(list)/float(len(list))
-	AvgDist = 0
-	sumWeights = 0
-	for item,w in zip(list,weights):
-		AvgDist += w*abs(item-center)/abs(center)
-		sumWeights += w
-	return AvgDist/sumWeights/float(len(list))
-
-def Avg(list,weights=None):
-	if len(list) == 0 : return 1e10 
-	if weights is None: weights = [1]*len(list)
-	Avg = 0
-	sumWeights = 0
-	for item,w in zip(list,weights):
-		Avg += item*w
-		sumWeights += w
-	return Avg/float(sumWeights)
