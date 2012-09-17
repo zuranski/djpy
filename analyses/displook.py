@@ -2,59 +2,48 @@ import supy,samples,calculables,steps,ROOT as r
 
 class displook(supy.analysis) :
     
-	ToCalculate=['dijetVtxptRatio','dijetVtxNTotRatio']
+	ToCalculate=['dijetVtxNRatio','dijetPromptness']
 
 	IniCuts=[
 		{'name':'dijet'},
+		# vertex minimal
 		{'name':'dijetVtxChi2','min':0,'max':4},
 		{'name':'dijetVtxN1','min':1},
 		{'name':'dijetVtxN2','min':1},
-		{'name':'dijetbestclusterN','min':2},	
+		# cluster minimal
+		{'name':'dijetbestclusterN','min':2},
 	]
 	Cuts=[
+		# clean up cuts	
+	  	{'name':'dijetNAvgMissHitsAfterVert','max':1.99},
 		{'name':'dijetVtxmass','min':5},
-		{'name':'dijetPosip2dFrac','min':0.5},
-		{'name':'dijetglxyrmsclr','max':1.},
-		{'name':'dijetVtxN','min':3},
-		{'name':'dijetNAvgMissHitsAfterVert','max':1.5},
 		{'name':'dijetVtxpt','min':10},
-		{'name':'dijetNPromptTracks','max':8},
-		{'name':'dijetPromptEnergyFrac','max':0.1},
+		{'name':'dijetVtxNRatio','min':0.1},
 		{'name':'dijetLxysig','min':8},
 	]
 
 	def dijetSteps(self):
 		mysteps = []
-		cuts = self.IniCuts + self.Cuts
-		cutsToPlot = self.IniCuts[-1:]+self.Cuts
-		for cut in cuts:
+		cutsToPlot1D = self.IniCuts[-1:]+self.Cuts
+		cutsToPlot2D = self.Cuts[-1:]
+		for cut in (self.IniCuts+self.Cuts):
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-			if cut in cutsToPlot:
-				mysteps.append(steps.plots.general(indices=cut['name']+'Indices'))
-				mysteps.append(steps.plots.promptness(indices=cut['name']+'Indices'))
-				mysteps.append(steps.plots.vertices(indices=cut['name']+'Indices'))
-				mysteps.append(steps.plots.clusters(indices=cut['name']+'Indices'))
+			if cut in cutsToPlot1D: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
+			if cut in cutsToPlot2D: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices',plot2D=True,plot1D=False))
 		return ([supy.steps.filters.label('dijet multiplicity filters')]+mysteps)
 
 	def calcsIndices(self):
 		calcs = []
-		cuts = self.IniCuts + self.Cuts
+		cuts=self.IniCuts+self.Cuts
 		for cutPrev,cutNext in zip(cuts[:-1],cuts[1:]):
-			indicesPrev=cutPrev['name']+'Indices'
-			indicesNext=cutNext['name']+'Indices'	
-			calcs.append(getattr(calculables.Indices,cutNext['name']+'Indices')(
-				indices=cutPrev['name']+'Indices',
-				min=cutNext['min'] if 'min' in cutNext else None,
-				max=cutNext['max'] if 'max' in cutNext else None,
-				val=cutNext['val'] if 'val' in cutNext else None,
-				)
+			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext)
 			)
 		return calcs
 
 	def calcsVars(self):
 		calcs = []
 		for calc in self.ToCalculate:
-			calcs.append(getattr(calculables.Vars,calc)(self.IniCuts[-1]['name']+'Indices'))
+			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -78,10 +67,6 @@ class displook(supy.analysis) :
 			+[supy.steps.filters.label("hlt trigger"),
 			steps.trigger.hltFilterWildcard("HLT_HT250_v")]
 
-			### reco filters
-			#+[supy.steps.filters.label('reco'),
-			#supy.steps.filters.value('PfHt',min=250)]
-
 			### plots
 			+[steps.event.general()]
 			+self.dijetSteps()
@@ -98,7 +83,7 @@ class displook(supy.analysis) :
 		return [samples.qcd,samples.data,samples.sigmc]
 
 	def listOfSamples(self,config) :
-		nFiles = 1 # or None for all
+		nFiles = None # or None for all
 		nEvents = None # or None for all
 
 		MH = [1000,1000,1000,400,400,200]
@@ -122,7 +107,7 @@ class displook(supy.analysis) :
 		return (supy.samples.specify(names = "dataA", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=9.0456)
 			+ supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=1.913)
 			+ qcd_samples 
-			+ sig_samples_u 
+			+ sig_samples_u
 			+ sig_samples_b
 		) 
 
@@ -140,4 +125,6 @@ class displook(supy.analysis) :
 			sampleLabelsForRatios = ("data","qcd"),
 			doLog=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
+			dependence2D=True,
+			doCorrTable=True,
 		).plotAll()

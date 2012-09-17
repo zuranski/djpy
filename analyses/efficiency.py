@@ -3,21 +3,34 @@ import supy,samples,calculables,steps,ROOT as r
 class efficiency(supy.analysis) :
     
     def listOfSteps(self,config) :
-        return [
-            supy.steps.printer.progressPrinter(),
-	    #steps.effplots.histos('candsDouble'),
-	    supy.steps.filters.value('trigHTdj',min=0.5),
-	    supy.steps.filters.value('PfHt',min=250),
-	    #steps.effplots.histos("doubleVeryLoose"),
-	    steps.counts.cuts('countsDouble'),
-	    steps.pfjetplots.general("doubleVeryLoose"),
-	    steps.pfjetplots.double("doubleVeryLoose"),
-	    steps.pfjetplots.tracks("doubleVeryLoose"),
-	    steps.vertexplots.vertices("doubleVeryLoose"),
-	    steps.trackplots.clusters("doubleVeryLoose"),
-	    steps.trackplots.disptracks("doubleVeryLoose"),
-            ]
-    
+        return ([
+		supy.steps.printer.progressPrinter()]
+		### filters
+		+[supy.steps.filters.label('data cleanup'),
+		supy.steps.filters.value('isPrimaryVertex',min=1),
+		supy.steps.filters.value('isPhysDeclared',min=1).onlyData(),
+		supy.steps.filters.value('isBeamScraping',max=0),
+		supy.steps.filters.value('passBeamHaloFilterTight',min=1),
+		supy.steps.filters.value('passHBHENoiseFilter',min=1)]
+
+		### pile-up reweighting
+		+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
+                                    target=("data/ABcontrol_observed.root","pileup"),
+                                    groups=[('qcd',[]),('Huds',[]),('Hb',[])]).onlySim()] 
+
+		### trigger
+		+[supy.steps.filters.label("hlt trigger"),
+		steps.trigger.hltFilterWildcard("HLT_HT250_v")]
+
+		#steps.effplots.histos('candsDouble'),
+		#steps.effplots.histos("doubleVeryLoose"),
+		+[steps.plots.general(),
+		steps.plots.promptness(),
+		steps.plots.fractions(),
+		steps.plots.vertices(),
+		steps.plots.clusters()]
+		)
+
     def listOfCalculables(self,config) :
         return ( supy.calculables.zeroArgs(supy.calculables) +
 		 supy.calculables.zeroArgs(calculables)
@@ -31,8 +44,8 @@ class efficiency(supy.analysis) :
 	nEvents = None # or None for all
 	MH = [1000,1000,1000,400,400,200]
 	MX = [350,150,50,150,50,50]
-	sig_names_u = ['H_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
-	sig_names_b = ['H_'+str(a)+'_X_'+str(b)+'b' for a,b in zip(MH,MX)]
+	sig_names_u = ['Huds_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
+	sig_names_b = ['Hb_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
 	sig_samples_u = []
 	sig_samples_b = []
 

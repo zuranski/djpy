@@ -1,7 +1,7 @@
 import supy,samples,calculables,steps,ROOT as r
 from calculables.utils import abcdCmp
 
-class discriminants(supy.analysis) :
+class abcd_scan(supy.analysis) :
     
 	MH = [1000,1000,1000,400,400,200]
 	MX = [350,150,50,150,50,50]
@@ -28,11 +28,16 @@ class discriminants(supy.analysis) :
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
     ]
-	ABCDCuts=[
-		{'name':'dijetPromptness','max':0.6,'more':'max0.6'},
-		{'name':'dijetDiscriminant','min':0.9,'more':'min0.8'},
-		]
-	
+	ABCDCuts=[]
+	cut1 = [5,4,3,2,1,0.9,0.8,0.7,0.6,0.5]
+	cut2 = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+	for c1 in cut1:
+		for c2 in cut2:
+			ABCDCuts.append([
+				{'name':'dijetPromptness','max':c1,'more':'max'+str(c1)},
+				{'name':'dijetDiscriminant','min':c2,'more':'min'+str(c2)},
+			])
+
 	def dijetSteps1(self):
 		mysteps = []
 		for cut in self.IniCuts+self.Cuts:
@@ -44,20 +49,22 @@ class discriminants(supy.analysis) :
 
 	def dijetSteps2(self):
 		mysteps=[]
-		mysteps.append(steps.plots.ABCDplots(indices=self.ABCDCuts[0]['name']+'_'+self.ABCDCuts[1]['name']+'_ABCDIndices_'+self.ABCDCuts[0]['more']+'_'+self.ABCDCuts[1]['more']))
+		for cuts in self.ABCDCuts:
+			mysteps.append(steps.plots.ABCDplots(indices=cuts[0]['name']+'_'+cuts[1]['name']+'_ABCDIndices_'+cuts[0]['more']+'_'+cuts[1]['more']))
 
-		for cut in self.ABCDCuts:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-			mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-			mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices'))
+		#for cut in self.ABCDCuts:
+		#	mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
+		#	mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
+		#	mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices'))
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
 
 	def calcsIndices(self):
 		calcs = []
-		cuts = self.IniCuts + self.Cuts + self.ABCDCuts
+		cuts = self.IniCuts + self.Cuts
 		for cutPrev,cutNext in zip(cuts[:-1],cuts[1:]):
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
-		calcs.append(calculables.Indices.ABCDIndices(indices=self.Cuts[-1]['name']+'Indices',cuts=self.ABCDCuts))
+		for cuts in self.ABCDCuts:
+			calcs.append(calculables.Indices.ABCDIndices(indices=self.Cuts[-1]['name']+'Indices',cuts=cuts))
 		return calcs
 
 	def discs(self):
@@ -103,8 +110,8 @@ class discriminants(supy.analysis) :
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
-			#steps.trigger.hltFilterWildcard("HLT_HT250_v")]
-			steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60")]
+			steps.trigger.hltFilterWildcard("HLT_HT250_v")]
+			#steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60")]
 
 			### plots
 			+[steps.event.general()]
