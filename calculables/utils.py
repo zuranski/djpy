@@ -28,3 +28,24 @@ def MatchByDR(eta1_v,phi1_v,eta2_v,phi2_v,DRmax):
 		matched[i] = bestMatchIdx
 	return matched
 
+def passed (var,cut):
+	passVal = (var == cut['val']) if 'val' in cut else True
+	passMin = (var >= cut['min']) if 'min' in cut else True
+	passMax = (var <= cut['max']) if 'max' in cut else True
+	return (passVal and passMin and passMax)
+
+def abcdCmp(histo):
+	a = histo.GetBinContent(1,1)
+	aerr = histo.GetBinError(1,1)
+	b = histo.GetBinContent(1,2)
+	berr = histo.GetBinError(1,2)
+	c = histo.GetBinContent(2,1)
+	cerr = histo.GetBinError(2,1)
+	d = histo.GetBinContent(2,2)
+	derr = histo.GetBinError(2,2)
+	exp = 0
+	expErr = 0
+	if a>0 and b>0 and c>0 and d>0:
+		exp = math.log(a*d/float(b*c))
+		expErr = math.sqrt(pow(aerr/float(a),2)+pow(berr/float(b),2)+pow(cerr/float(c),2)+pow(derr/float(d),2))
+	return min(5,max(exp/float(expErr),-5)) if exp is not 0 else 0
