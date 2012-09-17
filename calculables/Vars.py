@@ -14,6 +14,14 @@ class dijetVtxNTotRatio(DijetVar):
 		return self.source['dijetVtxN'][idx]/float(self.source['dijetNDispTracks'][idx]
 				+self.source['dijetNPromptTracks'][idx])
 
+class dijetVtxNRatio(DijetVar):
+	def calculate(self,idx):
+		return self.source['dijetVtxN'][idx]/float(self.source['dijetNDispTracks'][idx])
+
 class dijetVtxptRatio(DijetVar):
 	def calculate(self,idx):
 		return self.source['dijetVtxpt'][idx]/float(self.source['dijetPt'][idx])
+
+class dijetPromptness(DijetVar):
+	def calculate(self,idx):
+		return self.source['dijetNPromptTracks'][idx]*self.source['dijetPromptEnergyFrac'][idx]
