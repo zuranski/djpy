@@ -1,5 +1,5 @@
 from supy import wrappedChain
-from utils import MatchByDR
+from utils import passed
 
 class jetIndices(wrappedChain.calculable):
 	def update(self,ignored):
@@ -20,54 +20,26 @@ class dijetIndices(wrappedChain.calculable):
 			self.value = [i for i in range(len(self.source['dijetPt']))]
 
 class Indices(wrappedChain.calculable):
-	def __init__(self,val=None,min=None,max=None,indices=''):
-		for item in ['val','min','max','indices']: setattr(self,item,eval(item))
-
-	def passed (self,var,min,max,val):
-		passVal = (var == val) if val is not None else True
-		passMin = (var >= min) if min is not None else True
-		passMax = (var <= max) if max is not None else True
-		return (passVal and passMin and passMax)
+	def __init__(self,cut={},indices=''):
+		for item in ['cut','indices']: setattr(self,item,eval(item))
+		self.fixes = (cut['name'],'')
 
 	def update(self,ignored):
-		indicesOut = []
-		indicesIn = self.source[self.indices]
-		vars = self.source[self.coll]
-		for idx in indicesIn:
-			if self.passed(vars[idx],self.min,self.max,self.val): indicesOut.append(idx)
-		self.value = indicesOut
+		self.value = []
+		for idx in self.source[self.indices]:
+			if passed(self.source[self.cut['name']][idx],self.cut): self.value.append(idx)
 
-class jetVtxChi2Indices(Indices):
-	coll='jetVtxChi2'
-class dijetVtxChi2Indices(Indices):
-	coll='dijetVtxChi2'
-class dijetVtxNIndices(Indices):
-	coll='dijetVtxN'
-class dijetVtxN1Indices(Indices):
-	coll='dijetVtxN1'
-class dijetVtxN2Indices(Indices):
-	coll='dijetVtxN2'
-class dijetVtxNTotRatioIndices(Indices):
-	coll='dijetVtxNTotRatio'
-class dijetbestclusterNIndices(Indices):
-	coll='dijetbestclusterN'
-class dijetPosip2dFracIndices(Indices):
-	coll='dijetPosip2dFrac'
-class dijetNAvgMissHitsAfterVertIndices(Indices):
-	coll='dijetNAvgMissHitsAfterVert'
-class dijetglxyrmsclrIndices(Indices):
-	coll='dijetglxyrmsclr'
-class dijetVtxptIndices(Indices):
-	coll='dijetVtxpt'
-class dijetVtxmassIndices(Indices):
-	coll='dijetVtxmass'
-class dijetNPromptTracksIndices(Indices):
-	coll='dijetNPromptTracks'
-class dijetPromptEnergyFracIndices(Indices):
-	coll='dijetPromptEnergyFrac'
-class dijetLxysigIndices(Indices):
-	coll='dijetLxysig'
-class dijetDiscriminantPromptnessIndices(Indices):
-	coll='dijetDiscriminantPromptness'
-class dijetDiscriminantVtxIndices(Indices):
-	coll='dijetDiscriminantVtx'
+class ABCDIndices(wrappedChain.calculable):
+	def __init__(self,cuts=[],indices=''):
+		for item in ['cuts','indices']: setattr(self,item,eval(item))
+		self.fixes=(cuts[0]['name']+'_'+cuts[1]['name']+'_','_'+cuts[0]['more']+'_'+cuts[1]['more'])
+
+	def update(self,ignored):
+		self.value = {'A':[],'B':[],'C':[],'D':[]}
+		for idx in self.source[self.indices]:
+			pass1 = passed(self.source[self.cuts[0]['name']][idx],self.cuts[0])
+			pass2 = passed(self.source[self.cuts[1]['name']][idx],self.cuts[1])
+			if not pass1 and not pass2 : self.value['A'].append(idx)
+			if not pass1 and pass2 :     self.value['B'].append(idx)
+			if pass1 and not pass2 :     self.value['C'].append(idx)
+			if pass1 and pass2 :         self.value['D'].append(idx)
