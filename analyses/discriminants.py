@@ -58,6 +58,7 @@ class discriminants(supy.analysis) :
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
 			mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices'))
+		mysteps.append(steps.other.collector(['dijetMass','dijetLxy'],indices=self.ABCDCuts[-1]['name']+'Indices'))
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
 
 	def calcsIndices(self):
