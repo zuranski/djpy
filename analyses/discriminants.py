@@ -10,7 +10,8 @@ class discriminants(supy.analysis) :
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate=['dijetVtxNRatio','dijetPromptness']
+	ToCalculate=['dijetVtxNRatio','dijetPromptness','dijetPromptness1','dijetPromptness2']
+
 	IniCuts=[
         {'name':'dijet'},
         # vertex minimal
@@ -28,9 +29,10 @@ class discriminants(supy.analysis) :
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
     ]
-	ABCDCuts=[
-		{'name':'dijetPromptness','max':0.6,'more':'max0.6'},
-		{'name':'dijetDiscriminant','min':0.9,'more':'min0.8'},
+	ABCDCuts= [
+		{'name':'dijetPromptness1','max':0.35,'more':'max0.35'},
+		{'name':'dijetPromptness2','max':0.35,'more':'max0.35'},
+		{'name':'dijetDiscriminant','max':0.7,'more':'min0.7'},
 		]
 	
 	def dijetSteps1(self):
@@ -44,7 +46,13 @@ class discriminants(supy.analysis) :
 
 	def dijetSteps2(self):
 		mysteps=[]
-		mysteps.append(steps.plots.ABCDplots(indices=self.ABCDCuts[0]['name']+'_'+self.ABCDCuts[1]['name']+'_ABCDIndices_'+self.ABCDCuts[0]['more']+'_'+self.ABCDCuts[1]['more']))
+		mysteps.append(steps.plots.ABCDplots(indices=self.ABCDCuts[0]['name']
+                                                     +'_'+self.ABCDCuts[1]['name']
+                                                     +'_'+self.ABCDCuts[2]['name']
+                                                     +'_ABCDIndices_'
+                                                     +self.ABCDCuts[0]['more']+'_'
+                                                     +self.ABCDCuts[1]['more']+'_'
+                                                     +self.ABCDCuts[2]['more']))
 
 		for cut in self.ABCDCuts:
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
@@ -70,12 +78,9 @@ class discriminants(supy.analysis) :
 															 "dijetglxyrmsclr": (10,0,1),
 															 "dijetbestclusterN": (7,1.5,8.5),
 															 "dijetPosip2dFrac": (5,0.5001,1.001),
-															 #"dijetNAvgMissHitsAfterVert": (4,0.,2.),
-															 #"dijetVtxmass": (6,5,40),
-															 #"dijetVtxpt": (6,10,40),
 															},
 													indices=self.Cuts[-1]['name']+'Indices',
-													bins = 50),
+													bins = 14),
 			   ])
 
 	def calcsVars(self):
@@ -104,7 +109,7 @@ class discriminants(supy.analysis) :
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
 			#steps.trigger.hltFilterWildcard("HLT_HT250_v")]
-			steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60")]
+			steps.trigger.hltFilterWildcardUnprescaled("HLT_HT250_DoubleDisplacedJet60")]
 
 			### plots
 			+[steps.event.general()]
@@ -151,7 +156,7 @@ class discriminants(supy.analysis) :
 		org.mergeSamples(targetSpec = {"name":"data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.mergeSamples(targetSpec = {"name":"Huds", "color":r.kRed}, allWithPrefix = "Huds")
 		org.mergeSamples(targetSpec = {"name":"Hb", "color":r.kGreen}, allWithPrefix = "Hb")
-		org.scale()
+		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			#dependence2D=True,
 			pdfFileName = self.pdfFileName(org.tag),

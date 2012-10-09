@@ -2,7 +2,7 @@ import supy,samples,calculables,steps,ROOT as r
 
 class displook(supy.analysis) :
     
-	ToCalculate=['dijetVtxNRatio','dijetPromptness']
+	ToCalculate=['dijetVtxNRatio','dijetPromptness','dijetPromptness1','dijetPromptness2']
 
 	IniCuts=[
 		{'name':'dijet'},
@@ -25,7 +25,7 @@ class displook(supy.analysis) :
 	def dijetSteps(self):
 		mysteps = []
 		cutsToPlot1D = self.IniCuts[-1:]+self.Cuts
-		cutsToPlot2D = self.Cuts[-1:]
+		cutsToPlot2D = cutsToPlot1D[-1:]
 		for cut in (self.IniCuts+self.Cuts):
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
 			if cut in cutsToPlot1D: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))

@@ -29,7 +29,9 @@ class abcd_scan(supy.analysis) :
         {'name':'dijetLxysig','min':8},
     ]
 	ABCDCuts=[]
-	cut1 = [5,4,3,2,1,0.9,0.8,0.7,0.6,0.5]
+	#cut1 = [0.4,0.39,0.38,0.37,0.36,0.35]
+	#cut2 = [0.8,0.82,0.84,0.86,0.88,0.9]
+	cut1 = [1,2,3,4,5,6,7,8,9]
 	cut2 = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 	for c1 in cut1:
 		for c2 in cut2:
@@ -51,11 +53,6 @@ class abcd_scan(supy.analysis) :
 		mysteps=[]
 		for cuts in self.ABCDCuts:
 			mysteps.append(steps.plots.ABCDplots(indices=cuts[0]['name']+'_'+cuts[1]['name']+'_ABCDIndices_'+cuts[0]['more']+'_'+cuts[1]['more']))
-
-		#for cut in self.ABCDCuts:
-		#	mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-		#	mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-		#	mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices'))
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
 
 	def calcsIndices(self):
@@ -77,12 +74,9 @@ class abcd_scan(supy.analysis) :
 															 "dijetglxyrmsclr": (10,0,1),
 															 "dijetbestclusterN": (7,1.5,8.5),
 															 "dijetPosip2dFrac": (5,0.5001,1.001),
-															 #"dijetNAvgMissHitsAfterVert": (4,0.,2.),
-															 #"dijetVtxmass": (6,5,40),
-															 #"dijetVtxpt": (6,10,40),
 															},
 													indices=self.Cuts[-1]['name']+'Indices',
-													bins = 50),
+													bins = 14),
 			   ])
 
 	def calcsVars(self):
@@ -147,8 +141,8 @@ class abcd_scan(supy.analysis) :
 		return (supy.samples.specify(names = "dataA", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=9.0456)
 			+ supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=1.913)
 			+ qcd_samples 
-			+ sig_samples_u 
-			+ sig_samples_b
+			#+ sig_samples_u 
+			#+ sig_samples_b
 		) 
 
 	def conclude(self,pars) :
@@ -158,7 +152,7 @@ class abcd_scan(supy.analysis) :
 		org.mergeSamples(targetSpec = {"name":"data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.mergeSamples(targetSpec = {"name":"Huds", "color":r.kRed}, allWithPrefix = "Huds")
 		org.mergeSamples(targetSpec = {"name":"Hb", "color":r.kGreen}, allWithPrefix = "Hb")
-		org.scale()
+		org.scale(lumiToUseInAbsenceOfData=30)
 		plotter = supy.plotter( org,
 			#dependence2D=True,
 			pdfFileName = self.pdfFileName(org.tag),
@@ -167,8 +161,8 @@ class abcd_scan(supy.analysis) :
 			doLog=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
-		plotter.plotAll()
-		#self.makeABCDmap(org,plotter)
+		#plotter.plotAll()
+		self.makeABCDmap(org,plotter)
 
 	def makeABCDmap(self,org,plotter):
 		plotter.doLog = False
@@ -186,6 +180,8 @@ class abcd_scan(supy.analysis) :
 						val1=strings[2][3:]
 						val2=strings[3][3:strings[3].find('counts')]
 						for i in range(len(step[plotName])):
+							histo[i].GetXaxis().SetTitle(step[plotName][i].GetXaxis().GetTitle()+'CutValue')
+							histo[i].GetYaxis().SetTitle(step[plotName][i].GetYaxis().GetTitle()+'CutValue')
 							histo[i].SetBinContent(histo[i].GetXaxis().FindBin(val1),histo[i].GetYaxis().FindBin(val2),abcdCmp(step[plotName][i]))
 		for h in histo:
 			h.SetMinimum(-5)
