@@ -29,20 +29,32 @@ class ABCDplots(analysisStep):
 	def __init__(self,indices=None):
 		self.indices = indices
 		self.collection=indices[:indices.find('_ABCDIndices')]+indices[indices.find('_ABCDIndices')+12:]
-		self.cut1,self.cut2 = indices.split('_')[:2]
+		self.cut0,self.cut1,self.cut2 = indices.split('_')[:3]
 
 	def uponAcceptance(self,e):
 		indicesDict = e[self.indices]
-		self.book.fill((0,0),self.collection+'counts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['A']),
+		self.book.fill((0,0),self.collection+'ABCDcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['A']),
 		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
 		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((0,1),self.collection+'counts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['B']),
+		self.book.fill((0,1),self.collection+'ABCDcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['B']),
 		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
 		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((1,0),self.collection+'counts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['C']),
+		self.book.fill((1,0),self.collection+'ABCDcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['C']),
 		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
 		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((1,1),self.collection+'counts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['D']),
+		self.book.fill((1,1),self.collection+'ABCDcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['D']),
+		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
+		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
+		self.book.fill((0,0),self.collection+'EFGHcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['E']),
+		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
+		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
+		self.book.fill((0,1),self.collection+'EFGHcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['F']),
+		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
+		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
+		self.book.fill((1,0),self.collection+'EFGHcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['G']),
+		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
+		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
+		self.book.fill((1,1),self.collection+'EFGHcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['H']),
 		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
 		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
 
@@ -97,16 +109,17 @@ class clusters(plots):
 
 class ABCDvars(plots):
 	vars = [
-            {'name':'Discriminant','bins':50,'low':0.,'high':1,'unit':''},
-            {'name':'Promptness','bins':50,'low':0.,'high':20,'unit':''},
-            {'name':'Mass','bins':50,'low':0,'high':500,'unit':'[GeV]'},
+            {'name':'Discriminant','bins':14,'low':0.,'high':1.,'unit':''},
+            {'name':'Promptness1','bins':50,'low':0.,'high':20,'unit':''},
+            {'name':'Promptness2','bins':50,'low':0.,'high':20,'unit':''},
+            {'name':'Mass','bins':20,'low':0,'high':800,'unit':'[GeV]'},
            ]
 
 class cutvars(plots):
 	vars = [
-            {'name':'Mass','bins':50,'low':0,'high':500,'unit':'[GeV]'},
-            {'name':'Promptness','bins':50,'low':0,'high':20,'unit':''},
             {'name':'Lxysig','bins':50,'low':0,'high':100,'unit':''},
+            {'name':'Promptness1','bins':50,'low':0.,'high':20,'unit':''},
+            {'name':'Promptness2','bins':50,'low':0.,'high':20,'unit':''},
             {'name':'VtxN','bins':15,'low':1.5,'high':16.5,'unit':''},
             {'name':'Vtxmass','bins':50,'low':0,'high':100,'unit':'[GeV]'},
             {'name':'Vtxpt','bins':50,'low':0,'high':200,'unit':'[GeV]'},
