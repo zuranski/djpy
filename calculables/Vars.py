@@ -25,3 +25,11 @@ class dijetVtxptRatio(DijetVar):
 class dijetPromptness(DijetVar):
 	def calculate(self,idx):
 		return self.source['dijetNPromptTracks'][idx]*self.source['dijetPromptEnergyFrac'][idx]
+
+class dijetPromptness1(DijetVar):
+	def calculate(self,idx):
+		return self.source['jetNPromptTracks'][self.source['dijetIdx1'][idx]]*self.source['jetPromptEnergyFrac'][self.source['dijetIdx1'][idx]]
+
+class dijetPromptness2(DijetVar):
+	def calculate(self,idx):
+		return self.source['jetNPromptTracks'][self.source['dijetIdx2'][idx]]*self.source['jetPromptEnergyFrac'][self.source['dijetIdx2'][idx]]
