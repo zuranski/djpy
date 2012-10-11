@@ -3,21 +3,11 @@ from utils import passed
 
 class jetIndices(wrappedChain.calculable):
 	def update(self,ignored):
-		if self.source['jetTrueLxy'] is not None:
-			self.value = [i for i in range(len(self.source['jetPt']))
-				          if self.source['jetTrueLxy'][i] is not -1 ]
-		else:
-			self.value = [i for i in range(len(self.source['jetPt']))]
+		self.value = [i for i in range(len(self.source['jetPt']))]
 
 class dijetIndices(wrappedChain.calculable):
 	def update(self,ignored):
-		if self.source['jetTrueLxy'] is not None:
-			self.value = [i for i in range(len(self.source['dijetPt']))
-						  if self.source['jetTrueLxy'][self.source['dijetIdx1'][i]] ==
-						  self.source['jetTrueLxy'][self.source['dijetIdx2'][i]] != -1 
-						 ]
-		else:
-			self.value = [i for i in range(len(self.source['dijetPt']))]
+		self.value = [i for i in range(len(self.source['dijetPt']))]
 
 class Indices(wrappedChain.calculable):
 	def __init__(self,cut={},indices=''):
