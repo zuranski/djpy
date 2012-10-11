@@ -128,3 +128,10 @@ class cutvars(plots):
             {'name':'glxyrmsclr','bins':50,'low':0,'high':2.5,'unit':''},
             {'name':'bestclusterN','bins':15,'low':1.5,'high':16.5,'unit':''},
 	       ]
+
+class observables(plots):
+	vars = [
+            {'name':'Mass','bins':100,'low':0,'high':500,'unit':'[GeV]'},
+            {'name':'Lxy','bins':50,'low':0,'high':60,'unit':'[GeV]'},
+            {'name':'TrueLxy','bins':50,'low':0,'high':60,'unit':'[GeV]'},
+	       ]
