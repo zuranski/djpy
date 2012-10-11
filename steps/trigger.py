@@ -13,6 +13,7 @@ class hltFilterWildcard(analysisStep) :
 
     def __init__(self,hltPathWildcard):
         self.hltPathWildcard = hltPathWildcard
+        self.moreName = hltPathWildcard
 
     def select (self,e):
         for path in e["triggered"]:
@@ -23,6 +24,7 @@ class hltFilterWildcardUnprescaled(analysisStep):
 
     def __init__(self,hltPathWildcard):
         self.hltPathWildcard = hltPathWildcard
+        self.moreName = hltPathWildcard
 
     def select (self,e):
         for path,prescale in zip(e["triggered"],e["prescaled"]):
