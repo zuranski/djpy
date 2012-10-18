@@ -10,10 +10,11 @@ class discriminants(supy.analysis) :
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate=['dijetVtxNRatio','dijetPromptness','dijetPromptness1','dijetPromptness2']
+	ToCalculate=['dijetVtxNRatio','dijetPromptness1','dijetPromptness2']
 
 	IniCuts=[
         {'name':'dijet'},
+        {'name':'dijetTrueLxy','min':0},
         # vertex minimal
         {'name':'dijetVtxChi2','min':0,'max':4},
         {'name':'dijetVtxN1','min':1},
@@ -28,11 +29,12 @@ class discriminants(supy.analysis) :
         {'name':'dijetVtxpt','min':10},
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
+        {'name':'dijetNoOverlaps','val':True},
     ]
 	ABCDCuts= [
 		{'name':'dijetPromptness1','max':0.35,'more':'max0.35'},
 		{'name':'dijetPromptness2','max':0.35,'more':'max0.35'},
-		{'name':'dijetDiscriminant','max':0.7,'more':'min0.7'},
+		{'name':'dijetDiscriminant','min':0.7,'more':'min0.7'},
 		]
 	
 	def dijetSteps1(self):
@@ -88,6 +90,7 @@ class discriminants(supy.analysis) :
 		calcs = []
 		for calc in self.ToCalculate:
 			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
+		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :

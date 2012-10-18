@@ -20,6 +20,7 @@ class displook(supy.analysis) :
 		{'name':'dijetVtxpt','min':10},
 		{'name':'dijetVtxNRatio','min':0.1},
 		{'name':'dijetLxysig','min':8},
+		{'name':'dijetNoOverlaps','val':True},
 	]
 
 	def dijetSteps(self):
@@ -44,6 +45,7 @@ class displook(supy.analysis) :
 		calcs = []
 		for calc in self.ToCalculate:
 			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
+		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :
