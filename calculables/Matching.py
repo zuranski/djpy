@@ -22,3 +22,11 @@ class dijetTrueLxy(wrappedChain.calculable):
                       if self.source['jetTrueLxy'][self.source['dijetIdx1'][i]] ==
                       self.source['jetTrueLxy'][self.source['dijetIdx2'][i]] != -1 else -1
                       for i in range(len(self.source['dijetPt']))]
+
+class jetTrigPrompt(wrappedChain.calculable):
+	def update(self,ignored):
+		matches = MatchByDR(self.source['jetEta'],
+                            self.source['jetPhi'],
+                            self.source['trgobjEta'],
+                            self.source['trgobjPhi'],0.5)
+		self.value = [True if matches[i] is not None else False for i in range(len(matches))]
