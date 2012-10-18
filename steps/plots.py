@@ -5,6 +5,7 @@ class plots(analysisStep):
 	def __init__(self,njets=2,indices=None,plot2D=False,plot1D=True):
 		self.prefix = ['jet','dijet'][njets-1]
 		self.indices = indices if indices is not None else self.prefix+'Indices'
+		self.tag = self.indices[:self.indices.find('Indices')]
 		self.plot1D = plot1D
 		self.plot2D = plot2D
 
@@ -12,7 +13,7 @@ class plots(analysisStep):
 		if self.plot1D:
 			for var in self.vars:
 				for idx in e[self.indices]:
-					self.book.fill(e[self.prefix+var['name']][idx],var['name']+'_h',var['bins'],var['low'],
+					self.book.fill(e[self.prefix+var['name']][idx],var['name']+'_h_'+self.tag,var['bins'],var['low'],
 								   var['high'],w=None,title="%s; %s%s ; %s / bin "
 								   %(self.prefix,var['name'],var['unit'],self.prefix))
 
@@ -20,7 +21,7 @@ class plots(analysisStep):
 			for var1,var2 in itertools.combinations(self.vars,2):
 				for idx in e[self.indices]:
 					self.book.fill((e[self.prefix+var1['name']][idx],e[self.prefix+var2['name']][idx]),
-                                   var1['name']+'_'+var2['name']+'_h',(var1['bins'],var2['bins']),
+                                   var1['name']+'_'+var2['name']+'_h_'+self.tag,(var1['bins'],var2['bins']),
                                    (var1['low'],var2['low']),(var1['high'],var2['high']),
 								   w=None,title="%s ; %s%s; %s%s" 
 								   %(self.prefix,var1['name'],var1['unit'],var2['name'],var2['unit']))
@@ -135,3 +136,13 @@ class observables(plots):
             {'name':'Lxy','bins':50,'low':0,'high':60,'unit':'[GeV]'},
             {'name':'TrueLxy','bins':50,'low':0,'high':60,'unit':'[GeV]'},
 	       ]
+
+class trigvars(plots):
+	vars = [
+            {'name':'Pt','bins':100,'low':0,'high':300,'unit':'[GeV]'},
+            {'name':'Eta','bins':50,'low':-3,'high':3,'unit':''},
+            {'name':'Phi','bins':50,'low':-3.5,'high':3.5,'unit':''},
+            {'name':'Promptness','bins':50,'low':0.,'high':5,'unit':''},
+            {'name':'NPromptTracks','bins':11,'low':-0.5,'high':10.5,'unit':''},
+            {'name':'PromptEnergyFrac','bins':25,'low':0.,'high':0.5,'unit':''},
+           ]
