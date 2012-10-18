@@ -30,4 +30,15 @@ class hltFilterWildcardUnprescaled(analysisStep):
         for path,prescale in zip(e["triggered"],e["prescaled"]):
 			if self.hltPathWildcard in path.first and path.second and prescale.second==1: return True
         return False
-    
+#####################################
+class hltTriggerObjectMultiplicity(analysisStep):
+
+	def __init__(self,objectName,min=1):    
+		for item in ['objectName','min']: setattr(self,item,eval(item)) 
+
+	def select (self,e):
+		nObjects = 0
+		for tag in e["trgobjTag"]:
+			if tag == self.objectName : nObjects += 1
+		if nObjects >= self.min: return True
+		return False
