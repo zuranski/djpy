@@ -24,9 +24,18 @@ class dijetTrueLxy(wrappedChain.calculable):
                       for i in range(len(self.source['dijetPt']))]
 
 class jetTrigPrompt(wrappedChain.calculable):
+	def __init__(self,tag):
+		self.tag = tag
+
 	def update(self,ignored):
+		etas, phis = [],[]
+		for idx in range(len(self.source['trgobjTag'])):
+			if self.source['trgobjTag'][idx] == self.tag : 
+				etas.append(self.source['trgobjEta'][idx])
+				phis.append(self.source['trgobjPhi'][idx])
+		
 		matches = MatchByDR(self.source['jetEta'],
                             self.source['jetPhi'],
-                            self.source['trgobjEta'],
-                            self.source['trgobjPhi'],0.5)
+                            etas,
+                            phis,0.5)
 		self.value = [True if matches[i] is not None else False for i in range(len(matches))]
