@@ -27,9 +27,22 @@ class dijetVtxNRatio(DiJetVar):
 	def calculate(self,idx):
 		return self.source['dijetVtxN'][idx]/float(self.source['dijetNDispTracks'][idx]) if self.source['dijetNDispTracks'][idx] > 0 else -1
 
+class dijetVtxDelta(DiJetVar):
+	def calculate(self,idx):
+		return abs(self.source['dijetVtxN1'][idx]-self.source['dijetVtxN2'][idx])/float(self.source['dijetVtxN'][idx])
+
 class dijetVtxptRatio(DiJetVar):
 	def calculate(self,idx):
 		return self.source['dijetVtxpt'][idx]/float(self.source['dijetPt'][idx])
+
+class dijetDR(DiJetVar):
+	def calculate(self,idx):
+		return DeltaR(
+                      self.source['jetEta'][self.source['dijetIdx1'][idx]],
+                      self.source['jetPhi'][self.source['dijetIdx1'][idx]],
+                      self.source['jetEta'][self.source['dijetIdx2'][idx]],
+                      self.source['jetPhi'][self.source['dijetIdx2'][idx]]
+                     ) 
 
 class dijetPromptness(DiJetVar):
 	def calculate(self,idx):
