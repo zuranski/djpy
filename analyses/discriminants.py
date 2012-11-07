@@ -29,7 +29,7 @@ class discriminants(supy.analysis) :
         {'name':'dijetVtxpt','min':10},
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
-        {'name':'dijetNoOverlaps','val':True},
+        #{'name':'dijetNoOverlaps','val':True},
     ]
 	ABCDCuts= [
 		{'name':'dijetPromptness1','max':0.35,'more':'max0.35'},
@@ -112,8 +112,8 @@ class discriminants(supy.analysis) :
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
-			#steps.trigger.hltFilterWildcard("HLT_HT250_v")]
-			steps.trigger.hltFilterWildcardUnprescaled("HLT_HT250_DoubleDisplacedJet60")]
+			steps.trigger.hltFilterWildcard("HLT_HT250_v")]
+			#steps.trigger.hltFilterWildcardUnprescaled("HLT_HT250_DoubleDisplacedJet60")]
 
 			### plots
 			+[steps.event.general()]
@@ -156,20 +156,41 @@ class discriminants(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"qcd", "color":r.kBlue}, allWithPrefix = "qcd")
-		org.mergeSamples(targetSpec = {"name":"data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
-		org.mergeSamples(targetSpec = {"name":"Huds", "color":r.kRed}, allWithPrefix = "Huds")
-		org.mergeSamples(targetSpec = {"name":"Hb", "color":r.kGreen}, allWithPrefix = "Hb")
+		org.mergeSamples(targetSpec = {"name":"Standard Model", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
+		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
+		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}, q=u,d,s", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "Huds")
+		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}, q=b", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "Hb")
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			#dependence2D=True,
 			pdfFileName = self.pdfFileName(org.tag),
-			samplesForRatios = ("data","qcd"),
-			sampleLabelsForRatios = ("data","qcd"),
+			samplesForRatios = ("Data","Standard Model"),
+			sampleLabelsForRatios = ("Data","Standard Model"),
+			#printRatios = True,
 			doLog=True,
+			anMode=True,
+			showStatBox=False,
+			pegMinimum=0.5,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
-		plotter.plotAll()
+		#plotter.plotAll()
+		plotter.individualPlots(plotSpecs = [{"plotName":"Promptness2_h_dijetLxysig",
+                                              "stepName":"ABCDvars",
+                                              "stepDesc":"ABCDvars",
+                                              "newTitle":";Prompt-Veto;di-jets / bin",
+                                              "legendCoords": (0.55, 0.52, 0.9, 0.75),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                              {"plotName":"Discriminant_h_dijetLxysig",
+                                              "stepName":"ABCDvars",
+                                              "stepDesc":"ABCDvars",
+                                              "newTitle":";Vertex/Cluster Discriminant;di-jets / bin",
+                                              "legendCoords": (0.3, 0.6, 0.6, 0.78),
+                                              "stampCoords": (0.5, 0.88)
+                                              },
+                                            ],
+                                preliminary=True,
+                               )
 		#self.makeABCDmap(org,plotter)
 
 	def makeABCDmap(self,org,plotter):

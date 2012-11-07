@@ -2,21 +2,20 @@ import supy,samples,calculables,steps,ROOT as r
 
 class efficiency(supy.analysis) :
 
-	MH = [1000,1000,1000,400,400,200]
-	MX = [350,150,50,150,50,50]
+	MH = [1000,1000,400,1000,400,200]
+	MX = [350,150,50,50,150,50]
 	sig_names_u = ['Huds_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
 	sig_names_b = ['Hb_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
 
-	ToCalculate = ['dijetVtxNRatio','dijetPromptness1','dijetPromptness2']
+	ToCalculate = ['dijetVtxNRatio','dijetPromptness1','dijetPromptness2','dijetVtxDelta','dijetDR']
     
 	IniCuts=[
         {'name':'dijet'},
-        #{'name':'dijetTrueLxy','min':0},
+        {'name':'dijetTrueLxy','min':0},
         # vertex minimal
         {'name':'dijetVtxChi2','min':0,'max':4},
         {'name':'dijetVtxN1','min':1},
         {'name':'dijetVtxN2','min':1},
-        {'name':'dijetNoOverlaps','val':True},
         # cluster minimal
         {'name':'dijetbestclusterN','min':2},
     ]
@@ -27,6 +26,7 @@ class efficiency(supy.analysis) :
         {'name':'dijetVtxpt','min':10},
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
+        {'name':'dijetNoOverlaps','val':True},
     ]
 	ABCDCuts= [
 		{'name':'dijetPromptness1','max':0.35,'more':'max0.35'},
@@ -45,8 +45,9 @@ class efficiency(supy.analysis) :
 		mysteps=[]
 		for cut in self.ABCDCuts:
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-		#mysteps.append(supy.steps.filters.multiplicity(self.ABCDCuts[-1]['name']+'Indices',max=1))
-		mysteps.append(steps.other.collector(['dijetMass','dijetLxy'],indices=self.ABCDCuts[-1]['name']+'Indices'))
+		#mysteps.append(supy.steps.filters.multiplicity(self.ABCDCuts[-1]['name']+'Indices',max=2))
+		mysteps.append(supy.steps.other.collector(['run','lumiSection','event']))
+		#mysteps.append(steps.other.collector(['dijetMass','dijetLxy'],indices=self.ABCDCuts[-1]['name']+'Indices'))
 		mysteps.append(steps.plots.observables(indices=self.ABCDCuts[-1]['name']+'Indices'))
 		mysteps.append(steps.plots.cutvars(indices=self.ABCDCuts[-1]['name']+'Indices'))
 		mysteps.append(steps.plots.ABCDvars(indices=self.ABCDCuts[-1]['name']+'Indices'))
@@ -80,7 +81,7 @@ class efficiency(supy.analysis) :
 		calcs = []
 		for calc in self.ToCalculate:
 			calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
-		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetVtxN2Indices'))
+		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -102,7 +103,8 @@ class efficiency(supy.analysis) :
 		### trigger
 		+[supy.steps.filters.label("hlt trigger"),
 		steps.trigger.hltFilterWildcard("HLT_HT250_v"),
-		steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60_v")]
+		supy.steps.filters.value('pfHT',min=280),
+		steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60_v"),]
 		#steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60_PromptTrack_v")]
 
 		#steps.effplots.histos('candsDouble'),
@@ -130,21 +132,37 @@ class efficiency(supy.analysis) :
 
 		qcd_samples = []
 		for i in range(len(self.sig_names_u)):
-			sig_samples_u+=(supy.samples.specify(names = self.sig_names_u[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles))
+			sig_samples_u+=(supy.samples.specify(names = self.sig_names_u[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 			sig_samples_b+=(supy.samples.specify(names = self.sig_names_b[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles))
 
-		return sig_samples_u #+ sig_samples_b
+		return sig_samples_u[:3] #+ sig_samples_b
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.scale(lumiToUseInAbsenceOfData=30)
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}, q=uds", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_350")
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}, q=uds", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}, q=uds", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_400_X_50")
+		org.scale(lumiToUseInAbsenceOfData=4220)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=True,
+			doLog=False,
+			anMode=True,
+			showStatBox=False,
+			pegMinimum=0.5,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
-		plotter.plotAll()
+		#plotter.plotAll()
+		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_dijetDiscriminant",
+                                              "stepName":"observables",
+                                              "stepDesc":"observables",
+                                              "newTitle":";Mass [GeV/c^{2}];di-jets / bin",
+                                              "legendCoords": (0.45, 0.55, 0.9, 0.75),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                            ],
+                                preliminary=True
+                               )
 
 		#self.makeEfficiencyPlots(org,"candsDouble","doubleVeryLoose", plotter)
 
