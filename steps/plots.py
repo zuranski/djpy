@@ -139,9 +139,9 @@ class observables(plots):
 
 class trigvars(plots):
 	vars = [
-            {'name':'Pt','bins':100,'low':0,'high':300,'unit':'[GeV]'},
-            {'name':'Eta','bins':50,'low':-3,'high':3,'unit':''},
-            {'name':'Phi','bins':50,'low':-3.5,'high':3.5,'unit':''},
+            {'name':'Pt','bins':10,'low':60,'high':300,'unit':'[GeV]'},
+            {'name':'Eta','bins':20,'low':-2,'high':2,'unit':''},
+            {'name':'Phi','bins':20,'low':-3.15,'high':3.15,'unit':''},
             {'name':'Promptness','bins':50,'low':0.,'high':5,'unit':''},
             {'name':'NPromptTracks','bins':11,'low':-0.5,'high':10.5,'unit':''},
             {'name':'PromptEnergyFrac','bins':25,'low':0.,'high':0.5,'unit':''},
