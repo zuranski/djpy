@@ -100,14 +100,14 @@ class trigeff2Ptrk(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"markerStyle":21,"markerSize":0.3}, allWithPrefix = "qcd")
-		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":21,"markerSize":0.3}, allWithPrefix = "data")
+		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"markerStyle":21,"markerSize":0.6}, allWithPrefix = "qcd")
+		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":21,"markerSize":0.6}, allWithPrefix = "data")
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			#dependence2D=True,
 			pdfFileName = self.pdfFileName(org.tag),
-			samplesForRatios = ("Data","Simulation"),
-			sampleLabelsForRatios = ("Data","Sim"),
+			#samplesForRatios = ("Data","Simulation"),
+			#sampleLabelsForRatios = ("Data","Sim"),
 			doLog=False,
 			anMode=True,
 			pageNumbers=False,
@@ -115,7 +115,7 @@ class trigeff2Ptrk(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		#self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt", plotter)
+		self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt", plotter)
 		#self.makeEfficiencyPlots2(org,"jetPromptness","jetTrigPrompt",plotter)
 		self.makeEfficiencyPlots2(org,"jetNPromptTracks","jetTrigPrompt",plotter)
 
@@ -186,8 +186,8 @@ class trigeff2Ptrk(supy.analysis) :
                                               "stepName":"",
                                               "stepDesc":"",
                                               "newTitle":"; jet #eta; Trigger Efficiency",
-                                              "legendCoords": (0.35, 0.15, 0.7, 0.35),
-                                              "stampCoords": (0.6, 0.7),}
+                                              "legendCoords": (0.35, 0.25, 0.7, 0.45),
+                                              "stampCoords": (0.6, 0.6),}
                                             ],
                                 #histos=eff_histos["divide_Eta_h_jetTrigPrompt_by_Eta_h_jetPromptness"],
                                 histos=eff_histos["divide_Eta_h_jetTrigPrompt_by_Eta_h_jetNPromptTracks"],
@@ -196,8 +196,8 @@ class trigeff2Ptrk(supy.analysis) :
                                               "stepName":"",
                                               "stepDesc":"",
                                               "newTitle":"; jet #phi; Trigger Efficiency",
-                                              "legendCoords": (0.35, 0.15, 0.7, 0.35),
-                                              "stampCoords": (0.6, 0.7),}
+                                              "legendCoords": (0.35, 0.25, 0.7, 0.45),
+                                              "stampCoords": (0.6, 0.6),}
                                             ],
                                 #histos=eff_histos["divide_Phi_h_jetTrigPrompt_by_Phi_h_jetPromptness"],
                                 histos=eff_histos["divide_Phi_h_jetTrigPrompt_by_Phi_h_jetNPromptTracks"],
@@ -206,8 +206,8 @@ class trigeff2Ptrk(supy.analysis) :
                                               "stepName":"",
                                               "stepDesc":"",
                                               "newTitle":"; jet p_{T} [GeV/c]; Trigger Efficiency",
-                                              "legendCoords": (0.35, 0.15, 0.7, 0.35),
-                                              "stampCoords": (0.6, 0.7),}
+                                              "legendCoords": (0.35, 0.25, 0.7, 0.45),
+                                              "stampCoords": (0.6, 0.6),}
                                             ],
                                 #histos=eff_histos["divide_Pt_h_jetTrigPrompt_by_Pt_h_jetPromptness"],
                                 histos=eff_histos["divide_Pt_h_jetTrigPrompt_by_Pt_h_jetNPromptTracks"],

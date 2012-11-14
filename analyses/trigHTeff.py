@@ -40,7 +40,7 @@ class trigHTeff(supy.analysis) :
 		return [samples.qcd,samples.data,samples.sigmc]
 
 	def listOfSamples(self,config) :
-		nFiles = None # or None for all
+		nFiles = 2 # or None for all
 		nEvents = None # or None for all
 
 		qcd_bins = [str(q) for q in [50,80,120,170,300,470,600,800]]

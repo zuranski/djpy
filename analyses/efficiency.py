@@ -96,9 +96,9 @@ class efficiency(supy.analysis) :
 		supy.steps.filters.value('passHBHENoiseFilter',min=1)]
 
 		### pile-up reweighting
-		+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-                                    target=("data/ABcontrol_observed.root","pileup"),
-                                    groups=[('qcd',[]),('Huds',[]),('Hb',[])]).onlySim()] 
+		#+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
+        #                            target=("data/ABcontrol_observed.root","pileup"),
+        #                            groups=[('qcd',[]),('Huds',[]),('Hb',[])]).onlySim()] 
 
 		### trigger
 		+[supy.steps.filters.label("hlt trigger"),
@@ -157,6 +157,15 @@ class efficiency(supy.analysis) :
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";Mass [GeV/c^{2}];di-jets / bin",
+                                              "legendCoords": (0.45, 0.55, 0.9, 0.75),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                            ]
+                               )
+		plotter.individualPlots(plotSpecs = [{"plotName":"Lxy_h_dijetDiscriminant",
+                                              "stepName":"observables",
+                                              "stepDesc":"observables",
+                                              "newTitle":";L_{xy} [cm];di-jets / bin",
                                               "legendCoords": (0.45, 0.55, 0.9, 0.75),
                                               "stampCoords": (0.7, 0.88)
                                               },
