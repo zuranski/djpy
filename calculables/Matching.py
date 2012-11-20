@@ -10,7 +10,7 @@ class jetTrueLxy(wrappedChain.calculable):
 							self.source['jetPhi'],
 							self.source['genjetEta'],
 							self.source['genjetPhi'], 0.3)
-		self.value = [(self.source['genjetLxy'][matches[i]]/10. if matches[i] is not None else -1)
+		self.value = [(self.source['genjetLxy'][matches[i]] if matches[i] is not None else -1)
 					  for i in range(len(matches))]
 
 class dijetTrueLxy(wrappedChain.calculable):
