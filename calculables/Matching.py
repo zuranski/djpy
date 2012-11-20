@@ -3,7 +3,7 @@ from utils import MatchByDR
 
 class jetTrueLxy(wrappedChain.calculable):
 	def update(self,ignored):
-		if self.source['isRealData'] or len(self.source['genjetPt']) == 0: 
+		if self.source['realData'] or len(self.source['genjetPt']) == 0: 
 			self.value = [True for i in range(len(self.source['jetPt']))]
 			return
 		matches = MatchByDR(self.source['jetEta'],
@@ -15,7 +15,7 @@ class jetTrueLxy(wrappedChain.calculable):
 
 class dijetTrueLxy(wrappedChain.calculable):
 	def update(self,ignored):
-		if self.source['isRealData'] or len(self.source['genjetPt']) == 0: 
+		if self.source['realData'] or len(self.source['genjetPt']) == 0: 
 			self.value = [True for i in range(len(self.source['dijetPt']))]
 			return
 		self.value = [self.source['jetTrueLxy'][self.source['dijetIdx1'][i]] 

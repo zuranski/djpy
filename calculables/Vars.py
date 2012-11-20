@@ -56,3 +56,26 @@ class dijetPromptness2(DiJetVar):
 	def calculate(self,idx):
 		return self.source['jetNPromptTracks'][self.source['dijetIdx2'][idx]]*self.source['jetPromptEnergyFrac'][self.source['dijetIdx2'][idx]]
 
+class dijetNPromptTracks1(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetNPromptTracks'][self.source['dijetIdx1'][idx]]
+
+class dijetNPromptTracks2(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetNPromptTracks'][self.source['dijetIdx2'][idx]]
+
+class dijetPromptEnergyFrac1(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetPromptEnergyFrac'][self.source['dijetIdx1'][idx]]
+
+class dijetPromptEnergyFrac2(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetPromptEnergyFrac'][self.source['dijetIdx2'][idx]]
+
+class dijetPt1(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetPt'][self.source['dijetIdx1'][idx]]
+
+class dijetPt2(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetPt'][self.source['dijetIdx2'][idx]]
