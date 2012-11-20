@@ -4,11 +4,11 @@ class efficiency(supy.analysis) :
 
 	MH = [1000,1000,400,1000,400,200]
 	MX = [350,150,50,50,150,50]
-	sig_names_u = ['Huds_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
-	sig_names_b = ['Hb_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
+	sig_names = ['H_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
 
 	ToCalculate = ['dijetVtxNRatio','dijetPromptness1','dijetPromptness2','dijetVtxDelta','dijetDR']
-    
+	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']   
+ 
 	IniCuts=[
         {'name':'dijet'},
         {'name':'dijetTrueLxy','min':0},
@@ -63,7 +63,7 @@ class efficiency(supy.analysis) :
 		return calcs
 
 	def discs(self):
-		discSamplesRight=[name+'.pileupPUInteractionsBX0Target' for name in (self.sig_names_u + self.sig_names_b)]
+		discSamplesRight=[name+'.pileupPUInteractionsBX0Target' for name in (self.sig_names)]
 		discSamplesLeft=['dataA','dataB']
 		return([supy.calculables.other.Discriminant(fixes=("dijet",""),
 													right = {"pre":"H","tag":"","samples":discSamplesRight},
@@ -89,12 +89,17 @@ class efficiency(supy.analysis) :
 		supy.steps.printer.progressPrinter()]
 		### filters
 		+[supy.steps.filters.label('data cleanup'),
-		supy.steps.filters.value('isPrimaryVertex',min=1),
-		supy.steps.filters.value('isPhysDeclared',min=1).onlyData(),
-		supy.steps.filters.value('isBeamScraping',max=0),
-		supy.steps.filters.value('passBeamHaloFilterTight',min=1),
-		supy.steps.filters.value('passHBHENoiseFilter',min=1)]
-
+		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
+		supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
+		supy.steps.filters.value('beamScrapingFilterFlag',min=1),
+		supy.steps.filters.value('beamHaloTightFilterFlag',min=1),
+		supy.steps.filters.value('hbheNoiseFilterFlag',min=1),
+		supy.steps.filters.value('hcalLaserEventFilterFlag',min=1),
+		supy.steps.filters.value('ecalLaserCorrFilterFlag',min=1),
+		supy.steps.filters.value('eeBadScFilterFlag',min=1),
+		supy.steps.filters.value('ecalDeadCellTPFilterFlag',min=1),
+		supy.steps.filters.value('trackingFailureFilterFlag',min=1),
+		]
 		### pile-up reweighting
 		#+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
         #                            target=("data/ABcontrol_observed.root","pileup"),
@@ -102,10 +107,9 @@ class efficiency(supy.analysis) :
 
 		### trigger
 		+[supy.steps.filters.label("hlt trigger"),
-		steps.trigger.hltFilterWildcard("HLT_HT250_v"),
-		supy.steps.filters.value('pfHT',min=280),
-		steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60_v"),]
-		#steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60_PromptTrack_v")]
+		steps.trigger.hltFilterWildcard("HLT_HT300_v"),
+		supy.steps.filters.value('caloHT',min=320),
+		steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),]
 
 		#steps.effplots.histos('candsDouble'),
 		#steps.effplots.histos("doubleVeryLoose"),
@@ -127,32 +131,31 @@ class efficiency(supy.analysis) :
 	def listOfSamples(self,config) :
 		nFiles = None # or None for all
 		nEvents = None # or None for all
-		sig_samples_u = []
-		sig_samples_b = []
+		sig_samples = []
 
-		qcd_samples = []
-		for i in range(len(self.sig_names_u)):
-			sig_samples_u+=(supy.samples.specify(names = self.sig_names_u[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
-			sig_samples_b+=(supy.samples.specify(names = self.sig_names_b[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles))
+		for i in range(len(self.sig_names)):
+			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 
-		return sig_samples_u[:3] #+ sig_samples_b
+		return sig_samples
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}, q=uds", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_350")
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}, q=uds", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}, q=uds", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_400_X_50")
-		org.scale(lumiToUseInAbsenceOfData=4220)
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}, q=uds", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_350")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}, q=uds", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}, q=uds", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_400_X_50")
+		org.scale(lumiToUseInAbsenceOfData=11000)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=False,
+			doLog=True,
 			anMode=True,
 			showStatBox=False,
 			pegMinimum=0.5,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
-		#plotter.plotAll()
+		plotter.plotAll()
+		plotter.doLog=False
+		
 		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_dijetDiscriminant",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
@@ -160,19 +163,15 @@ class efficiency(supy.analysis) :
                                               "legendCoords": (0.45, 0.55, 0.9, 0.75),
                                               "stampCoords": (0.7, 0.88)
                                               },
-                                            ]
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"Lxy_h_dijetDiscriminant",
+											  {"plotName":"Lxy_h_dijetDiscriminant",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";L_{xy} [cm];di-jets / bin",
                                               "legendCoords": (0.45, 0.55, 0.9, 0.75),
                                               "stampCoords": (0.7, 0.88)
                                               },
-                                            ],
-                                preliminary=True
+                                            ]
                                )
-
 		#self.makeEfficiencyPlots(org,"candsDouble","doubleVeryLoose", plotter)
 
 	def makeEfficiencyPlots(self, org, denomName, numName, plotter):

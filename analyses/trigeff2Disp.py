@@ -1,45 +1,39 @@
-
 import supy,samples,calculables,steps,ROOT as r
 from calculables.utils import abcdCmp
 
-class trigeff2Ptrk(supy.analysis) :
+class trigeff2Disp(supy.analysis) :
     
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate = ['jetPromptness']
-
-	IniCuts=[
+	jetCuts=[
         {'name':'jet'},
-        {'name':'jetPt','min':60},
-    ]
-	Cuts=[
-        #{'name':'jetPromptness','max':0.35},
+        {'name':'jetPt','min':65},
         {'name':'jetNPromptTracks','max':2},
-        {'name':'jetTrigPrompt','val':True},
     ]
 	
-	def dijetSteps1(self):
+	def jetPlots(self):
 		mysteps = []
-		for cut in self.IniCuts:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=2))
-			mysteps.append(steps.plots.trigvars(indices=cut['name']+'Indices',njets=1))
-		for cut in self.Cuts: 
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-			mysteps.append(steps.plots.trigvars(indices=cut['name']+'Indices',njets=1))
-		return ([supy.steps.filters.label('dijet multiplicity filters')]+mysteps)
+		mysteps.append(steps.plots.trigvars(indices='jetPtIndices',njets=1))
+		mysteps.append(steps.plots.trigvars(indices='jetNPromptTracksIndices',njets=1))
+		mysteps.append(steps.plots.trigvars(indices='jetTrigPromptIndices1',njets=1))
+		mysteps.append(steps.plots.trigvars(indices='jetTrigPromptIndices2',njets=1))
+		return mysteps
 
 	def calcsIndices(self):
 		calcs = []
-		cuts = self.IniCuts+self.Cuts
+		cuts = self.jetCuts
 		for cutPrev,cutNext in zip(cuts[:-1],cuts[1:]):
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
-		return calcs
-
-	def calcsVars(self):
-		calcs = []
-		for calc in self.ToCalculate:
-			calcs.append(getattr(calculables.Vars,calc)('jetIndices'))
+		# before cut
+		calcs.append(calculables.Indices.Indices(indices='jetPtIndices',
+                                                 cut={'name':'jetTrigPrompt','val':1},
+                                                 tag='1'))
+		# after cut
+		calcs.append(calculables.Indices.Indices(indices='jetNPromptTracksIndices',
+                                                 cut={'name':'jetTrigPrompt','val':True},
+                                                 tag='2')
+                    )
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -48,38 +42,40 @@ class trigeff2Ptrk(supy.analysis) :
 
 			### filters
 			supy.steps.filters.label('data cleanup'),
-			supy.steps.filters.value('isPrimaryVertex',min=1),
-			supy.steps.filters.value('isPhysDeclared',min=1).onlyData(),
-			supy.steps.filters.value('isBeamScraping',max=0),
-			supy.steps.filters.value('passBeamHaloFilterTight',min=1),
-			supy.steps.filters.value('passHBHENoiseFilter',min=1)]
+			supy.steps.filters.value('primaryVertexFilterFlag',min=1),
+			supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
+			supy.steps.filters.value('beamScrapingFilterFlag',min=1),
+			supy.steps.filters.value('beamHaloTightFilterFlag',min=1),
+			supy.steps.filters.value('hbheNoiseFilterFlag',min=1),
+			supy.steps.filters.value('hcalLaserEventFilterFlag',min=1),
+			supy.steps.filters.value('ecalLaserCorrFilterFlag',min=1),
+			supy.steps.filters.value('eeBadScFilterFlag',min=1),
+			supy.steps.filters.value('ecalDeadCellTPFilterFlag',min=1),
+			supy.steps.filters.value('trackingFailureFilterFlag',min=1),
+			]
 
 			### pile-up reweighting
 			+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-				target=("data/HT250_R11AB_observed.root","pileup"),
-				groups=[('qcd',[]),('Huds',[]),('Hb',[])]).onlySim()] 
+				target=("data/HT300_R12BC_observed.root","pileup"),
+				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
-			steps.trigger.hltFilterWildcard("HLT_HT250_v"),
-			steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60_v",veto=True),
-			steps.trigger.hltFilterWildcard("HLT_HT250_DoubleDisplacedJet60_PromptTrack_v",veto=True),
-			steps.trigger.hltIsPresentUnprescaled("HLT_HT250_DoubleDisplacedJet60_v"),
+			steps.trigger.hltFilterWildcard("HLT_HT300_v"),
+			#steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v",veto=True),
 			]
 			
-			+[supy.steps.filters.value('pfHT',min=280)]
-
 			### plots
 			+[steps.event.general()]
-			+self.dijetSteps1()
+			+[steps.trigger.hltTriggerObjectMultiplicity("hltDoubleJet60L1FastJetVeryCentral",min=1),]
+			+self.jetPlots()
 			)
 
 	def listOfCalculables(self,config) :
 		return ( supy.calculables.zeroArgs(supy.calculables) +
 			supy.calculables.zeroArgs(calculables) 
 			+self.calcsIndices()
-			+self.calcsVars()
-			+[calculables.Matching.jetTrigPrompt('hlt2DisplacedHT250L3Filter')]
+			+[calculables.Matching.jetTrigPrompt('hlt2DisplacedHT300L1FastJetL3Filter')]
                  )
     
 	def listOfSampleDictionaries(self) :
@@ -92,8 +88,9 @@ class trigeff2Ptrk(supy.analysis) :
 		qcd_samples = []
 		for i in range(len(self.qcd_names)):
 			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupPUInteractionsBX0Target']))
-		return (supy.samples.specify(names = "dataA", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=9.0456)
-			+ supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=1.913)
+		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.039)
+			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=0.4404)
+			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=5.764)
 			+ qcd_samples 
 		) 
 
@@ -104,20 +101,19 @@ class trigeff2Ptrk(supy.analysis) :
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":21,"markerSize":0.6}, allWithPrefix = "data")
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
-			#dependence2D=True,
 			pdfFileName = self.pdfFileName(org.tag),
-			#samplesForRatios = ("Data","Simulation"),
-			#sampleLabelsForRatios = ("Data","Sim"),
-			doLog=False,
+			samplesForRatios = ("Data","Simulation"),
+			sampleLabelsForRatios = ("Data","Sim"),
+			doLog=True,
 			anMode=True,
 			pageNumbers=False,
 			pushLeft=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt", plotter)
-		#self.makeEfficiencyPlots2(org,"jetPromptness","jetTrigPrompt",plotter)
-		self.makeEfficiencyPlots2(org,"jetNPromptTracks","jetTrigPrompt",plotter)
+		plotter.doLog=False
+		#self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt1", plotter)
+		self.makeEfficiencyPlots2(org,"jetNPromptTracks","jetTrigPrompt2",plotter)
 
 	def makeEfficiencyPlots1(self, org, denomName, numName, plotter):
 
@@ -144,25 +140,7 @@ class trigeff2Ptrk(supy.analysis) :
                                               "legendCoords": (0.55, 0.45, 0.9, 0.65),
                                               "stampCoords": (0.67, 0.85),}
                                             ],
-                                histos=eff_histos["divide_NPromptTracks_h_jetTrigPrompt_by_NPromptTracks_h_jetPt"],
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"effPromptEnergyFrac",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; Prompt Energy Fraction; Trigger Efficiency",
-                                              "legendCoords": (0.55, 0.45, 0.9, 0.65),
-                                              "stampCoords": (0.67, 0.85),}
-                                            ],
-                                histos=eff_histos["divide_PromptEnergyFrac_h_jetTrigPrompt_by_PromptEnergyFrac_h_jetPt"],
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"effPromptness",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; Promptness; Trigger Efficiency",
-                                              "legendCoords": (0.55, 0.45, 0.9, 0.65),
-                                              "stampCoords": (0.67, 0.85),}
-                                            ],
-                                histos=eff_histos["divide_Promptness_h_jetTrigPrompt_by_Promptness_h_jetPt"],
+                                histos=eff_histos["divide_NPromptTracks_h_jetTrigPrompt1_by_NPromptTracks_h_jetPt"],
                                )
 
 	def makeEfficiencyPlots2(self, org, denomName, numName, plotter):
@@ -186,29 +164,26 @@ class trigeff2Ptrk(supy.analysis) :
                                               "stepName":"",
                                               "stepDesc":"",
                                               "newTitle":"; jet #eta; Trigger Efficiency",
-                                              "legendCoords": (0.35, 0.25, 0.7, 0.45),
-                                              "stampCoords": (0.6, 0.6),}
+                                              "legendCoords": (0.35, 0.15, 0.7, 0.35),
+                                              "stampCoords": (0.6, 0.65),}
                                             ],
-                                #histos=eff_histos["divide_Eta_h_jetTrigPrompt_by_Eta_h_jetPromptness"],
-                                histos=eff_histos["divide_Eta_h_jetTrigPrompt_by_Eta_h_jetNPromptTracks"],
+                                histos=eff_histos["divide_Eta_h_jetTrigPrompt2_by_Eta_h_jetNPromptTracks"],
                                )
 		plotter.individualPlots(plotSpecs = [{"plotName":"effPhi",
                                               "stepName":"",
                                               "stepDesc":"",
                                               "newTitle":"; jet #phi; Trigger Efficiency",
-                                              "legendCoords": (0.35, 0.25, 0.7, 0.45),
-                                              "stampCoords": (0.6, 0.6),}
+                                              "legendCoords": (0.35, 0.15, 0.7, 0.35),
+                                              "stampCoords": (0.6, 0.65),}
                                             ],
-                                #histos=eff_histos["divide_Phi_h_jetTrigPrompt_by_Phi_h_jetPromptness"],
-                                histos=eff_histos["divide_Phi_h_jetTrigPrompt_by_Phi_h_jetNPromptTracks"],
+                                histos=eff_histos["divide_Phi_h_jetTrigPrompt2_by_Phi_h_jetNPromptTracks"],
                                )
 		plotter.individualPlots(plotSpecs = [{"plotName":"effPt",
                                               "stepName":"",
                                               "stepDesc":"",
                                               "newTitle":"; jet p_{T} [GeV/c]; Trigger Efficiency",
-                                              "legendCoords": (0.35, 0.25, 0.7, 0.45),
-                                              "stampCoords": (0.6, 0.6),}
+                                              "legendCoords": (0.35, 0.15, 0.7, 0.35),
+                                              "stampCoords": (0.6, 0.65),}
                                             ],
-                                #histos=eff_histos["divide_Pt_h_jetTrigPrompt_by_Pt_h_jetPromptness"],
-                                histos=eff_histos["divide_Pt_h_jetTrigPrompt_by_Pt_h_jetNPromptTracks"],
+                                histos=eff_histos["divide_Pt_h_jetTrigPrompt2_by_Pt_h_jetNPromptTracks"],
                                )
