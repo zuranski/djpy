@@ -35,6 +35,6 @@ sigmc.add('H_400_X_150','%s'%(fileListFromDisk(loc+"MH_400_MX_150_Ctau_40To4000/
 sigmc.add('H_400_X_50','%s'%(fileListFromDisk(loc+"MH_400_MX_50_Ctau_8To800/")) ,xs=500.1) #/pb
 sigmc.add('H_400_X_20','%s'%(fileListFromDisk(loc+"MH_400_MX_20_Ctau_4To400/")) ,xs=500.1) #/pb
 sigmc.add('H_200_X_50','%s'%(fileListFromDisk(loc+"MH_200_MX_50_Ctau_20To2000/")) ,xs=500.1) #/pb
-sigmc.add('H_200_X_20','%s'%(fileListFromDisk(loc+"MH_200_MX_50_Ctau_7To700/")) ,xs=500.1) #/pb
+sigmc.add('H_200_X_20','%s'%(fileListFromDisk(loc+"MH_200_MX_20_Ctau_7To700/")) ,xs=500.1) #/pb
 sigmc.add('H_120_X_50','%s'%(fileListFromDisk(loc+"MH_120_MX_50_Ctau_50To5000/")) ,xs=500.1) #/pb
 sigmc.add('H_120_X_20','%s'%(fileListFromDisk(loc+"MH_120_MX_20_Ctau_13To1300/")) ,xs=500.1) #/pb
