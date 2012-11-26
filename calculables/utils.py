@@ -42,11 +42,11 @@ def getCounts(histo):
 		dict[keys[i]] = (histo.GetBinContent(i+1),histo.GetBinError(i+1))
 
 	results = []
+	results.append(dict['H'])
 	combinations = [('F','G','B'),('E','G','C'),('D','G','A')]
 	for comb in combinations:
 		b,c,a = dict[comb[0]],dict[comb[1]],dict[comb[2]]
 		results.append(estimate(b,c,a))
-	results.append(dict['H'])
 	return results
 
 def estimate(b,c,a):
