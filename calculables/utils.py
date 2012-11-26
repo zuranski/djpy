@@ -28,24 +28,30 @@ def MatchByDR(eta1_v,phi1_v,eta2_v,phi2_v,DRmax):
 		matched[i] = bestMatchIdx
 	return matched
 
-def passed (var,cut):
+def passed (e,idx,cut):
+	var = e[cut['name']][idx]
 	passVal = (var == cut['val']) if 'val' in cut else True
 	passMin = (var >= cut['min']) if 'min' in cut else True
 	passMax = (var <= cut['max']) if 'max' in cut else True
 	return (passVal and passMin and passMax)
 
-def abcdCmp(histo):
-	a = histo.GetBinContent(1,1)
-	aerr = histo.GetBinError(1,1)
-	b = histo.GetBinContent(1,2)
-	berr = histo.GetBinError(1,2)
-	c = histo.GetBinContent(2,1)
-	cerr = histo.GetBinError(2,1)
-	d = histo.GetBinContent(2,2)
-	derr = histo.GetBinError(2,2)
-	exp = 0
-	expErr = 0
-	if a>0 and b>0 and c>0 and d>0:
-		exp = math.log(a*d/float(b*c))
-		expErr = math.sqrt(pow(aerr/float(a),2)+pow(berr/float(b),2)+pow(cerr/float(c),2)+pow(derr/float(d),2))
-	return min(5,max(exp/float(expErr),-5)) if exp is not 0 else 0
+def getCounts(histo):
+	keys = ['A','B','C','D','E','F','G','H']
+	dict = {}
+	for i in range(len(keys)):
+		dict[keys[i]] = (histo.GetBinContent(i+1),histo.GetBinError(i+1))
+
+	results = []
+	combinations = [('F','G','B'),('E','G','C'),('D','G','A')]
+	for comb in combinations:
+		b,c,a = dict[comb[0]],dict[comb[1]],dict[comb[2]]
+		results.append(estimate(b,c,a))
+	results.append(dict['H'])
+	return results
+
+def estimate(b,c,a):
+        est = b[0]*c[0]/float(a[0])
+        err = est*math.sqrt(pow(a[1]/float(a[0]),2)+
+							pow(b[1]/float(b[0]),2)+
+							pow(c[1]/float(c[0]),2))
+        return (est,err)

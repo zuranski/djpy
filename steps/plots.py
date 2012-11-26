@@ -29,36 +29,22 @@ class plots(analysisStep):
 class ABCDplots(analysisStep):
 	def __init__(self,indices=None):
 		self.indices = indices
-		self.collection=indices[:indices.find('_ABCDIndices')]+indices[indices.find('_ABCDIndices')+12:]
-		self.cut0,self.cut1,self.cut2 = indices.split('_')[:3]
+		self.collection = ''.join(self.indices.split('ABCDIndices'))
 
 	def uponAcceptance(self,e):
 		indicesDict = e[self.indices]
-		self.book.fill((0,0),self.collection+'ABCDcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['A']),
-		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
-		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((0,1),self.collection+'ABCDcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['B']),
-		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
-		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((1,0),self.collection+'ABCDcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['C']),
-		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
-		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((1,1),self.collection+'ABCDcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['D']),
-		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
-		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((0,0),self.collection+'EFGHcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['E']),
-		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
-		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((0,1),self.collection+'EFGHcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['F']),
-		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
-		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((1,0),self.collection+'EFGHcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['G']),
-		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
-		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
-		self.book.fill((1,1),self.collection+'EFGHcounts',(2,2),(-0.5,-0.5),(1.5,1.5),w=len(indicesDict['H']),
-		title=self.collection + " ; " + self.cut1 +";"+ self.cut2+"; counts",
-		xAxisLabels=['False','True'],yAxisLabels=['False','True'])
+		for key,value in sorted(indicesDict.iteritems()):
+			self.book.fill(key,self.collection+'ABCDcounts',4,0.5,4.5,w=len(indicesDict[key]))
 
+class ABCDEFGHplots(analysisStep):
+	def __init__(self,indices=None):
+		self.indices = indices
+		self.collection = ''.join(self.indices.split('ABCDEFGHIndices'))
+
+	def uponAcceptance(self,e):
+		indicesDict = e[self.indices]
+		for key,value in sorted(indicesDict.iteritems()):
+			self.book.fill(key,self.collection+'ABCDEFGHcounts',8,0.5,8.5,w=len(indicesDict[key]))
 
 class general(plots):
 	vars = [
