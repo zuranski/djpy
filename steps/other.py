@@ -16,3 +16,15 @@ class collector(analysisStep) :
     def mergeFunc(self, products) :
         s = set([]).union(*products["collection"])
         pickle.dump(s,open(self.outputFileName,"w"))
+
+class genParticleMultiplicity(analysisStep):
+
+    def __init__(self,pdgId,min=1):
+        for item in ['pdgId','min']: setattr(self,item,eval(item))
+
+    def select (self,e):
+        nObjects = 0
+        for pdgId in e["XpdgId"]:
+            if pdgId == self.pdgId : nObjects += 1
+        if nObjects >= self.min: return True
+        return False
