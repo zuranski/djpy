@@ -67,7 +67,7 @@ class pflook(supy.analysis) :
 			+[supy.steps.filters.label("hlt trigger"),
 			steps.trigger.hltFilterWildcard("HLT_HT300_v")]
 
-			+[supy.steps.filters.value('caloHT',min=360)]
+			+[supy.steps.filters.value('pfHT',min=400)]
 			### plots
 			+[steps.event.general()]
 			+self.plots(1)
