@@ -12,7 +12,7 @@ class DiJetVar(wrappedChain.calculable):
 
 class JetVar(wrappedChain.calculable):
 	def __init__(self,indices=None):
-		self.indices = indices if indices is not None else 'dijetIndices'
+		self.indices = indices if indices is not None else 'jetIndices'
 
 	def update(self,ignored):
 		self.value = [-1 for i in range(len(self.source['jetPt']))]
