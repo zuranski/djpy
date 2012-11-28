@@ -1,16 +1,16 @@
-import supy,samples,calculables,steps,ROOT as r
-from calculables.utils import abcdCmp
+import itertools,supy,samples,calculables,steps,ROOT as r
+from calculables.utils import getCounts,listdiff
 
 class discriminants(supy.analysis) :
     
 	MH = [1000,1000,1000,400,400,200]
 	MX = [350,150,50,150,50,50]
-	sig_names_u = ["Huds_"+str(a)+"_X_"+str(b) for a,b in zip(MH,MX)]
-	sig_names_b = ["Hb_"+str(a)+"_X_"+str(b) for a,b in zip(MH,MX)]
+	sig_names = ["H_"+str(a)+"_X_"+str(b) for a,b in zip(MH,MX)]
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate=['dijetVtxNRatio','dijetPromptness1','dijetPromptness2']
+	ToCalculate=['dijetVtxNRatio']
+	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
 
 	IniCuts=[
         {'name':'dijet'},
@@ -24,18 +24,29 @@ class discriminants(supy.analysis) :
     ]
 	Cuts=[
         # clean up cuts 
-        {'name':'dijetNAvgMissHitsAfterVert','max':1.99},
+        #{'name':'dijetNAvgMissHitsAfterVert','max':1.99},
         {'name':'dijetVtxmass','min':5},
         {'name':'dijetVtxpt','min':10},
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
-        #{'name':'dijetNoOverlaps','val':True},
+        {'name':'dijetNoOverlaps','val':True},
     ]
-	ABCDCuts= [
-		{'name':'dijetPromptness1','max':0.35,'more':'max0.35'},
-		{'name':'dijetPromptness2','max':0.35,'more':'max0.35'},
-		{'name':'dijetDiscriminant','min':0.7,'more':'min0.7'},
-		]
+	ABCDCutsSets = []
+	scanPrompt = [(5,0.35),(4,0.3),(3,0.2),(2,0.15)]
+	scanVtx = [0.01,0.05,0.1,0.2,0.4,0.65,0.9]
+
+	scan = [obj for obj in itertools.product(scanPrompt,scanPrompt,scanVtx)]
+
+	for val in scan :
+		ABCDCutsSets.append([
+		{'name':'Prompt1','vars':({'name':'dijetNPromptTracks1','max':val[0][0]},
+   	                              {'name':'dijetPromptEnergyFrac1','max':val[0][1]})
+		},
+		{'name':'Prompt2','vars':({'name':'dijetNPromptTracks2','max':val[1][0]},
+	                              {'name':'dijetPromptEnergyFrac2','max':val[1][1]})
+		},
+		{'name':'Disc','vars':({'name':'dijetDiscriminant','min':val[2]},)},
+		])	
 	
 	def dijetSteps1(self):
 		mysteps = []
@@ -48,35 +59,26 @@ class discriminants(supy.analysis) :
 
 	def dijetSteps2(self):
 		mysteps=[]
-		mysteps.append(steps.plots.ABCDplots(indices=self.ABCDCuts[0]['name']
-                                                     +'_'+self.ABCDCuts[1]['name']
-                                                     +'_'+self.ABCDCuts[2]['name']
-                                                     +'_ABCDIndices_'
-                                                     +self.ABCDCuts[0]['more']+'_'
-                                                     +self.ABCDCuts[1]['more']+'_'
-                                                     +self.ABCDCuts[2]['more']))
-
-		for cut in self.ABCDCuts:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-			mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-			mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices'))
-		mysteps.append(steps.other.collector(['dijetMass','dijetLxy'],indices=self.ABCDCuts[-1]['name']+'Indices'))
+		for i in range(len(self.ABCDCutsSets)) :
+			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
 
 	def calcsIndices(self):
 		calcs = []
-		cuts = self.IniCuts + self.Cuts + self.ABCDCuts
+		cuts = self.IniCuts + self.Cuts + self.ABCDCutsSets[-1]
 		for cutPrev,cutNext in zip(cuts[:-1],cuts[1:]):
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
-		calcs.append(calculables.Indices.ABCDIndices(indices=self.Cuts[-1]['name']+'Indices',cuts=self.ABCDCuts))
+		for i in range(len(self.ABCDCutsSets)) :
+			calcs.append(calculables.Indices.ABCDEFGHIndices(indices=self.Cuts[-1]['name']+'Indices',
+															 cuts=self.ABCDCutsSets[i],suffix=str(i)))
 		return calcs
 
 	def discs(self):
-		discSamplesRight=[name+'.pileupPUInteractionsBX0Target' for name in (self.sig_names_u + self.sig_names_b)]
-		discSamplesLeft=['dataA','dataB']
+		discSamplesRight=[name+'.pileupPUInteractionsBX0Target' for name in self.sig_names]
+		discSamplesLeft=[name+'.pileupPUInteractionsBX0Target' for name in self.qcd_names]
 		return([supy.calculables.other.Discriminant(fixes=("dijet",""),
 													right = {"pre":"H","tag":"","samples":discSamplesRight},
-													left = {"pre":"data","tag":"","samples":discSamplesLeft},
+													left = {"pre":"qcd","tag":"","samples":discSamplesLeft},
 													dists = {"dijetVtxN":(7,1.5,8.5),
 															 "dijetglxyrmsclr": (10,0,1),
 															 "dijetbestclusterN": (7,1.5,8.5),
@@ -99,21 +101,27 @@ class discriminants(supy.analysis) :
 
 			### filters
 			supy.steps.filters.label('data cleanup'),
-			supy.steps.filters.value('isPrimaryVertex',min=1),
-			supy.steps.filters.value('isPhysDeclared',min=1).onlyData(),
-			supy.steps.filters.value('isBeamScraping',max=0),
-			supy.steps.filters.value('passBeamHaloFilterTight',min=1),
-			supy.steps.filters.value('passHBHENoiseFilter',min=1)]
+			supy.steps.filters.value('primaryVertexFilterFlag',min=1),
+            supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
+            supy.steps.filters.value('beamScrapingFilterFlag',min=1),
+            supy.steps.filters.value('beamHaloTightFilterFlag',min=1),
+            supy.steps.filters.value('hbheNoiseFilterFlag',min=1),
+            supy.steps.filters.value('hcalLaserEventFilterFlag',min=1),
+            supy.steps.filters.value('ecalLaserCorrFilterFlag',min=1),
+            supy.steps.filters.value('eeBadScFilterFlag',min=1),
+            supy.steps.filters.value('ecalDeadCellTPFilterFlag',min=1),
+            supy.steps.filters.value('trackingFailureFilterFlag',min=1),
+			]
 
 			### pile-up reweighting
 			+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-				target=("data/ABcontrol_observed.root","pileup"),
-				groups=[('qcd',[]),('Huds',[]),('Hb',[])]).onlySim()] 
+				target=("data//HT300_R12BC_observed.root","pileup"),
+				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
-			steps.trigger.hltFilterWildcard("HLT_HT250_v")]
-			#steps.trigger.hltFilterWildcardUnprescaled("HLT_HT250_DoubleDisplacedJet60")]
+			steps.trigger.hltFilterWildcard("HLT_HT300_v"),
+			supy.steps.filters.value("caloHT",min=325),]
 
 			### plots
 			+[steps.event.general()]
@@ -137,82 +145,81 @@ class discriminants(supy.analysis) :
 		nEvents = None # or None for all
 
 		qcd_samples = []
-		sig_samples_u = []
-		sig_samples_b = []
+		sig_samples = []
 		for i in range(len(self.qcd_names)):
 			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupPUInteractionsBX0Target']))
-		for i in range(len(self.sig_names_u)):
-			sig_samples_u+=(supy.samples.specify(names = self.sig_names_u[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupPUInteractionsBX0Target']))
-		for i in range(len(self.sig_names_b)):
-			sig_samples_b+=(supy.samples.specify(names = self.sig_names_b[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupPUInteractionsBX0Target']))
+		for i in range(len(self.sig_names)):
+			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupPUInteractionsBX0Target']))
 
-		return (supy.samples.specify(names = "dataA", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=9.0456)
-			+ supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=1.913)
-			+ qcd_samples 
-			+ sig_samples_u 
-			+ sig_samples_b
+		return (qcd_samples
+			    + sig_samples 
 		) 
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"Standard Model", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
+		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
-		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}, q=u,d,s", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "Huds")
-		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}, q=b", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "Hb")
+		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
-			#dependence2D=True,
 			pdfFileName = self.pdfFileName(org.tag),
-			samplesForRatios = ("Data","Standard Model"),
-			sampleLabelsForRatios = ("Data","Standard Model"),
-			#printRatios = True,
 			doLog=True,
-			anMode=True,
-			showStatBox=False,
-			pegMinimum=0.5,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		#plotter.plotAll()
-		plotter.individualPlots(plotSpecs = [{"plotName":"Promptness2_h_dijetLxysig",
-                                              "stepName":"ABCDvars",
-                                              "stepDesc":"ABCDvars",
-                                              "newTitle":";Prompt-Veto;di-jets / bin",
-                                              "legendCoords": (0.55, 0.52, 0.9, 0.75),
-                                              "stampCoords": (0.7, 0.88)
-                                              },
-                                              {"plotName":"Discriminant_h_dijetLxysig",
-                                              "stepName":"ABCDvars",
-                                              "stepDesc":"ABCDvars",
-                                              "newTitle":";Vertex/Cluster Discriminant;di-jets / bin",
-                                              "legendCoords": (0.3, 0.6, 0.6, 0.78),
-                                              "stampCoords": (0.5, 0.88)
-                                              },
-                                            ],
-                                preliminary=True,
-                               )
-		#self.makeABCDmap(org,plotter)
+		self.plotABCDscan(org,plotter)
 
-	def makeABCDmap(self,org,plotter):
-		plotter.doLog = False
+	def plotABCDscan(self,org,plotter):
+		plotter.pdfFileName = plotter.pdfFileName.replace(self.name+'.pdf','abcd_scan.pdf')
 		plotter.printCanvas("[")
 		text1 = plotter.printTimeStamp()
 		text2 = plotter.printNEventsIn()
 		plotter.flushPage()
+		r.gPad.SetLogy()
+		if not plotter.anMode : r.gPad.SetRightMargin(0.15)
+		# get all the counts
+		counts = [[0]*len(self.scan) for sample in org.samples]
+		for step in org.steps : 
+			for plotName in sorted(step.keys()) :
+				if 'ABCDEFGHcounts' not in plotName: continue
+				i = eval(plotName[:plotName.find('ABCDEFGH')])
+				for j in range(len(org.samples)): counts[j][i] = getCounts(step[plotName][j])
 
-		histo=tuple([r.TH2D('abcd'+sample['name'],'',len(self.cut1),min(self.cut1),max(self.cut1),len(self.cut2),min(self.cut2),max(self.cut2)) for sample in org.samples])
-		for step in org.steps:
-			for plotName in sorted(step.keys()):
-				if 'counts' in plotName:
-					strings=plotName.split('_')
-					if len(strings)>2:
-						val1=strings[2][3:]
-						val2=strings[3][3:strings[3].find('counts')]
-						for i in range(len(step[plotName])):
-							histo[i].SetBinContent(histo[i].GetXaxis().FindBin(val1),histo[i].GetYaxis().FindBin(val2),abcdCmp(step[plotName][i]))
-		for h in histo:
-			h.SetMinimum(-5)
-			h.SetMaximum(5)
-		plotter.onePlotFunction(histo)
+		# plot scans
+		scans=[(self.scanPrompt[0],self.scanPrompt[0],None),
+               (self.scanPrompt[0],None,self.scanVtx[0]),
+               (None,self.scanPrompt[0],self.scanVtx[0])]
+		names = ['observed','FG/B','EG/C','DG/A','BE/A','CF/A','EF/D']
+		for i,scan in enumerate(scans):
+			list = [(a,obj[scan.index(None)]) for a,obj in enumerate(self.scan) if len(listdiff(obj,scan))<=1]
+			labels = ['('+','.join(str(a) for a in obj[1])+')' if type(obj[1])==tuple else str(obj[1]) for obj in list]
+			graphs = [tuple([r.TGraphErrors(len(list)) for sample in org.samples]) for i in range(7)]
+			for j in range(len(org.samples)):
+				for k in range(len(list)):
+					for l in range(7):
+						graphs[l][j].SetPoint(k,k+1,counts[j][list[k][0]][l][0])
+						graphs[l][j].SetPointError(k,0,counts[j][list[k][0]][l][1])
+
+				mg = r.TMultiGraph()
+				legend = r.TLegend(0.86, 0.60, 1.00, 0.10)
+				for l in reversed(range(7)):
+					graphs[l][j].SetMarkerStyle(8)
+					graphs[l][j].SetMarkerColor(l+1)
+					graphs[l][j].SetName(names[l])
+					graphs[l][j].SetFillColor(0)
+					legend.AddEntry(graphs[l][j],names[l])
+					mg.Add(graphs[l][j])
+
+				mg.SetTitle(org.samples[j]['name'])
+				mg.Draw("AP")
+				for k in range(len(list)):
+					mg.GetXaxis().SetBinLabel(mg.GetXaxis().FindFixBin(k+1),labels[k])
+				mg.GetYaxis().SetTitle('Number of Events')
+				mg.GetXaxis().SetTitle('cut Index')
+				legend.Draw("same")
+				plotter.printCanvas()
+				plotter.canvas.Clear()
+
 		plotter.printCanvas("]")
 		print plotter.pdfFileName, "has been written."
