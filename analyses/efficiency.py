@@ -2,8 +2,8 @@ import supy,samples,calculables,steps,ROOT as r
 
 class efficiency(supy.analysis) :
 
-	MH = [1000,1000,400,1000,400,200]
-	MX = [350,150,50,50,150,50]
+	MH = [1000,1000,1000,1000,400,400,400,200,200,120,120]
+	MX = [350,150,50,20,150,50,20,50,20,50,20]
 	sig_names = ['H_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
 
 	ToCalculate = ['dijetVtxNRatio','dijetPromptness1','dijetPromptness2','dijetVtxDelta','dijetDR']
@@ -88,34 +88,39 @@ class efficiency(supy.analysis) :
 		return ([
 		supy.steps.printer.progressPrinter()]
 		### filters
+	
+	
 		+[supy.steps.filters.label('data cleanup'),
-		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
-		supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
-		supy.steps.filters.value('beamScrapingFilterFlag',min=1),
-		supy.steps.filters.value('beamHaloTightFilterFlag',min=1),
-		supy.steps.filters.value('hbheNoiseFilterFlag',min=1),
-		supy.steps.filters.value('hcalLaserEventFilterFlag',min=1),
-		supy.steps.filters.value('ecalLaserCorrFilterFlag',min=1),
-		supy.steps.filters.value('eeBadScFilterFlag',min=1),
-		supy.steps.filters.value('ecalDeadCellTPFilterFlag',min=1),
-		supy.steps.filters.value('trackingFailureFilterFlag',min=1),
+		#supy.steps.filters.value('primaryVertexFilterFlag',min=1),
+		#supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
+		#supy.steps.filters.value('beamScrapingFilterFlag',min=1),
+		#supy.steps.filters.value('beamHaloTightFilterFlag',min=1),
+		#supy.steps.filters.value('hbheNoiseFilterFlag',min=1),
+		#supy.steps.filters.value('hcalLaserEventFilterFlag',min=1),
+		#supy.steps.filters.value('ecalLaserCorrFilterFlag',min=1),
+		#supy.steps.filters.value('eeBadScFilterFlag',min=1),
+		#supy.steps.filters.value('ecalDeadCellTPFilterFlag',min=1),
+		#supy.steps.filters.value('trackingFailureFilterFlag',min=1),
 		]
+		
 		### pile-up reweighting
-		#+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-        #                            target=("data/ABcontrol_observed.root","pileup"),
-        #                            groups=[('qcd',[]),('Huds',[]),('Hb',[])]).onlySim()] 
+		+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
+                                    target=("data/HT300_Double_R12BC_observed.root","pileup"),
+                                    groups=[('H',[])]).onlySim()] 
 
+		+[steps.other.genParticleMultiplicity(6003114,min=2)]
 		### trigger
 		+[supy.steps.filters.label("hlt trigger"),
 		steps.trigger.hltFilterWildcard("HLT_HT300_v"),
-		supy.steps.filters.value('caloHT',min=320),
+		steps.trigger.hltFilterWildcard("HLT_HT300_SingleDisplacedPFJet60_v"),
+		#supy.steps.filters.value('caloHT',min=320),
 		steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),]
 
 		#steps.effplots.histos('candsDouble'),
 		#steps.effplots.histos("doubleVeryLoose"),
-		+self.dijetSteps1()
-		+self.discs()
-		+self.dijetSteps2()
+		#+self.dijetSteps1()
+		#+self.discs()
+		#+self.dijetSteps2()
 		)
 
 	def listOfCalculables(self,config) :
@@ -144,13 +149,13 @@ class efficiency(supy.analysis) :
 		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}, q=uds", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_350")
 		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}, q=uds", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_150")
 		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}, q=uds", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_400_X_50")
-		org.scale(lumiToUseInAbsenceOfData=11000)
+		org.scale(lumiToUseInAbsenceOfData=0.11)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			anMode=True,
+			#anMode=True,
 			showStatBox=False,
-			pegMinimum=0.5,
+			#pegMinimum=0.5,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
