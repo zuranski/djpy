@@ -56,6 +56,3 @@ def estimate(b,c,a):
 						pow(b[1]/float(b[0]),2)+
 						pow(c[1]/float(c[0]),2))
 	return (est,err)
-
-def listdiff(a,b):
-	return [i for i,j in zip(a,b) if i!=j]

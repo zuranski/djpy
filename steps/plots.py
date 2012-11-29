@@ -79,6 +79,7 @@ class promptness(plots):
 
 class vertices(plots):
 	vars = [
+            {'name':'Lxy','bins':50,'low':0,'high':60,'unit':'[cm]'},
             {'name':'Lxysig','bins':50,'low':0,'high':100,'unit':''},
             {'name':'VtxN','bins':15,'low':1.5,'high':16.5,'unit':''},
             {'name':'Vtxmass','bins':50,'low':0,'high':100,'unit':'[GeV]'},
@@ -106,6 +107,7 @@ class ABCDvars(plots):
 
 class cutvars(plots):
 	vars = [
+            {'name':'Lxy','bins':50,'low':0,'high':60,'unit':'[cm]'},
             {'name':'PromptEnergyFrac1','bins':50,'low':0.,'high':1,'unit':''},
             {'name':'PromptEnergyFrac2','bins':50,'low':0.,'high':1,'unit':''},
             {'name':'NPromptTracks1','bins':11,'low':-0.5,'high':10.5,'unit':''},
