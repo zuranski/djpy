@@ -1,7 +1,7 @@
 import itertools,supy,samples,calculables,steps,ROOT as r
-from calculables.utils import getCounts,listdiff
+from calculables.utils import getCounts
 
-class discriminants(supy.analysis) :
+class abcdHTDouble(supy.analysis) :
     
 	MH = [1000,1000,1000,400,400,200]
 	MX = [350,150,50,150,50,50]
@@ -24,7 +24,7 @@ class discriminants(supy.analysis) :
     ]
 	Cuts=[
         # clean up cuts 
-        #{'name':'dijetNAvgMissHitsAfterVert','max':1.99},
+        {'name':'dijetNAvgMissHitsAfterVert','max':1.99},
         {'name':'dijetVtxmass','min':5},
         {'name':'dijetVtxpt','min':10},
         {'name':'dijetVtxNRatio','min':0.1},
@@ -32,8 +32,8 @@ class discriminants(supy.analysis) :
         {'name':'dijetNoOverlaps','val':True},
     ]
 	ABCDCutsSets = []
-	scanPrompt = [(5,0.35),(4,0.3),(3,0.2),(2,0.15)]
-	scanVtx = [0.01,0.05,0.1,0.2,0.4,0.65,0.9]
+	scanPrompt = [(6,0.4),(5,0.35),(3,0.2),(2,0.15)]
+	scanVtx = [0.001,0.005,0.01,0.05,0.1,0.5,0.9]
 
 	scan = [obj for obj in itertools.product(scanPrompt,scanPrompt,scanVtx)]
 
@@ -115,12 +115,12 @@ class discriminants(supy.analysis) :
 
 			### pile-up reweighting
 			+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-				target=("data//HT300_R12BC_observed.root","pileup"),
+				target=("data//HT300_Double_R12BC_observed.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
-			steps.trigger.hltFilterWildcard("HLT_HT300_v"),
+            steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
 			supy.steps.filters.value("caloHT",min=325),]
 
 			### plots
@@ -151,8 +151,11 @@ class discriminants(supy.analysis) :
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupPUInteractionsBX0Target']))
 
-		return (qcd_samples
-			    + sig_samples 
+		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=44.284) +
+			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.9104) +
+			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=63.387)
+			#+ qcd_samples
+			+ sig_samples 
 		) 
 
 	def conclude(self,pars) :
@@ -167,11 +170,11 @@ class discriminants(supy.analysis) :
 			doLog=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
-		#plotter.plotAll()
-		self.plotABCDscan(org,plotter)
+		plotter.plotAll()
+		self.plotABCDscan(org,plotter,1,4)
 
-	def plotABCDscan(self,org,plotter):
-		plotter.pdfFileName = plotter.pdfFileName.replace(self.name+'.pdf','abcd_scan.pdf')
+	def plotABCDscan(self,org,plotter,n1,n2):
+		plotter.pdfFileName = plotter.pdfFileName.replace(self.name+'.pdf','Scans_'+self.name+'.pdf')
 		plotter.printCanvas("[")
 		text1 = plotter.printTimeStamp()
 		text2 = plotter.printNEventsIn()
@@ -186,38 +189,49 @@ class discriminants(supy.analysis) :
 				i = eval(plotName[:plotName.find('ABCDEFGH')])
 				for j in range(len(org.samples)): counts[j][i] = getCounts(step[plotName][j])
 
+		# helper functions
+		def string(obj): return '('+','.join(str(a) for a in obj)+')' if type(obj)==tuple else str(obj)
+		def listdiff(a,b): return [i for i,j in zip(a,b) if i!=j]
+
+		# pick points to scan
+		scans=[(self.scanPrompt[3],self.scanPrompt[3],None),
+               (self.scanPrompt[3],None,self.scanVtx[-1]),
+               (None,self.scanPrompt[3],self.scanVtx[-1])]
+
+		# constant names
+		cutNames = ['(NPrompt1,PromptFrac1)','(NPrompt2,PromptFrac2)','DiscVtx']
+		histNames = ['observed','FG/B','EG/C','DG/A','BE/A','CF/A','EF/D'][n1:n2]
+
 		# plot scans
-		scans=[(self.scanPrompt[0],self.scanPrompt[0],None),
-               (self.scanPrompt[0],None,self.scanVtx[0]),
-               (None,self.scanPrompt[0],self.scanVtx[0])]
-		names = ['observed','FG/B','EG/C','DG/A','BE/A','CF/A','EF/D']
-		for i,scan in enumerate(scans):
-			list = [(a,obj[scan.index(None)]) for a,obj in enumerate(self.scan) if len(listdiff(obj,scan))<=1]
-			labels = ['('+','.join(str(a) for a in obj[1])+')' if type(obj[1])==tuple else str(obj[1]) for obj in list]
-			graphs = [tuple([r.TGraphErrors(len(list)) for sample in org.samples]) for i in range(7)]
+		for scan in scans:
+
+			title = ' '.join(name+'='+string(value) if value else '' for name,value in zip(cutNames,scan))
+			xtitle = cutNames[scan.index(None)]+ ' cut'
+			ytitle = 'Number of Events / ' +str(org.lumi)+'pb^{-1}'
+
+			indices = [i for i,cuts in enumerate(self.scan) if len(listdiff(cuts,scan))<=1]
+			labels = [string(cuts[scan.index(None)]) for i,cuts in enumerate(self.scan) if i in indices]
+			histos = [[r.TH1F(name,sample['name']+' '+title,len(indices),0,1) for sample in org.samples] for name in histNames]
 			for j in range(len(org.samples)):
-				for k in range(len(list)):
-					for l in range(7):
-						graphs[l][j].SetPoint(k,k+1,counts[j][list[k][0]][l][0])
-						graphs[l][j].SetPointError(k,0,counts[j][list[k][0]][l][1])
-
-				mg = r.TMultiGraph()
 				legend = r.TLegend(0.86, 0.60, 1.00, 0.10)
-				for l in reversed(range(7)):
-					graphs[l][j].SetMarkerStyle(8)
-					graphs[l][j].SetMarkerColor(l+1)
-					graphs[l][j].SetName(names[l])
-					graphs[l][j].SetFillColor(0)
-					legend.AddEntry(graphs[l][j],names[l])
-					mg.Add(graphs[l][j])
-
-				mg.SetTitle(org.samples[j]['name'])
-				mg.Draw("AP")
-				for k in range(len(list)):
-					mg.GetXaxis().SetBinLabel(mg.GetXaxis().FindFixBin(k+1),labels[k])
-				mg.GetYaxis().SetTitle('Number of Events')
-				mg.GetXaxis().SetTitle('cut Index')
+				for i in reversed(range(n2-n1)):
+					for k,idx in enumerate(indices):
+						histos[i][j].SetBinContent(k+1,counts[j][idx][i][0])
+						histos[i][j].SetBinError(k+1,counts[j][idx][i][1])
+						histos[i][j].GetXaxis().SetBinLabel(k+1,labels[k])
+					histos[i][j].GetXaxis().SetTitle(xtitle)
+					histos[i][j].GetYaxis().SetTitle(ytitle)
+					histos[i][j].SetStats(False)
+					histos[i][j].SetMarkerStyle(8)
+					histos[i][j].SetMarkerColor(i+1)
+					histos[i][j].SetFillColor(0)
+					histos[i][j].SetLabelSize(0.06)
+					legend.AddEntry(histos[i][j],histNames[i])
+					option='EX0' if i==(n2-n1-1) else 'EX0same'
+					histos[i][j].Draw(option)
 				legend.Draw("same")
+				histos_tmp=tuple([histos[i][j] for i in range(n2-n1)])
+				plotter.setRanges(histos_tmp,*plotter.getExtremes(1,histos_tmp,[False]*(n2-n1)))
 				plotter.printCanvas()
 				plotter.canvas.Clear()
 
