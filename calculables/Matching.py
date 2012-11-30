@@ -24,8 +24,9 @@ class dijetTrueLxy(wrappedChain.calculable):
                       for i in range(len(self.source['dijetPt']))]
 
 class jetTrigPrompt(wrappedChain.calculable):
-	def __init__(self,tag):
+	def __init__(self,tag,instance):
 		self.tag = tag
+		self.fixes = ('',instance)
 
 	def update(self,ignored):
 		etas, phis = [],[]

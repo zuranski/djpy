@@ -79,3 +79,13 @@ class dijetPt1(DiJetVar):
 class dijetPt2(DiJetVar):
 	def calculate(self,idx):
 		return self.source['jetPt'][self.source['dijetIdx2'][idx]]
+
+class dijetTrigMatch1(DiJetVar):
+	def calculate(self,idx):
+		if (self.source['jetTrigPrompt1'][self.source['dijetIdx1'][idx]] and self.source['jetTrigPrompt2'][self.source['dijetIdx1'][idx]]) : return True
+		elif (self.source['jetTrigPrompt1'][self.source['dijetIdx2'][idx]] and self.source['jetTrigPrompt2'][self.source['dijetIdx2'][idx]]) :
+			buffer = self.source['dijetIdx1'][idx]
+			self.source['dijetIdx1'][idx] = self.source['dijetIdx2'][idx]
+			self.source['dijetIdx2'][idx] = buffer
+			return True
+		return False
