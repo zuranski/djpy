@@ -9,7 +9,7 @@ class abcdHTSingle(supy.analysis) :
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate=['dijetVtxNRatio']
+	ToCalculate=['dijetVtxNRatio','dijetTrigMatch1']
 	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
 
 	IniCuts=[
@@ -26,10 +26,11 @@ class abcdHTSingle(supy.analysis) :
         # clean up cuts 
         #{'name':'dijetNAvgMissHitsAfterVert','max':1.99},
         {'name':'dijetVtxmass','min':5},
-        {'name':'dijetVtxpt','min':10},
+        #{'name':'dijetVtxpt','min':10},
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
         {'name':'dijetNoOverlaps','val':True},
+        {'name':'dijetTrigMatch1','val':True},
     ]
 	ABCDCutsSets = []
 	scanPrompt = [(6,0.4),(5,0.35),(3,0.2),(2,0.15)]
@@ -93,6 +94,8 @@ class abcdHTSingle(supy.analysis) :
 		for calc in self.ToCalculate:
 			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
+		calcs.append(calculables.Matching.jetTrigPrompt('hlt2DisplacedHT300L1FastJetL3Filter',instance='1'))
+		calcs.append(calculables.Matching.jetTrigPrompt('hlt2PFDisplacedJetsPt50',instance='2'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -154,8 +157,8 @@ class abcdHTSingle(supy.analysis) :
 
 		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=44.284) +
 			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.9104) +
-			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=63.387) +
-			qcd_samples
+			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=63.387)
+			+ qcd_samples
 			+ sig_samples 
 		) 
 

@@ -192,8 +192,8 @@ class abcdHT(supy.analysis) :
 
 		# pick points to scan
 		scans=[(self.scanPrompt[0],self.scanPrompt[0],None),
-               (self.scanPrompt[0],None,self.scanVtx[0]),
-               (None,self.scanPrompt[0],self.scanVtx[0])]
+               (self.scanPrompt[0],None,self.scanVtx[1]),
+               (None,self.scanPrompt[0],self.scanVtx[1])]
 
 		# constant names
 		cutNames = ['(NPrompt1,PromptFrac1)','(NPrompt2,PromptFrac2)','DiscVtx']
