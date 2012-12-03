@@ -1,5 +1,5 @@
 import itertools,supy,samples,calculables,steps,ROOT as r
-from calculables.utils import getCounts
+from utils.ABCDscan import plotABCDscan
 
 class abcdHTSingle(supy.analysis) :
     
@@ -14,9 +14,9 @@ class abcdHTSingle(supy.analysis) :
 
 	IniCuts=[
         {'name':'dijet'},
-        {'name':'dijetTrueLxy','min':0},
+        #{'name':'dijetTrueLxy','min':0},
         # vertex minimal
-        {'name':'dijetVtxChi2','min':0,'max':4},
+        {'name':'dijetVtxChi2','min':0,'max':5},
         {'name':'dijetVtxN1','min':1},
         {'name':'dijetVtxN2','min':1},
         # cluster minimal
@@ -24,13 +24,13 @@ class abcdHTSingle(supy.analysis) :
     ]
 	Cuts=[
         # clean up cuts 
-        #{'name':'dijetNAvgMissHitsAfterVert','max':1.99},
-        {'name':'dijetVtxmass','min':5},
-        #{'name':'dijetVtxpt','min':10},
+        {'name':'dijetNAvgMissHitsAfterVert','max':2},
+        {'name':'dijetVtxmass','min':4},
+        {'name':'dijetVtxpt','min':8},
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
         {'name':'dijetNoOverlaps','val':True},
-        {'name':'dijetTrigMatch1','val':True},
+        #{'name':'dijetTrigMatch1','val':True},
     ]
 	ABCDCutsSets = []
 	scanPrompt = [(6,0.4),(5,0.35),(3,0.2),(2,0.15)]
@@ -167,7 +167,7 @@ class abcdHTSingle(supy.analysis) :
 		org = self.organizer(pars)
 		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
-		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
+		#org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
@@ -175,69 +175,5 @@ class abcdHTSingle(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		self.plotABCDscan(org,plotter,7)
+		plotABCDscan(self,org,plotter,4,blind=False)
 
-	def plotABCDscan(self,org,plotter,n):
-		plotter.pdfFileName = plotter.pdfFileName.replace(self.name+'.pdf','Scans_'+self.name+'.pdf')
-		plotter.printCanvas("[")
-		text1 = plotter.printTimeStamp()
-		text2 = plotter.printNEventsIn()
-		plotter.flushPage()
-		r.gPad.SetLogy()
-		if not plotter.anMode : r.gPad.SetRightMargin(0.15)
-		# get all the counts
-		counts = [[0]*len(self.scan) for sample in org.samples]
-		for step in org.steps : 
-			for plotName in sorted(step.keys()) :
-				if 'ABCDEFGHcounts' not in plotName: continue
-				i = eval(plotName[:plotName.find('ABCDEFGH')])
-				for j in range(len(org.samples)): counts[j][i] = getCounts(step[plotName][j])
-
-		# helper functions
-		def string(obj): return '('+','.join(str(a) for a in obj)+')' if type(obj)==tuple else str(obj)
-		def listdiff(a,b): return [i for i,j in zip(a,b) if i!=j]
-
-		# pick points to scan
-		scans=[(self.scanPrompt[3],self.scanPrompt[3],None),
-               (self.scanPrompt[3],None,self.scanVtx[0]),
-               (None,self.scanPrompt[3],self.scanVtx[0])]
-
-		# constant names
-		cutNames = ['(NPrompt1,PromptFrac1)','(NPrompt2,PromptFrac2)','DiscVtx']
-		histNames = ['observed','FG/B','EG/C','DG/A','BE/A','CF/A','EF/D'][:n]
-
-		# plot scans
-		for scan in scans:
-
-			title = ' '.join(name+'='+string(value) if value else '' for name,value in zip(cutNames,scan))
-			xtitle = cutNames[scan.index(None)]+ ' cut'
-			ytitle = 'Number of Events / ' +str(org.lumi)+'pb^{-1}'
-
-			indices = [i for i,cuts in enumerate(self.scan) if len(listdiff(cuts,scan))<=1]
-			labels = [string(cuts[scan.index(None)]) for i,cuts in enumerate(self.scan) if i in indices]
-			histos = [[r.TH1F(name,sample['name']+' '+title,len(indices),0,1) for sample in org.samples] for name in histNames]
-			for j in range(len(org.samples)):
-				legend = r.TLegend(0.86, 0.60, 1.00, 0.10)
-				for i in reversed(range(n)):
-					for k,idx in enumerate(indices):
-						histos[i][j].SetBinContent(k+1,counts[j][idx][i][0])
-						histos[i][j].SetBinError(k+1,counts[j][idx][i][1])
-						histos[i][j].GetXaxis().SetBinLabel(k+1,labels[k])
-					histos[i][j].GetXaxis().SetTitle(xtitle)
-					histos[i][j].GetYaxis().SetTitle(ytitle)
-					histos[i][j].SetStats(False)
-					histos[i][j].SetMarkerStyle(8)
-					histos[i][j].SetMarkerColor(i+1)
-					histos[i][j].SetFillColor(0)
-					histos[i][j].SetLabelSize(0.06)
-					legend.AddEntry(histos[i][j],histNames[i])
-					option='EX0' if i==(n-1) else 'EX0same'
-					histos[i][j].Draw(option)
-				legend.Draw("same")
-				histos_tmp=tuple([histos[i][j] for i in range(n)])
-				plotter.setRanges(histos_tmp,*plotter.getExtremes(1,histos_tmp,[False]*n))
-				plotter.printCanvas()
-				plotter.canvas.Clear()
-
-		plotter.printCanvas("]")
-		print plotter.pdfFileName, "has been written."
