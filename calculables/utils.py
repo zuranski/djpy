@@ -34,25 +34,3 @@ def passed (e,idx,cut):
 	passMin = (var >= cut['min']) if 'min' in cut else True
 	passMax = (var <= cut['max']) if 'max' in cut else True
 	return (passVal and passMin and passMax)
-
-def getCounts(histo):
-	keys = ['A','B','C','D','E','F','G','H']
-	dict = {}
-	for i in range(len(keys)):
-		dict[keys[i]] = (histo.GetBinContent(i+1),histo.GetBinError(i+1))
-
-	results = []
-	results.append(dict['H'])
-	combinations = [('F','G','B'),('E','G','C'),('D','G','A'),('B','E','A'),('C','F','A'),('E','F','D')]
-	for comb in combinations:
-		b,c,a = dict[comb[0]],dict[comb[1]],dict[comb[2]]
-		results.append(estimate(b,c,a))
-	return results
-
-def estimate(b,c,a):
-	if not b[0]>0 or not c[0]>0 or not a[0]>0 : return (0,0)
-	est = b[0]*c[0]/float(a[0])
-	err = est*math.sqrt(pow(a[1]/float(a[0]),2)+
-						pow(b[1]/float(b[0]),2)+
-						pow(c[1]/float(c[0]),2))
-	return (est,err)
