@@ -27,6 +27,10 @@ def string(obj): return '('+','.join(str(a) for a in obj)+')' if type(obj)==tupl
 
 def listdiff(a,b): return [i for i,j in zip(a,b) if i!=j]
 
+def lumistring(lumi): 
+	if lumi>1e3: return str(round(lumi/float(1e3),1))+' fb^{-1}'
+	else : return str(round(lumi,1))+' pb^{-1}'
+
 def plotABCDscan(analysis,org,plotter,n,blind=True):
 	plotter.pdfFileName = plotter.pdfFileName.replace(analysis.name+'.pdf','Scans_'+analysis.name+'.pdf')
 	plotter.canvas.Clear()
@@ -61,13 +65,12 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 
 		title = ' '.join(name+'='+string(value) if value else '' for name,value in zip(cutNames,scan))
 		xtitle = cutNames[scan.index(None)]+ ' cut'
-		ytitle = 'Number of Events / ' +str(org.lumi)+'pb^{-1}'
+		ytitle = 'Number of Events / ' +lumistring(org.lumi)
 
 		indices = [i for i,cuts in enumerate(analysis.scan) if len(listdiff(cuts,scan))<=1]
 		labels = [string(cuts[scan.index(None)]) for i,cuts in enumerate(analysis.scan) if i in indices]
 		# first make a plot of signal efficiency
 		sigSamples = [sample for sample in org.samples if 'H' in sample['name']]		
- 
 	 	sigeff = [r.TH1F('sigeff',sample['name'],len(indices),0,1) for sample in sigSamples]
 		for j,sample in enumerate(sigSamples):
 			i = org.indexOfSampleWithName(sample['name'])
@@ -77,6 +80,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 				sigeff[j].SetBinError(k+1,100*counts[i][idx][0][1]/float(norm))
 				sigeff[j].GetXaxis().SetBinLabel(k+1,labels[k])
 
+		# Data/QCD plots with signal efficiency on the same plot
 		for j,sample in enumerate(org.samples):
 			if 'H' in sample['name'] : continue
 			histos = [r.TH1F(name,sample['name']+' '+title,len(indices),0,1) for name in histNames]
@@ -120,8 +124,6 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 				legend.AddEntry(sigeff[i],sample['name'].split('.')[0])
 
 			legend.Draw("same")
-			#histos_tmp=tuple([sigeff[i] for i in range(len(sigSamples))])
-			#plotter.setRanges(histos_tmp,*plotter.getExtremes(1,histos_tmp,[False]*len(sigSamples)))
 			plotter.printCanvas()
 			plotter.canvas.Clear()
 
