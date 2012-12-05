@@ -32,10 +32,10 @@ class abcdHT(supy.analysis) :
         {'name':'dijetNoOverlaps','val':True},
     ]
 	ABCDCutsSets = []
-	scanPrompt = [(8,0.5),(6,0.4),(4,0.25),(2,0.15)]
+	scanPrompt = [(8,0.45),(7,0.4),(6,0.35),(5,0.3),(4,0.25),(3,0.2),(2,0.15)]
 	scanVtx = [1e-5,1e-4,1e-3,1e-2,0.1,0.3,0.85]
 
-	scan = [obj for obj in itertools.product(scanPrompt,scanPrompt,scanVtx)]
+	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
 
 	for val in scan :
 		ABCDCutsSets.append([
@@ -166,9 +166,35 @@ class abcdHT(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
+			#anMode=True,
+			showStatBox=False,
+			pageNumbers=False,
 			doLog=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-
 		plotABCDscan(self,org,plotter,4)
+
+		plotter.individualPlots(plotSpecs = [{"plotName":"NPromptTracks1_h_dijetNoOverlaps",
+                                              "stepName":"ABCDvars",
+                                              "stepDesc":"ABCDvars",
+                                              "newTitle":"; N Prompt Tracks (jet 2) ;di-jets / bin",
+                                              "legendCoords": (0.58, 0.7, 0.78, 0.9),
+                                              "stamp": False 
+                                              },
+											 {"plotName":"PromptEnergyFrac1_h_dijetNoOverlaps",
+                                              "stepName":"ABCDvars",
+                                              "stepDesc":"ABCDvars",
+                                              "newTitle":"; Prompt Energy Fraction (jet 2) ;di-jets / bin",
+                                              "legendCoords": (0.58, 0.7, 0.78, 0.9),
+                                              "stamp": False 
+                                              },
+											  {"plotName":"Discriminant_h_dijetNoOverlaps",
+                                              "stepName":"ABCDvars",
+                                              "stepDesc":"ABCDvars",
+                                              "newTitle":"; Vertex/Cluster Discriminant ;di-jets / bin",
+                                              "legendCoords": (0.58, 0.7, 0.78, 0.9),
+                                              "stamp": False 
+                                              },])
+
+

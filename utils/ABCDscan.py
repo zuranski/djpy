@@ -49,12 +49,8 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 			for j in range(len(org.samples)): counts[j][i] = getCounts(step[plotName][j])
 
 	# pick points to scan
-	scans=[
-               (analysis.scanPrompt[0],analysis.scanPrompt[0],None),
-               (analysis.scanPrompt[1],analysis.scanPrompt[1],None),
-               (analysis.scanPrompt[2],analysis.scanPrompt[2],None),
-               (analysis.scanPrompt[3],analysis.scanPrompt[3],None),
-		  ]
+	scans=[]
+	for cut in analysis.scanPrompt: scans.append((cut,cut,None))
 
 	# constant names
 	cutNames = ['(NPrompt1,PromptFrac1)','(NPrompt2,PromptFrac2)','DiscVtx']
@@ -68,10 +64,11 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 		ytitle = 'Number of Events / ' +lumistring(org.lumi)
 
 		indices = [i for i,cuts in enumerate(analysis.scan) if len(listdiff(cuts,scan))<=1]
+		print indices
 		labels = [string(cuts[scan.index(None)]) for i,cuts in enumerate(analysis.scan) if i in indices]
 		# first make a plot of signal efficiency
 		sigSamples = [sample for sample in org.samples if 'H' in sample['name']]		
-	 	sigeff = [r.TH1F('sigeff',sample['name'],len(indices),0,1) for sample in sigSamples]
+	 	sigeff = [r.TH1F('','',len(indices),0,1) for sample in sigSamples]
 		for j,sample in enumerate(sigSamples):
 			i = org.indexOfSampleWithName(sample['name'])
 			norm = sample['xs']*org.lumi

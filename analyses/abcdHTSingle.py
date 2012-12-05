@@ -33,10 +33,10 @@ class abcdHTSingle(supy.analysis) :
         #{'name':'dijetTrigMatch1','val':True},
     ]
 	ABCDCutsSets = []
-	scanPrompt = [(6,0.4),(5,0.35),(3,0.2),(2,0.15)]
+	scanPrompt = [(8,0.45),(7,0.4),(6,0.35),(5,0.3),(4,0.25),(3,0.2),(2,0.15)]
 	scanVtx = [1e-5,1e-4,1e-3,1e-2,0.1,0.3,0.85]
 
-	scan = [obj for obj in itertools.product(scanPrompt,scanPrompt,scanVtx)]
+	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
 
 	for val in scan :
 		ABCDCutsSets.append([
@@ -172,6 +172,7 @@ class abcdHTSingle(supy.analysis) :
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
+			pageNumbers=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
