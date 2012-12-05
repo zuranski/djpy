@@ -124,9 +124,8 @@ class displookHT(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=11000)
 		supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			samplesForRatios = ("Data","QCD"),
-			sampleLabelsForRatios = ("Data","QCD"),
 			doLog=True,
+			anMode=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			dependence2D=True,
 			doCorrTable=True,
