@@ -80,8 +80,6 @@ class efficiency(supy.analysis) :
 															 "dijetglxyrmsclr": (10,0,1),
 															 "dijetbestclusterN": (7,1.5,8.5),
 															 "dijetPosip2dFrac": (5,0.5001,1.001),
-															 #"dijetNAvgMissHitsAfterVert": (6,0.,3.),
-															 #"dijetVtxpt": (10,0,50),
 															},
 													indices=self.Cuts[-1]['name']+'Indices',
 													bins = 14),
@@ -97,6 +95,10 @@ class efficiency(supy.analysis) :
 	def listOfSteps(self,config) :
 		return ([
 		supy.steps.printer.progressPrinter()]
+		### pile-up reweighting
+		+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
+                                    target=("data/HT300_Double_R12BC_true_down.root","pileup"),
+                                    groups=[('H',[])]).onlySim()] 
 		### filters
 
 		+[steps.event.effDenom()]	
@@ -114,19 +116,12 @@ class efficiency(supy.analysis) :
 		supy.steps.filters.value('trackingFailureFilterFlag',min=1),
 		]
 		
-		### pile-up reweighting
-		+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-                                    target=("data/HT300_Double_R12BC_observed.root","pileup"),
-                                    groups=[('H',[])]).onlySim()] 
-
 		#+[steps.other.genParticleMultiplicity(6003114,min=2)]
 		### trigger
 		+[supy.steps.filters.label("hlt trigger"),
 		steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
 		supy.steps.filters.value('caloHT',min=325),]
 
-		#steps.effplots.histos('candsDouble'),
-		#steps.effplots.histos("doubleVeryLoose"),
 		+self.dijetSteps1()
 		+self.discs()
 		+self.dijetSteps2()
@@ -149,7 +144,8 @@ class efficiency(supy.analysis) :
 		sig_samples = []
 
 		for i in range(len(self.sig_names)):
-			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
+			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles, weights = ['pileupTrueNumInteractionsBX0Target']))
+			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 
 		return sig_samples
 
@@ -159,10 +155,10 @@ class efficiency(supy.analysis) :
 		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}, q=uds", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_350")
 		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}, q=uds", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_150")
 		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}, q=uds", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_400_X_50")
-		org.scale(lumiToUseInAbsenceOfData=11)
+		#org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=True,
+			doLog=False,
 			#anMode=True,
 			showStatBox=True,
 			#pegMinimum=0.5,
@@ -189,7 +185,6 @@ class efficiency(supy.analysis) :
                                             ]
                                )
 		'''
-		#self.makeEfficiencyPlots(org,"candsDouble","doubleVeryLoose", plotter)
 		self.totalEfficiencies(org)
 
 	def totalEfficiencies(self,org) :
@@ -199,12 +194,18 @@ class efficiency(supy.analysis) :
 				if 'effNum' in plotName : num=step[plotName]
 				if 'effDenom' in plotName : denom=step[plotName]
 
+		# testing
+		n,d = num[0],denom[0]
+		for i in range(1,n.GetNbinsX()+1):
+			print n.GetBinContent(i),d.GetBinContent(i)
+
 		efficiency = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom)])
 		import pickle
 		list = []
 		for i,sample in enumerate(org.samples):
-			H,X=sample['name'].split('_')[1],sample['name'].split('_')[3]
-			ctau = self.ctau[self.sig_names.index(sample['name'])]
+			name = sample['name'].split('.')[0]
+			H,X=name.split('_')[1],name.split('_')[3]
+			ctau = self.ctau[self.sig_names.index(name)]
 			for j in range(3):
 				x,y=r.Double(0),r.Double(0)
 				efficiency[i].GetPoint(j,x,y)
@@ -212,26 +213,4 @@ class efficiency(supy.analysis) :
 				effErr = efficiency[i].GetErrorY(j)
 				list.append({'H':H,'X':X,'ctau':ctau*pow(10,int(x-1)),'eff':eff,'effErr':effErr})
 		print list
-		pickle.dump(list,open('data/eff.pkl','w'))
-
-	def makeEfficiencyPlots(self, org, denomName, numName, plotter):
-		plotter.doLog = False
-		plotter.printCanvas("[")
-		text1 = plotter.printTimeStamp()
-		text2 = plotter.printNEventsIn()
-		plotter.flushPage()
-
-		hists_denom = []
-		hists_num = []
-		for step in org.steps:
-			for plotName in sorted(step.keys()):
-				if denomName in plotName: hists_denom.append(step[plotName])
-				if numName in plotName: hists_num.append(step[plotName])
-
-		for num_list,denom_list in zip(hists_num,hists_denom):
-			ratio_tpl = tuple([supy.utils.ratioHistogram(num,denom) for num,denom in zip(num_list,denom_list)])
-			for ratio in ratio_tpl:
-				ratio.GetYaxis().SetTitle("efficiency")
-			plotter.onePlotFunction(ratio_tpl)
-		plotter.printCanvas("]")
-		print plotter.pdfFileName, 'has been written'
+		pickle.dump(list,open('data/eff_down.pkl','w'))
