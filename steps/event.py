@@ -11,7 +11,7 @@ class general(analysisStep):
 class effDenom(analysisStep):
 	def uponAcceptance(self,e):
 		bin = (e["XpdgId"][0]-6000114)/1000 - 1
-		self.book.fill(bin,'effDenom',3,-0.5,2.5,w=2)
+		for i in range(2):	self.book.fill(bin,'effDenom',3,-0.5,2.5,None)
 
 class effNum(analysisStep):
 	def __init__(self,indices):
@@ -19,4 +19,4 @@ class effNum(analysisStep):
 
 	def uponAcceptance(self,e):
 		bin = (e["XpdgId"][0]-6000114)/1000 - 1
-		self.book.fill(bin,'effNum',3,-0.5,2.5,w=len(e[self.indices]))
+		for i in range(len(e[self.indices])): self.book.fill(bin,'effNum',3,-0.5,2.5,None)
