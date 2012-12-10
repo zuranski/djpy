@@ -64,7 +64,6 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 		ytitle = 'Number of Events / ' +lumistring(org.lumi)
 
 		indices = [i for i,cuts in enumerate(analysis.scan) if len(listdiff(cuts,scan))<=1]
-		print indices
 		labels = [string(cuts[scan.index(None)]) for i,cuts in enumerate(analysis.scan) if i in indices]
 		# first make a plot of signal efficiency
 		sigSamples = [sample for sample in org.samples if 'H' in sample['name']]		
