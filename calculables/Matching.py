@@ -1,27 +1,45 @@
 from supy import wrappedChain
 from utils import MatchByDR
 
-class jetTrueLxy(wrappedChain.calculable):
+class jetTrueMatch(wrappedChain.calculable):
 	def update(self,ignored):
 		if self.source['realData'] or len(self.source['genjetPt']) == 0: 
-			self.value = [True for i in range(len(self.source['jetPt']))]
+			self.value = [True for i in self.source['jetIndices']]
 			return
-		matches = MatchByDR(self.source['jetEta'],
+		self.value = MatchByDR(self.source['jetEta'],
 							self.source['jetPhi'],
 							self.source['genjetEta'],
-							self.source['genjetPhi'], 0.3)
-		self.value = [(self.source['genjetLxy'][matches[i]] if matches[i] is not None else -1)
-					  for i in range(len(matches))]
+							self.source['genjetPhi'],0.5) 
+
+class jetTrueLxy(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value=[self.source['genjetLxy'][self.source['jetTrueMatch'][i]] 
+                    if self.source['jetTrueMatch'][i] is not None else -1 for i in self.source['jetIndices']]
+
+class jetTrueCtau(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value=[self.source['genjetCtau'][self.source['jetTrueMatch'][i]] 
+                    if self.source['jetTrueMatch'][i] is not None else -1 for i in self.source['jetIndices']]
 
 class dijetTrueLxy(wrappedChain.calculable):
 	def update(self,ignored):
 		if self.source['realData'] or len(self.source['genjetPt']) == 0: 
-			self.value = [True for i in range(len(self.source['dijetPt']))]
+			self.value = [True for i in self.source['dijetIndices']]
 			return
-		self.value = [self.source['jetTrueLxy'][self.source['dijetIdx1'][i]] 
+		self.value = [self.source['jetTrueLxy'][self.source['dijetIdx1'][i]]
                       if self.source['jetTrueLxy'][self.source['dijetIdx1'][i]] ==
                       self.source['jetTrueLxy'][self.source['dijetIdx2'][i]] != -1 else -1
-                      for i in range(len(self.source['dijetPt']))]
+                      for i in self.source['dijetIndices']]
+
+class dijetTrueCtau(wrappedChain.calculable):
+	def update(self,ignored):
+		if self.source['realData'] or len(self.source['genjetPt']) == 0: 
+			self.value = [True for i in self.source['dijetIndices']]
+			return
+		self.value = [self.source['jetTrueCtau'][self.source['dijetIdx1'][i]] 
+                      if self.source['jetTrueCtau'][self.source['dijetIdx1'][i]] ==
+                      self.source['jetTrueCtau'][self.source['dijetIdx2'][i]] != -1 else -1
+                      for i in self.source['dijetIndices']]
 
 class jetTrigPrompt(wrappedChain.calculable):
 	def __init__(self,tag,instance):
