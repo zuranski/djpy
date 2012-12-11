@@ -1,4 +1,5 @@
 from supy import analysisStep
+import math
 
 class general(analysisStep):
 	def uponAcceptance(self,e): 
@@ -16,7 +17,21 @@ class effDenom(analysisStep):
 class effNum(analysisStep):
 	def __init__(self,indices):
 		self.indices = indices
+		self.map={
+			'H_1000_X_350':35,'H_1000_X_150':10,'H_1000_X_50':4,
+			'H_400_X_150':40,'H_400_X_50':8,'H_200_X_50':20,
+		}
+
+	def weight(self,ct,ctau,expo):
+		f = math.pow(10,expo)
+		return 1./f * math.exp(-ct/ctau*(1./f - 1))
 
 	def uponAcceptance(self,e):
+		inputString = self.inputFileName.split('.')[0].split('/')[-1]
+		ctau_base = self.map[inputString]
 		bin = (e["XpdgId"][0]-6000114)/1000 - 1
-		for i in range(len(e[self.indices])): self.book.fill(bin,'effNum',3,-0.5,2.5,None)
+		ctau=ctau_base*pow(10,int(bin-1))
+		for idx in e[self.indices]: 
+			self.book.fill(bin,'effNum0',3,-0.5,2.5,None)
+			self.book.fill(bin,'effNump',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,0.33))
+			self.book.fill(bin,'effNumm',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,-0.33))
