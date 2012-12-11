@@ -1,5 +1,6 @@
 from supy import wrappedChain
 from utils import DeltaR
+import math
 
 class DiJetVar(wrappedChain.calculable):
 	def __init__(self,indices=None):
@@ -89,3 +90,16 @@ class dijetTrigMatch1(DiJetVar):
 			self.source['dijetIdx2'][idx] = buffer
 			return True
 		return False
+
+class dijetCtau(DiJetVar):
+	def calculate(self,idx):
+		x=self.source['dijetVtxX'][idx]
+		y=self.source['dijetVtxY'][idx]
+		z=self.source['dijetVtxZ'][idx]
+		pt=self.source['dijetPt'][idx]
+		eta=self.source['dijetEta'][idx]
+		m=self.source['dijetMass'][idx]
+		R=math.sqrt(x*x+y*y+z*z)
+		return R*m/(pt*math.cosh(eta))
+		
+		
