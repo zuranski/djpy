@@ -6,8 +6,9 @@ def expected(dict):
 	keys = ['exp','m1s','m2s','p1s','p2s','obs']
 	for key in keys: res[key]=None
 	if dict['eff']>0:
-		res['obs'] = r.GetBayesianLimit(l,le,dict['eff'],effsys*dict['eff'],b,be,obs)
-		explimit = r.GetExpectedLimit(l,le,dict['eff'],effsys*dict['eff'],b,be,2,"bayesian")
+		eff_err = dict['eff']*math.sqrt(0.2*0.2+dict['effErr']*dict['effErr']/dict['eff']/dict['eff'])
+		res['obs'] = r.GetBayesianLimit(l,le,dict['eff'],eff_err,b,be,obs)
+		explimit = r.GetExpectedLimit(l,le,dict['eff'],eff_err,b,be,2,"bayesian")
 		res['exp'] = explimit.GetExpectedLimit()
 		res['m1s'] = explimit.GetOneSigmaLowRange()
 		res['m2s'] = explimit.GetTwoSigmaLowRange()

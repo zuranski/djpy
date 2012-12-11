@@ -1,6 +1,6 @@
 import os,sys,pickle
 
-effDict = pickle.load(open('../data/eff.pkl','r'))
+effDict = sorted(pickle.load(open('../data/eff.pkl','r')))
 
 print "\\begin{table}[!h] \n\centering \n\\begin{tabular}{llll} \n\hline"
 print "$H^{0}$ [GeV] & $X$ [GeV] & c$\\tau$ [cm] & $\epsilon$ [\%] \\\\"
