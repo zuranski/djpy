@@ -13,14 +13,21 @@ def getCounts(histo):
 	for comb in combinations:
 		b,c,a = dict[comb[0]],dict[comb[1]],dict[comb[2]]
 		results.append(estimate(b,c,a))
+	results.append(estimate(dict['B'],dict['C'],dict['D'],dict['A']))
 	return results
 
-def estimate(b,c,a):
+def estimate(b,c,a,d=None):
 	if not b[0]>0 or not c[0]>0 or not a[0]>0 : return (0,0)
 	est = b[0]*c[0]/float(a[0])
 	err = est*math.sqrt(pow(a[1]/float(a[0]),2)+
 						pow(b[1]/float(b[0]),2)+
 						pow(c[1]/float(c[0]),2))
+	if d is not None and d[0]>0:
+		est = b[0]*c[0]*a[0]/d[0]/d[0]
+		err = est*math.sqrt(pow(a[1]/float(a[0]),2)+
+							pow(b[1]/float(b[0]),2)+
+							pow(c[1]/float(c[0]),2)+
+							4*pow(d[1]/float(d[0]),2))
 	return (est,err)
 
 def string(obj): return '('+','.join(str(a) for a in obj)+')' if type(obj)==tuple else str(obj)
@@ -54,7 +61,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 
 	# constant names
 	cutNames = ['(NPrompt1,PromptFrac1)','(NPrompt2,PromptFrac2)','DiscVtx']
-	histNames = ['observed','FG/B','EG/C','DG/A','BE/A','CF/A','EF/D']
+	histNames = ['observed','FG/B','EG/C','DG/A','BE/A','CF/A','EF/D','BCD/A^{2}']
 
 	# plot scans
 	for scan in scans:
@@ -91,6 +98,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 				histos[i].GetYaxis().SetTitle(ytitle)
 				histos[i].SetStats(False)
 				histos[i].SetMarkerStyle(25 if i!=0 else 8)
+				if i==(n-1):histos[i].SetMarkerStyle(21)
 				histos[i].SetMarkerColor(i+1)
 				histos[i].SetFillColor(0)
 				histos[i].SetLabelSize(0.06)
@@ -125,3 +133,60 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 
 	plotter.printCanvas("]")
 	print plotter.pdfFileName, "has been written."
+
+def getBkg(list):
+	b=100000
+	err=10000
+	for obj in list :
+		if (obj[1]/obj[0] < err) : b=obj[0];err=obj[1]/obj[0]
+	combs = [obj[0] for obj in list]
+	err=0.34*(max(combs)-min(combs))
+	return b,err
+
+def plotExpLimit(analysis,org):
+
+	data={'bkg':[],'obs':[]}
+	for j,sample in enumerate(org.samples):
+		if 'Data' in sample['name']: # get background estimate
+			for step in org.steps:
+				for plotName in sorted(step.keys()):
+					if 'ABCDEFGHcounts' not in plotName : continue
+					counts = getCounts(step[plotName][j])
+					data['bkg'].append(getBkg(counts[1:]))
+					data['obs'].append(counts[0])
+		if 'H' in sample['name']: # get efficiencies
+			name=sample['name'].split('.')[0]
+			num=[]
+			denom=None
+			for step in org.steps:
+				num_i=[False,False,False]
+				for plotName in sorted(step.keys()):
+					if 'effDenom' in plotName : denom=step[plotName][j]
+					if 'effNumm' in plotName: num_i[0]=step[plotName][j]
+					if 'effNum0' in plotName: num_i[1]=step[plotName][j]
+					if 'effNump' in plotName: num_i[2]=step[plotName][j]
+				if all(num_i): 
+					num.append(num_i)
+
+			ctau_factors=[pow(10,i/float(3)) for i in range(-4,5)]
+			eff=[[r.TGraphAsymmErrors(n[i],denom,"cl=0.683 n") for i in range(3)] for n in num]
+			sample_data={}
+			for factor in ctau_factors : sample_data[factor]=[]
+			for i in range(len(analysis.scan)):
+				for j,factor in enumerate(ctau_factors):
+					x,y=r.Double(0),r.Double(0)
+					eff[i][j%3].GetPoint(j/3,x,y)
+					val=float(y)
+					err=eff[i][j/3].GetErrorY(j%3)
+					if val>0: err=val*math.sqrt(0.15*0.15+err*err/val/val)
+					else: err=0.0
+					sample_data[factor].append((val,err))
+
+			print name,'\n\n'
+			for key in  sorted(sample_data.keys()): 
+				print key,sample_data[key]
+				print '\n\n\n'
+			data[name]=sample_data
+
+	import pickle
+	pickle.dump(data,open('limits/data/data.pkl','w'))

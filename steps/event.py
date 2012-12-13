@@ -17,6 +17,7 @@ class effDenom(analysisStep):
 class effNum(analysisStep):
 	def __init__(self,indices):
 		self.indices = indices
+		self.n = ''.join(self.indices.split('ABCDEFGHIndices'))
 		self.map={
 			'H_1000_X_350':35,'H_1000_X_150':10,'H_1000_X_50':4,
 			'H_400_X_150':40,'H_400_X_50':8,'H_200_X_50':20,
@@ -31,7 +32,7 @@ class effNum(analysisStep):
 		ctau_base = self.map[inputString]
 		bin = (e["XpdgId"][0]-6000114)/1000 - 1
 		ctau=ctau_base*pow(10,int(bin-1))
-		for idx in e[self.indices]: 
-			self.book.fill(bin,'effNum0',3,-0.5,2.5,None)
-			self.book.fill(bin,'effNump',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,0.33))
-			self.book.fill(bin,'effNumm',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,-0.33))
+		for idx in e[self.indices]['H']: 
+			self.book.fill(bin,self.n+'effNum0',3,-0.5,2.5,None)
+			self.book.fill(bin,self.n+'effNump',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,0.33))
+			self.book.fill(bin,self.n+'effNumm',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,-0.33))
