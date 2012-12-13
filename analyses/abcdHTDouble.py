@@ -1,5 +1,5 @@
 import itertools,supy,samples,calculables,steps,ROOT as r
-from utils.ABCDscan import plotABCDscan
+from utils.ABCDscan import plotABCDscan,plotExpLimit
 
 class abcdHTDouble(supy.analysis) :
     
@@ -14,7 +14,6 @@ class abcdHTDouble(supy.analysis) :
 
 	IniCuts=[
         {'name':'dijet'},
-        #{'name':'dijetTrueLxy','min':0},
         # vertex minimal
         {'name':'dijetVtxChi2','min':0,'max':5},
         {'name':'dijetVtxN1','min':1},
@@ -30,10 +29,11 @@ class abcdHTDouble(supy.analysis) :
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
         {'name':'dijetNoOverlaps','val':True},
+        {'name':'dijetTrueLxy','min':0},
     ]
 	ABCDCutsSets = []
-	scanPrompt = [(8,0.45),(7,0.4),(6,0.35),(5,0.3),(4,0.25),(3,0.2),(2,0.15),(1,0.1)]
-	scanVtx = [1e-5,1e-4,1e-3,1e-2,0.1,0.3,0.85]
+	scanPrompt = [(2,0.15),(2,0.13),(2,0.11),(2,0.09),(1,0.15),(1,0.13),(1,0.11),(1,0.09)]
+	scanVtx = [0.1,0.3,0.5,0.7,0.9]
 
 	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
 
@@ -61,6 +61,7 @@ class abcdHTDouble(supy.analysis) :
 		mysteps=[]
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
+			mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i)).onlySim())
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
 
 	def calcsIndices(self):
@@ -74,8 +75,8 @@ class abcdHTDouble(supy.analysis) :
 		return calcs
 
 	def discs(self):
-		discSamplesRight=[name+'.pileupPUInteractionsBX0Target' for name in self.sig_names]
-		discSamplesLeft=[name+'.pileupPUInteractionsBX0Target' for name in self.qcd_names]
+		discSamplesRight=[name+'.pileupTrueNumInteractionsBX0Target' for name in self.sig_names]
+		discSamplesLeft=[name+'.pileupTrueNumInteractionsBX0Target' for name in self.qcd_names]
 		return([supy.calculables.other.Discriminant(fixes=("dijet",""),
 													right = {"pre":"H","tag":"","samples":discSamplesRight},
 													left = {"pre":"qcd","tag":"","samples":discSamplesLeft},
@@ -97,10 +98,17 @@ class abcdHTDouble(supy.analysis) :
 
 	def listOfSteps(self,config) :
 		return ([
-			supy.steps.printer.progressPrinter(),
+			supy.steps.printer.progressPrinter(),]
+
+			### pile-up reweighting
+			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
+				target=("data//HT300_Double_R12BC_true.root","pileup"),
+				groups=[('qcd',[]),('H',[])]).onlySim()] 
+
+			+[steps.event.effDenom().onlySim()]
 
 			### filters
-			supy.steps.filters.label('data cleanup'),
+			+[supy.steps.filters.label('data cleanup'),
 			supy.steps.filters.value('primaryVertexFilterFlag',min=1),
             supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
             supy.steps.filters.value('beamScrapingFilterFlag',min=1),
@@ -112,11 +120,6 @@ class abcdHTDouble(supy.analysis) :
             supy.steps.filters.value('ecalDeadCellTPFilterFlag',min=1),
             supy.steps.filters.value('trackingFailureFilterFlag',min=1),
 			]
-
-			### pile-up reweighting
-			+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-				target=("data//HT300_Double_R12BC_observed.root","pileup"),
-				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
@@ -147,15 +150,15 @@ class abcdHTDouble(supy.analysis) :
 		qcd_samples = []
 		sig_samples = []
 		for i in range(len(self.qcd_names)):
-			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupPUInteractionsBX0Target']))
+			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupTrueNumInteractionsBX0Target']))
 		for i in range(len(self.sig_names)):
-			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupPUInteractionsBX0Target']))
+			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
 		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4428.4) +
 			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=491.04) +
 			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6397.2)
 			#+ qcd_samples
-			+ sig_samples 
+			+sig_samples 
 		) 
 
 	def conclude(self,pars) :
@@ -169,8 +172,9 @@ class abcdHTDouble(supy.analysis) :
 			pdfFileName = self.pdfFileName(org.tag),
 			pageNumbers=False,
 			doLog=True,
+			dependence2D=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		plotABCDscan(self,org,plotter,4,blind=True)
-
+		plotABCDscan(self,org,plotter,8,blind=True)
+		plotExpLimit(self,org)

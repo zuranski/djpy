@@ -7,9 +7,8 @@ class displook(supy.analysis) :
 
 	IniCuts=[
 		{'name':'dijet'},
-		{'name':'dijetTrueLxy','min':0},
 		# vertex minimal
-		{'name':'dijetVtxChi2','min':0,'max':4},
+		{'name':'dijetVtxChi2','min':0,'max':5},
 		{'name':'dijetVtxN1','min':1},
 		{'name':'dijetVtxN2','min':1},
 		# cluster minimal
@@ -17,12 +16,13 @@ class displook(supy.analysis) :
 	]
 	Cuts=[
 		# clean up cuts	
-	  	#{'name':'dijetNAvgMissHitsAfterVert','max':1.99},
-		{'name':'dijetVtxmass','min':5},
-		{'name':'dijetVtxpt','min':10},
+		{'name':'dijetVtxmass','min':4},
+		{'name':'dijetVtxpt','min':8},
 		{'name':'dijetVtxNRatio','min':0.1},
 		{'name':'dijetLxysig','min':8},
 		{'name':'dijetNoOverlaps','val':True},
+	  	{'name':'dijetNAvgMissHitsAfterVert','max':2},
+		{'name':'dijetTrueLxy','min':0},
 	]
 
 	def dijetSteps(self):
@@ -69,13 +69,12 @@ class displook(supy.analysis) :
 			]
 
 			### pile-up reweighting
-			+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-				target=("data//HT300_Single_R12BC_observed.root","pileup"),
+			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
+				target=("data//HT300_Single_R12BC_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
-			#steps.trigger.hltFilterWildcard("HLT_HT300_v"),
 			steps.trigger.hltFilterWildcard("HLT_HT300_SingleDisplacedPFJet60_v"),
 			steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v",veto=True),
 			supy.steps.filters.value('caloHT',min=325),]
@@ -109,9 +108,9 @@ class displook(supy.analysis) :
 		qcd_samples = []
 		sig_samples = []
 		for i in range(len(qcd_names)):
-			qcd_samples+=(supy.samples.specify(names = qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupPUInteractionsBX0Target']))
+			qcd_samples+=(supy.samples.specify(names = qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupTrueNumInteractionsBX0Target']))
 		for i in range(len(sig_names)):
-			sig_samples+=(supy.samples.specify(names = sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupPUInteractionsBX0Target']))
+			sig_samples+=(supy.samples.specify(names = sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
 		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=44.284) +
 			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.9104) +
@@ -135,4 +134,5 @@ class displook(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			dependence2D=True,
 			doCorrTable=True,
+			pegMinimum=0.5,
 		).plotAll()

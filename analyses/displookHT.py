@@ -2,11 +2,13 @@ import supy,samples,calculables,steps,ROOT as r
 
 class displookHT(supy.analysis) :
     
-	ToCalculate=['dijetVtxNRatio']
-	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
+	ToCalculateAny=['dijetPt1','dijetPt2','dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
+	ToCalculateVtx=['dijetVtxNRatio']
 
 	IniCuts=[
 		{'name':'dijet'},
+		{'name':'dijetPt1','min':65},
+		{'name':'dijetPt2','min':65},
 		{'name':'dijetTrueLxy','min':0},
 		# vertex minimal
 		{'name':'dijetVtxChi2','min':0,'max':4},
@@ -18,10 +20,10 @@ class displookHT(supy.analysis) :
 	Cuts=[
 		# clean up cuts	
 	  	#{'name':'dijetNAvgMissHitsAfterVert','max':1.99},
-		{'name':'dijetVtxmass','min':5},
-		#{'name':'dijetVtxpt','min':10},
+		{'name':'dijetVtxmass','min':4},
+		{'name':'dijetVtxpt','min':5},
 		{'name':'dijetVtxNRatio','min':0.1},
-		{'name':'dijetLxysig','min':8},
+		{'name':'dijetLxysig','min':5},
 		{'name':'dijetNoOverlaps','val':True},
 	]
 
@@ -45,8 +47,10 @@ class displookHT(supy.analysis) :
 
 	def calcsVars(self):
 		calcs = []
-		for calc in self.ToCalculate:
+		for calc in self.ToCalculateVtx:
 			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
+		for calc in self.ToCalculateAny:
+			calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
@@ -69,8 +73,8 @@ class displookHT(supy.analysis) :
 			]
 
 			### pile-up reweighting
-			+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-				target=("data//HT300_R12BC_observed.root","pileup"),
+			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
+				target=("data//HT300_R12BC_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
@@ -107,9 +111,9 @@ class displookHT(supy.analysis) :
 		qcd_samples = []
 		sig_samples = []
 		for i in range(len(qcd_names)):
-			qcd_samples+=(supy.samples.specify(names = qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupPUInteractionsBX0Target']))
+			qcd_samples+=(supy.samples.specify(names = qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupTrueNumInteractionsBX0Target']))
 		for i in range(len(sig_names)):
-			sig_samples+=(supy.samples.specify(names = sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupPUInteractionsBX0Target']))
+			sig_samples+=(supy.samples.specify(names = sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
 		return (
 			qcd_samples 
@@ -125,7 +129,7 @@ class displookHT(supy.analysis) :
 		supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			anMode=True,
+			#anMode=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			dependence2D=True,
 			doCorrTable=True,

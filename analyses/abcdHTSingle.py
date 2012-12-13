@@ -14,7 +14,6 @@ class abcdHTSingle(supy.analysis) :
 
 	IniCuts=[
         {'name':'dijet'},
-        #{'name':'dijetTrueLxy','min':0},
         # vertex minimal
         {'name':'dijetVtxChi2','min':0,'max':5},
         {'name':'dijetVtxN1','min':1},
@@ -30,7 +29,7 @@ class abcdHTSingle(supy.analysis) :
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
         {'name':'dijetNoOverlaps','val':True},
-        #{'name':'dijetTrigMatch1','val':True},
+        {'name':'dijetTrueLxy','min':0},
     ]
 	ABCDCutsSets = []
 	scanPrompt = [(8,0.45),(7,0.4),(6,0.35),(5,0.3),(4,0.25),(3,0.2),(2,0.15)]
@@ -75,8 +74,8 @@ class abcdHTSingle(supy.analysis) :
 		return calcs
 
 	def discs(self):
-		discSamplesRight=[name+'.pileupPUInteractionsBX0Target' for name in self.sig_names]
-		discSamplesLeft=[name+'.pileupPUInteractionsBX0Target' for name in self.qcd_names]
+		discSamplesRight=[name+'.pileupTrueNumInteractionsBX0Target' for name in self.sig_names]
+		discSamplesLeft=[name+'.pileupTrueNumInteractionsBX0Target' for name in self.qcd_names]
 		return([supy.calculables.other.Discriminant(fixes=("dijet",""),
 													right = {"pre":"H","tag":"","samples":discSamplesRight},
 													left = {"pre":"qcd","tag":"","samples":discSamplesLeft},
@@ -117,8 +116,8 @@ class abcdHTSingle(supy.analysis) :
 			]
 
 			### pile-up reweighting
-			+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-				target=("data//HT300_Single_R12BC_observed.root","pileup"),
+			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
+				target=("data//HT300_Single_R12BC_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
@@ -151,9 +150,9 @@ class abcdHTSingle(supy.analysis) :
 		qcd_samples = []
 		sig_samples = []
 		for i in range(len(self.qcd_names)):
-			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupPUInteractionsBX0Target']))
+			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupTrueNumInteractionsBX0Target']))
 		for i in range(len(self.sig_names)):
-			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupPUInteractionsBX0Target']))
+			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
 		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=44.284) +
 			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.9104) +
@@ -173,8 +172,9 @@ class abcdHTSingle(supy.analysis) :
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			pageNumbers=False,
+			pegMinimum=0.05,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		plotABCDscan(self,org,plotter,4,blind=False)
+		plotABCDscan(self,org,plotter,8,blind=False)
 
