@@ -16,7 +16,7 @@ qcd.add('qcd_600_800','%s/%s/%s")'%(pnfs,loc,"QCD_Pt_600to800") ,xs=15.6) #/pb
 '''
 
 #PU
-loc='/tigress-hsm/zuranski/work/cms/data/DJTuple53x_PROD/'
+loc='/tigress-hsm/zuranski/work/cms/data/DJTuple53x_DEV/'
 qcd.add('qcd_50_80','%s'%(fileListFromDisk(loc+"QCD_Pt_50to80")),xs=8.148778e6) #/pb
 qcd.add('qcd_80_120','%s'%(fileListFromDisk(loc+"QCD_Pt_80to120")),xs=10.3368e5) #/pb
 qcd.add('qcd_120_170','%s'%(fileListFromDisk(loc+"QCD_Pt_120to170")),xs=15.62933e4) #/pb
