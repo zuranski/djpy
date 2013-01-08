@@ -12,7 +12,7 @@ class general(analysisStep):
 class effDenom(analysisStep):
 	def uponAcceptance(self,e):
 		bin = (e["XpdgId"][0]-6000114)/1000 - 1
-		for i in range(2):	self.book.fill(bin,'effDenom',3,-0.5,2.5,None)
+		for i in range(2):	self.book.fill(bin,'effDenom',3,-0.5,2.5,None) # 2 exotic X per event
 
 class effNum(analysisStep):
 	def __init__(self,indices):
@@ -31,8 +31,10 @@ class effNum(analysisStep):
 		inputString = self.inputFileName.split('.')[0].split('/')[-1]
 		ctau_base = self.map[inputString]
 		bin = (e["XpdgId"][0]-6000114)/1000 - 1
+		idx_coll = e[self.indices]
+		indices = idx_coll['H'] if type(idx_coll)==dict else idx_coll
 		ctau=ctau_base*pow(10,int(bin-1))
-		for idx in e[self.indices]['H']: 
+		for idx in indices: 
 			self.book.fill(bin,self.n+'effNum0',3,-0.5,2.5,None)
 			self.book.fill(bin,self.n+'effNump',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,0.33))
 			self.book.fill(bin,self.n+'effNumm',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,-0.33))
