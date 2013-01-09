@@ -7,11 +7,10 @@ class displookHT(supy.analysis) :
 
 	IniCuts=[
 		{'name':'dijet'},
-		{'name':'dijetPt1','min':65},
-		{'name':'dijetPt2','min':65},
-		{'name':'dijetTrueLxy','min':0},
+		#{'name':'dijetPt1','min':65},
+		#{'name':'dijetPt2','min':65},
 		# vertex minimal
-		{'name':'dijetVtxChi2','min':0,'max':4},
+		{'name':'dijetVtxChi2','min':0,'max':5},
 		{'name':'dijetVtxN1','min':1},
 		{'name':'dijetVtxN2','min':1},
 		# cluster minimal
@@ -19,12 +18,13 @@ class displookHT(supy.analysis) :
 	]
 	Cuts=[
 		# clean up cuts	
-	  	#{'name':'dijetNAvgMissHitsAfterVert','max':1.99},
+	  	{'name':'dijetNAvgMissHitsAfterVert','max':2},
 		{'name':'dijetVtxmass','min':4},
-		{'name':'dijetVtxpt','min':5},
+		{'name':'dijetVtxpt','min':8},
 		{'name':'dijetVtxNRatio','min':0.1},
-		{'name':'dijetLxysig','min':5},
+		{'name':'dijetLxysig','min':8},
 		{'name':'dijetNoOverlaps','val':True},
+		{'name':'dijetTrueLxy','min':0},
 	]
 
 	def dijetSteps(self):
