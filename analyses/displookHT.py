@@ -98,7 +98,7 @@ class displookHT(supy.analysis) :
 		return [samples.qcd,samples.data,samples.sigmc]
 
 	def listOfSamples(self,config) :
-		nFiles = 1 # or None for all
+		nFiles = None # or None for all
 		nEvents = None # or None for all
 
 		MH = [1000,1000,1000,400,400,200]
