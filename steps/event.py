@@ -38,3 +38,12 @@ class effNum(analysisStep):
 			self.book.fill(bin,self.n+'effNum0',3,-0.5,2.5,None)
 			self.book.fill(bin,self.n+'effNump',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,0.33))
 			self.book.fill(bin,self.n+'effNumm',3,-0.5,2.5,w=self.weight(e['dijetTrueCtau'][idx],ctau,-0.33))
+
+class runModulo(analysisStep):
+	def __init__(self,modulo,inverted=False):
+		self.modulo = modulo
+		self.inverted = inverted
+
+	def select(self,e):
+		passed = (e['run'] % self.modulo == 0)
+		return ((not passed) if self.inverted else passed)
