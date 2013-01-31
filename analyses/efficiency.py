@@ -11,12 +11,12 @@ class efficiency(supy.analysis) :
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate = ['dijetVtxNRatio','dijetPromptness1','dijetPromptness2','dijetVtxDelta','dijetDR']
+	ToCalculate = ['dijetVtxNRatio','dijetPromptness1','dijetPromptness2','dijetVtxDelta','dijetDR','dijetCtau']
 	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']   
  
 	IniCuts=[
         {'name':'dijet'},
-        #{'name':'dijetTrueLxy','min':0},
+		{'name':'dijetTrueLxy','min':0},
         # vertex minimal
         {'name':'dijetVtxChi2','min':0,'max':5},
         {'name':'dijetVtxN1','min':1},
@@ -32,6 +32,7 @@ class efficiency(supy.analysis) :
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
         {'name':'dijetNoOverlaps','val':True},
+		#{'name':'dijetTrueLxy','min':0},
     ]
 	
 	ABCDCuts = [
@@ -41,7 +42,7 @@ class efficiency(supy.analysis) :
 		{'name':'Prompt2','vars':({'name':'dijetNPromptTracks2','max':2},
 	                              {'name':'dijetPromptEnergyFrac2','max':0.15})
 		},
-		{'name':'Disc','vars':({'name':'dijetDiscriminant','min':0.85},)},
+		{'name':'Disc','vars':({'name':'dijetDiscriminant','min':0.9},)}
 		]	
 	def dijetSteps1(self):
 		mysteps = []
@@ -56,7 +57,7 @@ class efficiency(supy.analysis) :
 		for cut in self.ABCDCuts:
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
 		#mysteps.append(supy.steps.other.collector(['run','lumiSection','event']))
-		#mysteps.append(steps.other.collector(['dijetMass','dijetLxy'],indices=self.ABCDCuts[-1]['name']+'Indices'))
+		mysteps.append(steps.other.collector(['dijetMass','dijetLxy','dijetTrueCtau'],indices=self.ABCDCuts[-1]['name']+'Indices'))
 		mysteps.append(steps.plots.observables(indices=self.ABCDCuts[-1]['name']+'Indices'))
 		mysteps.append(steps.plots.cutvars(indices=self.ABCDCuts[-1]['name']+'Indices'))
 		mysteps.append(steps.plots.ABCDvars(indices=self.ABCDCuts[-1]['name']+'Indices'))
@@ -71,8 +72,8 @@ class efficiency(supy.analysis) :
 		return calcs
 
 	def discs(self):
-		discSamplesRight=[name+'.pileupPUInteractionsBX0Target' for name in self.sig_names]
-		discSamplesLeft=[name+'.pileupPUInteractionsBX0Target' for name in self.qcd_names]
+		discSamplesRight=[name+'.pileupTrueInteractionsBX0Target' for name in self.sig_names]
+		discSamplesLeft=[name+'.pileupTrueInteractionsBX0Target' for name in self.qcd_names]
 		return([supy.calculables.other.Discriminant(fixes=("dijet",""),
 													right = {"pre":"H","tag":"","samples":discSamplesRight},
 													left = {"pre":"qcd","tag":"","samples":discSamplesLeft},
@@ -97,7 +98,7 @@ class efficiency(supy.analysis) :
 		supy.steps.printer.progressPrinter()]
 		### pile-up reweighting
 		+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-                                    target=("data/HT300_Double_R12BC_true_down.root","pileup"),
+                                    target=("data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('H',[])]).onlySim()] 
 		### filters
 
@@ -121,6 +122,9 @@ class efficiency(supy.analysis) :
 		+[supy.steps.filters.label("hlt trigger"),
 		steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
 		supy.steps.filters.value('caloHT',min=325),]
+
+		#+[supy.steps.filters.label("muon veto"),
+		#supy.steps.filters.multiplicity('muonTightIdLooseIso',max=0)]
 
 		+self.dijetSteps1()
 		+self.discs()
@@ -155,13 +159,13 @@ class efficiency(supy.analysis) :
 		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}, q=uds", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_350")
 		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}, q=uds", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_150")
 		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}, q=uds", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_400_X_50")
-		#org.scale(lumiToUseInAbsenceOfData=11)
+		org.scale(lumiToUseInAbsenceOfData=52)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=False,
+			doLog=True,
 			#anMode=True,
 			showStatBox=True,
-			#pegMinimum=0.5,
+			pegMinimum=0.5,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
@@ -188,29 +192,54 @@ class efficiency(supy.analysis) :
 		self.totalEfficiencies(org)
 
 	def totalEfficiencies(self,org) :
-		num,denom=None,None
+		num0,nump,numm,denom=None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'effNum' in plotName : num=step[plotName]
+				if 'effNum0' in plotName : num0=step[plotName]
+				if 'effNumm' in plotName : numm=step[plotName]
+				if 'effNump' in plotName : nump=step[plotName]
 				if 'effDenom' in plotName : denom=step[plotName]
 
 		# testing
-		n,d = num[0],denom[0]
+		n,d = num0[0],denom[0]
 		for i in range(1,n.GetNbinsX()+1):
 			print n.GetBinContent(i),d.GetBinContent(i)
 
-		efficiency = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom)])
-		import pickle
-		list = []
+		efficiency0 = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num0,denom)])
+		efficiencym = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(numm,denom)])
+		efficiencyp = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(nump,denom)])
+		import pickle,math
 		for i,sample in enumerate(org.samples):
 			name = sample['name'].split('.')[0]
 			H,X=name.split('_')[1],name.split('_')[3]
 			ctau = self.ctau[self.sig_names.index(name)]
+			data={}
 			for j in range(3):
 				x,y=r.Double(0),r.Double(0)
-				efficiency[i].GetPoint(j,x,y)
+				efficiency0[i].GetPoint(j,x,y)
 				eff = float(y)
-				effErr = efficiency[i].GetErrorY(j)
-				list.append({'H':H,'X':X,'ctau':ctau*pow(10,int(x-1)),'eff':eff,'effErr':effErr})
-		print list
-		pickle.dump(list,open('data/eff_down.pkl','w'))
+				effErr = efficiency0[i].GetErrorY(j)
+				if eff > 0. : effErr = eff*math.sqrt(0.15*0.15+pow(effErr/eff,2))
+				else : effErr = 0.
+				data['eff']=(eff,effErr)
+				factor=pow(10,int(x-1))
+				pickle.dump(data,open('results/intuitive/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
+				
+				efficiencym[i].GetPoint(j,x,y)
+				eff = float(y)
+				effErr = efficiencym[i].GetErrorY(j)
+				if eff > 0. : effErr = eff*math.sqrt(0.15*0.15+pow(effErr/eff,2))
+				else : effErr = 0.
+				data['eff']=(eff,effErr)
+				factor=pow(10,int(x-1))*pow(10,-1./3.)
+				pickle.dump(data,open('results/intuitive/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
+
+				efficiencyp[i].GetPoint(j,x,y)
+				eff = float(y)
+				effErr = efficiencyp[i].GetErrorY(j)
+				if eff > 0. : effErr = eff*math.sqrt(0.15*0.15+pow(effErr/eff,2))
+				else : effErr = 0.
+				data['eff']=(eff,effErr)
+				factor=pow(10,int(x-1))*pow(10,+1./3.)
+				pickle.dump(data,open('results/intuitive/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
+
