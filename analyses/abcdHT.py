@@ -100,10 +100,15 @@ class abcdHT(supy.analysis) :
 
 	def listOfSteps(self,config) :
 		return ([
-			supy.steps.printer.progressPrinter(),
+			supy.steps.printer.progressPrinter(),]
+
+			### pile-up reweighting
+			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
+				target=("data/pileup/HT300_R12BCD_true.root","pileup"),
+				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### filters
-			supy.steps.filters.label('data cleanup'),
+			+[supy.steps.filters.label('data cleanup'),
 			supy.steps.filters.value('primaryVertexFilterFlag',min=1),
             supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
             supy.steps.filters.value('beamScrapingFilterFlag',min=1),
@@ -115,11 +120,6 @@ class abcdHT(supy.analysis) :
             supy.steps.filters.value('ecalDeadCellTPFilterFlag',min=1),
             supy.steps.filters.value('trackingFailureFilterFlag',min=1),
 			]
-
-			### pile-up reweighting
-			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-				target=("data//HT300_R12BC_true.root","pileup"),
-				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),

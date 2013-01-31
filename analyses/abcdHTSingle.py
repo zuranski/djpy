@@ -99,10 +99,15 @@ class abcdHTSingle(supy.analysis) :
 
 	def listOfSteps(self,config) :
 		return ([
-			supy.steps.printer.progressPrinter(),
+			supy.steps.printer.progressPrinter(),]
+
+			### pile-up reweighting
+			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
+				target=("data/pileup/HT300_Single_R12BCD_true.root","pileup"),
+				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### filters
-			supy.steps.filters.label('data cleanup'),
+			+[supy.steps.filters.label('data cleanup'),
 			supy.steps.filters.value('primaryVertexFilterFlag',min=1),
             supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
             supy.steps.filters.value('beamScrapingFilterFlag',min=1),
@@ -114,11 +119,6 @@ class abcdHTSingle(supy.analysis) :
             supy.steps.filters.value('ecalDeadCellTPFilterFlag',min=1),
             supy.steps.filters.value('trackingFailureFilterFlag',min=1),
 			]
-
-			### pile-up reweighting
-			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-				target=("data//HT300_Single_R12BC_true.root","pileup"),
-				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
@@ -154,9 +154,10 @@ class abcdHTSingle(supy.analysis) :
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
-		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=44.284) +
-			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.9104) +
-			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=63.387)
+		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=44.3) +
+			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.95) +
+			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=63.44) +
+			supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=71.05)
 			+ qcd_samples
 			+ sig_samples 
 		) 
