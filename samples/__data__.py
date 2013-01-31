@@ -17,3 +17,8 @@ data.add('dataB','%s'%(fileListFromDisk(loc+"/DataRun2012B")),lumi=0.5725) #/pb
 data.add('dataC1','%s'%(fileListFromDisk(loc+"/DataRun2012C1")),lumi=0.5725) #/pb
 data.add('dataC2','%s'%(fileListFromDisk(loc+"/DataRun2012C2")),lumi=0.5725) #/pb
 data.add('dataD','%s'%(fileListFromDisk(loc+"/DataRun2012D")),lumi=0.5725) #/pb
+
+data.add('mudataB','%s'%(fileListFromDisk(loc+"/MuDataRun2012B")),lumi=0.5725) #/pb
+data.add('mudataC1','%s'%(fileListFromDisk(loc+"/MuDataRun2012C1")),lumi=0.5725) #/pb
+data.add('mudataC2','%s'%(fileListFromDisk(loc+"/MuDataRun2012C2")),lumi=0.5725) #/pb
+data.add('mudataD','%s'%(fileListFromDisk(loc+"/MuDataRun2012D")),lumi=0.5725) #/pb
