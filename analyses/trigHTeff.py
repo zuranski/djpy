@@ -26,8 +26,8 @@ class trigHTeff(supy.analysis) :
             ]
 
 			### pile-up reweighting
-			+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-				target=("data/HT250_R12BC_observed.root","pileup"),
+			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
+				target=("data/pileup/HT250_R12BCD_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
@@ -76,10 +76,11 @@ class trigHTeff(supy.analysis) :
 		qcd_samples = []
 
 		for i in range(len(qcd_names)):
-			qcd_samples+=(supy.samples.specify(names = qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=["pileupPUInteractionsBX0Target"]))
+			qcd_samples+=(supy.samples.specify(names = qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=["pileupTrueNumInteractionsBX0Target"]))
 		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=2.02)
-			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=0.2202)
-			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=2.882)
+			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=0.2218)
+			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=2.885)
+			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=3.213)
 			+ qcd_samples[:-3] 
 		) 
 

@@ -1,5 +1,4 @@
 import supy,samples,calculables,steps,ROOT as r
-from calculables.utils import abcdCmp
 
 class trigeff2Disp(supy.analysis) :
     
@@ -55,8 +54,8 @@ class trigeff2Disp(supy.analysis) :
 			]
 
 			### pile-up reweighting
-			+[supy.calculables.other.Target("pileupPUInteractionsBX0",thisSample=config['baseSample'],
-				target=("data/HT300_R12BC_observed.root","pileup"),
+			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
+				target=("data/pileup/HT300_R12BCD_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
@@ -87,10 +86,11 @@ class trigeff2Disp(supy.analysis) :
 
 		qcd_samples = []
 		for i in range(len(self.qcd_names)):
-			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupPUInteractionsBX0Target']))
-		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.039)
-			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=0.4404)
-			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=5.764)
+			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupTrueNumInteractionsBX0Target']))
+		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.04)
+			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=0.4437)
+			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=5.769)
+			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6.427)
 			+ qcd_samples 
 		) 
 
@@ -102,8 +102,8 @@ class trigeff2Disp(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			samplesForRatios = ("Data","Simulation"),
-			sampleLabelsForRatios = ("Data","Sim"),
+			#samplesForRatios = ("Data","Simulation"),
+			#sampleLabelsForRatios = ("Data","Sim"),
 			doLog=True,
 			anMode=True,
 			pageNumbers=False,
@@ -112,8 +112,8 @@ class trigeff2Disp(supy.analysis) :
 		)
 		plotter.plotAll()
 		plotter.doLog=False
-		#self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt1", plotter)
-		self.makeEfficiencyPlots2(org,"jetNPromptTracks","jetTrigPrompt2",plotter)
+		self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt1", plotter)
+		#self.makeEfficiencyPlots2(org,"jetNPromptTracks","jetTrigPrompt2",plotter)
 
 	def makeEfficiencyPlots1(self, org, denomName, numName, plotter):
 
