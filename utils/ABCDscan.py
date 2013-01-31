@@ -134,16 +134,20 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 	plotter.printCanvas("]")
 	print plotter.pdfFileName, "has been written."
 
-def getBkg(list):
-	b=100000
-	err=10000
-	for obj in list :
-		if (obj[1]/obj[0] < err) : b=obj[0];err=obj[1]/obj[0]
+def getBkg(counts):
+	list=counts[1:]
+	b=list[-1][0]
+	err_stat=list[-1][1]
 	combs = [obj[0] for obj in list]
-	err=0.34*(max(combs)-min(combs))
+	dists= [abs(comb-b) for comb in combs]
+	err_sys = max(dists)
+	#err_sys=0.5*(max(combs)-min(combs))
+	#b=0.5*(max(combs)+min(combs))
+	err=math.sqrt(pow(err_stat,2)+pow(err_sys,2))
+	print round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2)#,counts[0][0]
 	return b,err
 
-def plotExpLimit(analysis,org):
+def plotExpLimit(analysis,n,org):
 
 	data={'bkg':[],'obs':[]}
 	for j,sample in enumerate(org.samples):
@@ -152,7 +156,7 @@ def plotExpLimit(analysis,org):
 				for plotName in sorted(step.keys()):
 					if 'ABCDEFGHcounts' not in plotName : continue
 					counts = getCounts(step[plotName][j])
-					data['bkg'].append(getBkg(counts[1:]))
+					data['bkg'].append(getBkg(counts[:n]))
 					data['obs'].append(counts[0])
 		if 'H' in sample['name']: # get efficiencies
 			name=sample['name'].split('.')[0]
@@ -171,6 +175,7 @@ def plotExpLimit(analysis,org):
 			ctau_factors=[pow(10,i/float(3)) for i in range(-4,5)]
 			eff=[[r.TGraphAsymmErrors(n[i],denom,"cl=0.683 n") for i in range(3)] for n in num]
 			sample_data={}
+			print sample['name']
 			for factor in ctau_factors : sample_data[factor]=[]
 			for i in range(len(analysis.scan)):
 				for j,factor in enumerate(ctau_factors):
@@ -178,15 +183,20 @@ def plotExpLimit(analysis,org):
 					eff[i][j%3].GetPoint(j/3,x,y)
 					val=float(y)
 					err=eff[i][j/3].GetErrorY(j%3)
+					if j==4: print round(100*val,1),round(100*err/val,1)
 					if val>0: err=val*math.sqrt(0.15*0.15+err*err/val/val)
 					else: err=0.0
 					sample_data[factor].append((val,err))
 
-			print name,'\n\n'
-			for key in  sorted(sample_data.keys()): 
-				print key,sample_data[key]
-				print '\n\n\n'
 			data[name]=sample_data
 
+			'''
+			print '\n'
+			print name
+			print '\n'
+			for key in sorted(sample_data.keys()):
+				print key, sample_data[key][4]
+				print '\n'
+			'''
 	import pickle
-	pickle.dump(data,open('limits/data/data.pkl','w'))
+	pickle.dump(data,open('results/data/data.pkl','w'))
