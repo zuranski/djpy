@@ -42,9 +42,8 @@ class dijetTrueCtau(wrappedChain.calculable):
                       for i in self.source['dijetIndices']]
 
 class jetTrigPrompt(wrappedChain.calculable):
-	def __init__(self,tag,instance):
+	def __init__(self,tag):
 		self.tag = tag
-		self.fixes = ('',instance)
 
 	def update(self,ignored):
 		etas, phis = [],[]
