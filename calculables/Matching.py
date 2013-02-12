@@ -13,11 +13,17 @@ class jetTrueMatch(wrappedChain.calculable):
 
 class jetTrueLxy(wrappedChain.calculable):
 	def update(self,ignored):
+		if self.source['realData'] or len(self.source['genjetPt']) == 0: 
+			self.value = [True for i in self.source['jetIndices']]
+			return
 		self.value=[self.source['genjetLxy'][self.source['jetTrueMatch'][i]] 
                     if self.source['jetTrueMatch'][i] is not None else -1 for i in self.source['jetIndices']]
 
 class jetTrueCtau(wrappedChain.calculable):
 	def update(self,ignored):
+		if self.source['realData'] or len(self.source['genjetPt']) == 0: 
+			self.value = [True for i in self.source['jetIndices']]
+			return
 		self.value=[self.source['genjetCtau'][self.source['jetTrueMatch'][i]] 
                     if self.source['jetTrueMatch'][i] is not None else -1 for i in self.source['jetIndices']]
 

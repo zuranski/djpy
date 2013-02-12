@@ -72,8 +72,8 @@ class fractions(plots):
 
 class promptness(plots):
 	vars = [
-            {'name':'NPromptTracks','bins':50,'low':-0.5,'high':49.5,'unit':''},
-            {'name':'NDispTracks','bins':50,'low':-0.5,'high':49.5,'unit':''},
+            {'name':'NPromptTracks','bins':30,'low':-0.5,'high':29.5,'unit':''},
+            {'name':'NDispTracks','bins':30,'low':-0.5,'high':29.5,'unit':''},
             {'name':'PromptEnergyFrac','bins':50,'low':0,'high':1,'unit':''},
            ]
 

@@ -144,7 +144,7 @@ def getBkg(counts):
 	#err_sys=0.5*(max(combs)-min(combs))
 	#b=0.5*(max(combs)+min(combs))
 	err=math.sqrt(pow(err_stat,2)+pow(err_sys,2))
-	print round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2)#,counts[0][0]
+	print round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2),counts[0][0]
 	return b,err
 
 def plotExpLimit(analysis,n,org):
