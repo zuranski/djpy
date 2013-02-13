@@ -176,21 +176,21 @@ class abcdHT(supy.analysis) :
 		plotter.plotAll()
 		plotABCDscan(self,org,plotter,8)
 
-		plotter.individualPlots(plotSpecs = [{"plotName":"NPromptTracks1_h_dijetNoOverlaps",
+		plotter.individualPlots(plotSpecs = [{"plotName":"NPromptTracks1_h_dijetTrueLxy",
                                               "stepName":"ABCDvars",
                                               "stepDesc":"ABCDvars",
                                               "newTitle":"; N Prompt Tracks (jet 2) ;di-jets / bin",
                                               "legendCoords": (0.58, 0.7, 0.78, 0.9),
                                               "stamp": False 
                                               },
-											 {"plotName":"PromptEnergyFrac1_h_dijetNoOverlaps",
+											 {"plotName":"PromptEnergyFrac1_h_dijetTrueLxy",
                                               "stepName":"ABCDvars",
                                               "stepDesc":"ABCDvars",
                                               "newTitle":"; Prompt Energy Fraction (jet 2) ;di-jets / bin",
                                               "legendCoords": (0.58, 0.7, 0.78, 0.9),
                                               "stamp": False 
                                               },
-											  {"plotName":"Discriminant_h_dijetNoOverlaps",
+											  {"plotName":"Discriminant_h_dijetTrueLxy",
                                               "stepName":"ABCDvars",
                                               "stepDesc":"ABCDvars",
                                               "newTitle":"; Vertex/Cluster Discriminant ;di-jets / bin",

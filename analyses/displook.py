@@ -7,6 +7,7 @@ class displook(supy.analysis) :
 
 	IniCuts=[
 		{'name':'dijet'},
+		{'name':'dijetTrueLxy','min':0},
 		# vertex minimal
 		{'name':'dijetVtxChi2','min':0,'max':5},
 		{'name':'dijetVtxN1','min':1},
@@ -22,7 +23,7 @@ class displook(supy.analysis) :
 		{'name':'dijetLxysig','min':8},
 		{'name':'dijetNoOverlaps','val':True},
 	  	{'name':'dijetNAvgMissHitsAfterVert','max':2},
-		{'name':'dijetTrueLxy','min':0},
+		#{'name':'dijetTrueLxy','min':0},
 	]
 
 	def dijetSteps(self):
@@ -76,12 +77,13 @@ class displook(supy.analysis) :
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
 			steps.trigger.hltFilterWildcard("HLT_HT300_SingleDisplacedPFJet60_v"),
-			steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v",veto=True),
+			steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v",veto=True).onlyData(),
 			supy.steps.filters.value('caloHT',min=325),]
 
 			### plots
 			+[steps.event.general()]
 			+self.dijetSteps()
+			+[steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v",veto=True),]
 			)
 
 	def listOfCalculables(self,config) :
@@ -127,7 +129,7 @@ class displook(supy.analysis) :
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale(lumiToUseInAbsenceOfData=11000)
-		supy.plotter( org,
+		plotter=supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			samplesForRatios = ("Data","QCD"),
 			sampleLabelsForRatios = ("Data","QCD"),
@@ -135,5 +137,81 @@ class displook(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			dependence2D=True,
 			doCorrTable=True,
-			pegMinimum=0.5,
-		).plotAll()
+			pegMinimum=1,
+			anMode=True,
+		)
+		plotter.plotAll()
+
+		plotter.individualPlots(plotSpecs = [
+											  {"plotName":"Lxysig_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; L_{xy} significance; di-jets / bin",
+                                              "legendCoords": (0.35, 0.15, 0.9, 0.35),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+											  {"plotName":"PromptEnergyFrac2_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Charged Prompt Energy Fraction; di-jets / bin",
+                                              "legendCoords": (0.35, 0.15, 0.9, 0.35),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                              {"plotName":"NPromptTracks2_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Number of Prompt Tracks ; di-jets / bin",
+                                              "legendCoords": (0.45, 0.15, 0.9, 0.35),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                              {"plotName":"VtxN_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Vertex Multiplicity ; di-jets / bin",
+                                              "legendCoords": (0.55, 0.35, 0.9, 0.55),
+                                              "stampCoords": (0.7, 0.8)
+                                              },
+                                              {"plotName":"Vtxmass_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Vertex Invariant Mass [GeV/c^{2}]; di-jets / bin",
+                                              "legendCoords": (0.45, 0.15, 0.9, 0.35),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                              {"plotName":"Vtxpt_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Vertex p_{T} [GeV/c]; di-jets / bin",
+                                              "legendCoords": (0.55, 0.45, 0.9, 0.65),
+                                              "stampCoords": (0.7, 0.92)
+                                              },
+                                              {"plotName":"bestclusterN_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Cluster Multiplicity; di-jets / bin",
+                                              "legendCoords": (0.55, 0.3, 0.9, 0.5),
+                                              "stampCoords": (0.7, 0.72)
+                                              },
+                                              {"plotName":"glxyrmsclr_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Cluster RMS; di-jets / bin",
+                                              "legendCoords": (0.55, 0.45, 0.9, 0.65),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                              {"plotName":"NAvgMissHitsAfterVert_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Missing Hits per track after Vertex; di-jets / bin",
+                                              "legendCoords": (0.45, 0.15, 0.9, 0.35),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                              {"plotName":"Posip2dFrac_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Tracks with positive IP fraction; di-jets / bin",
+                                              "legendCoords": (0.45, 0.15, 0.9, 0.35),
+                                              "stampCoords": (0.5, 0.88)
+                                              },
+                                            ]
+                               )

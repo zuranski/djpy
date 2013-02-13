@@ -8,6 +8,8 @@ class pflook(supy.analysis) :
 	jetCuts=[
         {'name':'jet'},
         {'name':'jetPt','min':65},
+        {'name':'jetTrueLxy','min':0},
+        {'name':'jetPromptEnergyFrac','max':1},
     ]
 	dijetCuts=[
         {'name':'dijet'},
@@ -67,7 +69,7 @@ class pflook(supy.analysis) :
 			+[supy.steps.filters.label("hlt trigger"),
 			steps.trigger.hltFilterWildcard("HLT_HT300_v")]
 
-			+[supy.steps.filters.value('pfHT',min=400)]
+			+[supy.steps.filters.value('caloHT',min=400)]
 			### plots
 			+[steps.event.general()]
 			+self.plots(1)
@@ -92,7 +94,7 @@ class pflook(supy.analysis) :
 		MX = [350,150,50,150,50,50]
 		sig_names = ["H_"+str(a)+"_X_"+str(b) for a,b in zip(MH,MX)]
 
-		qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
+		qcd_bins = [str(q) for q in [80,120,170,300,470,600]]
 		qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
 		qcd_samples = []
@@ -113,14 +115,34 @@ class pflook(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"qcd", "color":r.kBlue}, allWithPrefix = "qcd")
-		org.mergeSamples(targetSpec = {"name":"data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
-		org.mergeSamples(targetSpec = {"name":"H", "color":r.kRed}, allWithPrefix = "H")
+		org.mergeSamples(targetSpec = {"name":"Standard Model", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
+		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
+		org.mergeSamples(targetSpec = {"name":"H #rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale()
-		supy.plotter( org,
+		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			samplesForRatios = ("data","qcd"),
-			sampleLabelsForRatios = ("data","qcd"),
+			#samplesForRatios = ("data","qcd"),
+			#sampleLabelsForRatios = ("data","qcd"),
 			doLog=True,
+			anMode=True,
+			pegMinimum=1,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
-		).plotAll()
+		)
+		plotter.plotAll()
+
+		plotter.individualPlots(plotSpecs = [{"plotName":"PromptEnergyFrac_h_jetPromptEnergyFrac",
+                                              "stepName":"promptness",
+                                              "stepDesc":"promptness",
+                                              "newTitle":"; Charged Prompt Energy Fraction; jets / bin",
+                                              "legendCoords": (0.35, 0.35, 0.9, 0.55),
+                                              "stampCoords": (0.6, 0.68)
+                                              },
+                                              {"plotName":"NPromptTracks_h_jetPromptEnergyFrac",
+                                              "stepName":"promptness",
+                                              "stepDesc":"promptness",
+                                              "newTitle":"; Number of Prompt Tracks ; jets / bin",
+                                              "legendCoords": (0.55, 0.55, 0.9, 0.75),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                            ]
+                               )

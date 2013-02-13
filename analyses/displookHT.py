@@ -7,6 +7,9 @@ class displookHT(supy.analysis) :
 
 	IniCuts=[
 		{'name':'dijet'},
+		{'name':'dijetTrueLxy','min':0},
+		{'name':'dijetPromptEnergyFrac1','max':1},
+		{'name':'dijetPromptEnergyFrac2','max':1},
 		#{'name':'dijetPt1','min':65},
 		#{'name':'dijetPt2','min':65},
 		# vertex minimal
@@ -18,13 +21,15 @@ class displookHT(supy.analysis) :
 	]
 	Cuts=[
 		# clean up cuts	
-	  	{'name':'dijetNAvgMissHitsAfterVert','max':2},
-		{'name':'dijetVtxmass','min':4},
-		{'name':'dijetVtxpt','min':8},
 		{'name':'dijetVtxNRatio','min':0.1},
 		{'name':'dijetLxysig','min':8},
+		{'name':'dijetVtxmass','min':4},
+		{'name':'dijetVtxpt','min':8},
+	  	{'name':'dijetNAvgMissHitsAfterVert','max':2},
+		#{'name':'dijetVtxmass','min':4},
+		#{'name':'dijetVtxpt','min':8},
 		{'name':'dijetNoOverlaps','val':True},
-		{'name':'dijetTrueLxy','min':0},
+		#{'name':'dijetTrueLxy','min':0},
 	]
 
 	def dijetSteps(self):

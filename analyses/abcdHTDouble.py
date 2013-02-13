@@ -15,18 +15,18 @@ class abcdHTDouble(supy.analysis) :
 	IniCuts=[
         {'name':'dijet'},
         # vertex minimal
-        {'name':'dijetVtxChi2','min':0,'max':5},
         {'name':'dijetVtxN1','min':1},
         {'name':'dijetVtxN2','min':1},
         # cluster minimal
         {'name':'dijetbestclusterN','min':2},
+        {'name':'dijetVtxChi2','min':0,'max':5},
     ]
 	Cuts=[
         # clean up cuts 
-        {'name':'dijetNAvgMissHitsAfterVert','max':2},
+        {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetVtxmass','min':4},
         {'name':'dijetVtxpt','min':8},
-        {'name':'dijetVtxNRatio','min':0.1},
+        {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetLxysig','min':8},
         {'name':'dijetNoOverlaps','val':True},
         {'name':'dijetTrueLxy','min':0},
@@ -61,7 +61,7 @@ class abcdHTDouble(supy.analysis) :
 		mysteps=[]
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
-			mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i)).onlySim())
+			#mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i)).onlySim())
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
 
 	def calcsIndices(self):
@@ -125,7 +125,7 @@ class abcdHTDouble(supy.analysis) :
 			+[supy.steps.filters.label("hlt trigger"),
             steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
 			supy.steps.filters.value("caloHT",min=325),
-			#steps.event.runModulo(modulo=11,inverted=True).onlyData(),
+			steps.event.runModulo(modulo=11,inverted=True).onlyData(),
 			]
 
 			### plots
@@ -161,7 +161,7 @@ class abcdHTDouble(supy.analysis) :
 			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3) 
 			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274)
 			#+ qcd_samples
-			#+sig_samples 
+			+sig_samples 
 		) 
 
 	def conclude(self,pars) :
@@ -169,7 +169,7 @@ class abcdHTDouble(supy.analysis) :
 		org = self.organizer(pars)
 		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
-		#org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
+		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),

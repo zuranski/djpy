@@ -9,7 +9,7 @@ class abcdHTSingle(supy.analysis) :
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate=['dijetVtxNRatio','dijetTrigMatch1']
+	ToCalculate=['dijetVtxNRatio']
 	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
 
 	IniCuts=[
@@ -23,7 +23,7 @@ class abcdHTSingle(supy.analysis) :
     ]
 	Cuts=[
         # clean up cuts 
-        {'name':'dijetNAvgMissHitsAfterVert','max':2},
+        #{'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetVtxmass','min':4},
         {'name':'dijetVtxpt','min':8},
         {'name':'dijetVtxNRatio','min':0.1},
@@ -93,8 +93,8 @@ class abcdHTSingle(supy.analysis) :
 		for calc in self.ToCalculate:
 			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
-		calcs.append(calculables.Matching.jetTrigPrompt('hlt2DisplacedHT300L1FastJetL3Filter',instance='1'))
-		calcs.append(calculables.Matching.jetTrigPrompt('hlt2PFDisplacedJetsPt50',instance='2'))
+		#calcs.append(calculables.Matching.jetTrigPrompt('hlt2DisplacedHT300L1FastJetL3Filter',instance='1'))
+		#calcs.append(calculables.Matching.jetTrigPrompt('hlt2PFDisplacedJetsPt50',instance='2'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -123,7 +123,7 @@ class abcdHTSingle(supy.analysis) :
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
 			steps.trigger.hltFilterWildcard("HLT_HT300_SingleDisplacedPFJet60_v"),
-            steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v",veto=True),
+            steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v",veto=True).onlyData(),
 			supy.steps.filters.value("caloHT",min=325),]
 
 			### plots
@@ -167,15 +167,27 @@ class abcdHTSingle(supy.analysis) :
 		org = self.organizer(pars)
 		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
-		#org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
+		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
+			samplesForRatios = ("Data","QCD"),
+            sampleLabelsForRatios = ("Data","QCD"),
 			doLog=True,
 			pageNumbers=False,
-			pegMinimum=0.05,
+			pegMinimum=1,
+			anMode=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
 		plotABCDscan(self,org,plotter,8,blind=False)
-
+	
+		plotter.individualPlots(plotSpecs = [
+                                              {"plotName":"Discriminant_h_dijetTrueLxy",
+                                              "stepName":"ABCDvars",
+                                              "stepDesc":"ABCDvars",
+                                              "newTitle":"; Vertex-Cluster discriminant; di-jets / bin",
+                                              "legendCoords": (0.6, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.4, 0.88)
+                                              },
+											])
