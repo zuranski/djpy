@@ -1,5 +1,6 @@
 import ROOT as r
 import math
+from supy.utils import cmsStamp
 
 def getCounts(histo):
 	keys = ['A','B','C','D','E','F','G','H']
@@ -46,7 +47,8 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 	plotter.flushPage()
 	r.gPad.SetLogy()
 	r.gPad.SetTicky(0)
-	if not plotter.anMode : r.gPad.SetRightMargin(0.2)
+	#if not plotter.anMode : r.gPad.SetRightMargin(0.2)
+	r.gPad.SetRightMargin(0.2)
 	# get all the counts
 	counts = [[0]*len(analysis.scan) for sample in org.samples]
 	for step in org.steps : 
@@ -67,8 +69,9 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 	for scan in scans:
 
 		title = ' '.join(name+'='+string(value) if value else '' for name,value in zip(cutNames,scan))
-		xtitle = cutNames[scan.index(None)]+ ' cut'
-		ytitle = 'Number of Events / ' +lumistring(org.lumi)
+		title='- max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
+		xtitle = 'Vertex/Cluster Discriminant cut'
+		ytitle = 'Number of Events'
 
 		indices = [i for i,cuts in enumerate(analysis.scan) if len(listdiff(cuts,scan))<=1]
 		labels = [string(cuts[scan.index(None)]) for i,cuts in enumerate(analysis.scan) if i in indices]
@@ -87,7 +90,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 		for j,sample in enumerate(org.samples):
 			if 'H' in sample['name'] : continue
 			histos = [r.TH1F(name,sample['name']+' '+title,len(indices),0,1) for name in histNames]
-			legend = r.TLegend(0.85, 0.60, 0.99, 0.10)
+			legend = r.TLegend(0.81, 0.60, 0.99, 0.10)
 			for i in reversed(range(n)):
 				if blind and 'Data' in sample['name'] and i==0: continue
 				for k,idx in enumerate(indices):
@@ -127,14 +130,16 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 				sigeff[i].Draw(option)
 				legend.AddEntry(sigeff[i],sample['name'].split('.')[0])
 
+			legend.SetFillColor(0)
 			legend.Draw("same")
+			cmsStamp(lumi=org.lumi,coords=(0.55,0.8))
 			plotter.printCanvas()
 			plotter.canvas.Clear()
 
 	plotter.printCanvas("]")
 	print plotter.pdfFileName, "has been written."
 
-def getBkg(counts):
+def getBkg(counts,cuts):
 	list=counts[1:]
 	b=list[-1][0]
 	err_stat=list[-1][1]
@@ -144,7 +149,7 @@ def getBkg(counts):
 	#err_sys=0.5*(max(combs)-min(combs))
 	#b=0.5*(max(combs)+min(combs))
 	err=math.sqrt(pow(err_stat,2)+pow(err_sys,2))
-	print round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2),counts[0][0]
+	print cuts,round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2)#,counts[0][0]
 	return b,err
 
 def plotExpLimit(analysis,n,org):
@@ -155,8 +160,9 @@ def plotExpLimit(analysis,n,org):
 			for step in org.steps:
 				for plotName in sorted(step.keys()):
 					if 'ABCDEFGHcounts' not in plotName : continue
+					cutsidx=eval(plotName[:plotName.find('ABCDEFGH')])
 					counts = getCounts(step[plotName][j])
-					data['bkg'].append(getBkg(counts[:n]))
+					data['bkg'].append(getBkg(counts[:n],(analysis.scan[cutsidx],cutsidx)))
 					data['obs'].append(counts[0])
 		if 'H' in sample['name']: # get efficiencies
 			name=sample['name'].split('.')[0]
@@ -175,7 +181,7 @@ def plotExpLimit(analysis,n,org):
 			ctau_factors=[pow(10,i/float(3)) for i in range(-4,5)]
 			eff=[[r.TGraphAsymmErrors(n[i],denom,"cl=0.683 n") for i in range(3)] for n in num]
 			sample_data={}
-			print sample['name']
+			#print sample['name']
 			for factor in ctau_factors : sample_data[factor]=[]
 			for i in range(len(analysis.scan)):
 				for j,factor in enumerate(ctau_factors):
@@ -183,7 +189,7 @@ def plotExpLimit(analysis,n,org):
 					eff[i][j%3].GetPoint(j/3,x,y)
 					val=float(y)
 					err=eff[i][j/3].GetErrorY(j%3)
-					if j==4: print round(100*val,1),round(100*err/val,1)
+					#if j==4: print round(100*val,1),round(100*err/val,1)
 					if val>0: err=val*math.sqrt(0.15*0.15+err*err/val/val)
 					else: err=0.0
 					sample_data[factor].append((val,err))

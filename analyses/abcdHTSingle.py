@@ -23,7 +23,7 @@ class abcdHTSingle(supy.analysis) :
     ]
 	Cuts=[
         # clean up cuts 
-        #{'name':'dijetNAvgMissHitsAfterVert','max':2},
+        {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetVtxmass','min':4},
         {'name':'dijetVtxpt','min':8},
         {'name':'dijetVtxNRatio','min':0.1},
@@ -33,7 +33,7 @@ class abcdHTSingle(supy.analysis) :
     ]
 	ABCDCutsSets = []
 	scanPrompt = [(8,0.45),(7,0.4),(6,0.35),(5,0.3),(4,0.25),(3,0.2),(2,0.15)]
-	scanVtx = [1e-5,1e-4,1e-3,1e-2,0.1,0.3,0.85]
+	scanVtx = [1e-2,0.1,0.3,0.5,0.7,0.9]
 
 	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
 
@@ -93,8 +93,6 @@ class abcdHTSingle(supy.analysis) :
 		for calc in self.ToCalculate:
 			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
-		#calcs.append(calculables.Matching.jetTrigPrompt('hlt2DisplacedHT300L1FastJetL3Filter',instance='1'))
-		#calcs.append(calculables.Matching.jetTrigPrompt('hlt2PFDisplacedJetsPt50',instance='2'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -175,12 +173,12 @@ class abcdHTSingle(supy.analysis) :
             sampleLabelsForRatios = ("Data","QCD"),
 			doLog=True,
 			pageNumbers=False,
-			pegMinimum=1,
-			anMode=True,
+			#pegMinimum=1,
+			#anMode=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		plotABCDscan(self,org,plotter,8,blind=False)
+		plotABCDscan(self,org,plotter,4,blind=False)
 	
 		plotter.individualPlots(plotSpecs = [
                                               {"plotName":"Discriminant_h_dijetTrueLxy",

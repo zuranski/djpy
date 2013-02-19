@@ -34,7 +34,7 @@ class abcdHT(supy.analysis) :
     ]
 	ABCDCutsSets = []
 	scanPrompt = [(8,0.45),(7,0.4),(6,0.35),(5,0.3),(4,0.25),(3,0.2),(2,0.15)]
-	scanVtx = [1e-5,1e-4,1e-3,1e-2,0.1,0.3,0.85]
+	scanVtx = [1e-2,0.1,0.3,0.5,0.7,0.9]
 
 	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
 
@@ -155,7 +155,7 @@ class abcdHT(supy.analysis) :
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
 		return (qcd_samples
-			    + sig_samples 
+			    #+ sig_samples 
 		) 
 
 	def conclude(self,pars) :
@@ -164,7 +164,7 @@ class abcdHT(supy.analysis) :
 		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
-		org.scale(lumiToUseInAbsenceOfData=11)
+		org.scale(lumiToUseInAbsenceOfData=17)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			#anMode=True,

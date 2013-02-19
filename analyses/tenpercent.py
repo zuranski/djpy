@@ -1,7 +1,7 @@
 import itertools,supy,samples,calculables,steps,ROOT as r
 from utils.ABCDscan import plotABCDscan,plotExpLimit
 
-class abcdHTDouble(supy.analysis) :
+class tenpercent(supy.analysis) :
     
 	MH = [1000,1000,1000,400,400,200]
 	MX = [350,150,50,150,50,50]
@@ -34,8 +34,7 @@ class abcdHTDouble(supy.analysis) :
 	ABCDCutsSets = []
 	scanPrompt = [(2,0.15),(2,0.13),(2,0.11),(2,0.09),(2,0.07),(2,0.05)]
 	scanPrompt += [(1,0.15),(1,0.13),(1,0.11),(1,0.09),(1,0.07),(1,0.05)]
-	#scanPrompt += [(0,0.15),(0,0.13),(0,0.11),(0,0.09),(0,0.07),(0,0.05)]
-	scanVtx = [0.5,0.6,0.7,0.8,0.9]
+	scanVtx = [1e-2,0.1,0.3,0.5,0.7,0.9]
 
 	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
 
@@ -127,7 +126,7 @@ class abcdHTDouble(supy.analysis) :
 			+[supy.steps.filters.label("hlt trigger"),
             steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
 			supy.steps.filters.value("caloHT",min=325),
-			steps.event.runModulo(modulo=11,inverted=True).onlyData(),
+			steps.event.runModulo(modulo=11,inverted=False).onlyData(),
 			]
 
 			### plots
@@ -158,12 +157,12 @@ class abcdHTDouble(supy.analysis) :
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
-		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4430) 
-			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=495.03) 
-			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3) 
-			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274)
+		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=443) 
+			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=49.503) 
+			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=640.13) 
+			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=727.4)
 			#+ qcd_samples
-			+sig_samples 
+			#+sig_samples 
 		) 
 
 	def conclude(self,pars) :
@@ -182,4 +181,3 @@ class abcdHTDouble(supy.analysis) :
 		)
 		plotter.plotAll()
 		plotABCDscan(self,org,plotter,8,blind=False)
-		plotExpLimit(self,8,org)
