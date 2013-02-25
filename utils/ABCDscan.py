@@ -96,25 +96,30 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 		# Data/QCD plots with signal efficiency on the same plot
 		for j,sample in enumerate(org.samples):
 			if 'H' in sample['name'] : continue
+
 			histos = [r.TH1F(name,title,len(indices),0,1) for name in histNames]
 			histop = r.TGraphAsymmErrors(len(indices))
-			histop.GetYaxis().SetRangeUser(-.1,1.1)
 			histoz = r.TGraphAsymmErrors(len(indices))
-			histoz.GetYaxis().SetRangeUser(-3,3)
+
 			for k,idx in enumerate(indices):
 				b,berr = getBkg(counts[j][idx],None)
-				values = [r.TMath.Poisson(a,b) for a in range(int(counts[j][idx][0][0])+1,1000)]
-				values_up = [r.TMath.Poisson(a,b+berr) for a in range(int(counts[j][idx][0][0])+1,1000)]
-				values_down = [r.TMath.Poisson(a,b-berr) for a in range(int(counts[j][idx][0][0])+1,1000)]
+				N=int(counts[j][idx][0][0])
+				N_up=int(N+15*math.sqrt(N))
+				print N,N_up
+
+				values = [r.TMath.Poisson(a,b) for a in range(N,N_up)]
+				values_up = [r.TMath.Poisson(a,b+berr) for a in range(N,N_up)]
+				values_down = [r.TMath.Poisson(a,max(0.01,b-berr)) for a in range(N,N_up)]
 				p,p_up,p_down=sum(values),sum(values_up),sum(values_down)
+				if N==0: p,p_up,p_down=1,1,1
 				#p=r.RooStats.NumberCountingUtils.BinomialWithTauObsP(counts[j][idx][0][0],b,1)
 				#p_up=r.RooStats.NumberCountingUtils.BinomialWithTauObsP(counts[j][idx][0][0],b+berr,1)
 				#p_down=r.RooStats.NumberCountingUtils.BinomialWithTauObsP(counts[j][idx][0][0],b-berr,1)
-				if p>0 and p<1:
+				if p!=1 :
 					z=r.RooStats.PValueToSignificance(p)
 					z_up=r.RooStats.PValueToSignificance(p_up)
 					z_down=r.RooStats.PValueToSignificance(p_down)
-				else: z,z_up,z_down=0,0,0
+				else: z,z_up,z_down=1e5,0,0
 				print p,p_up,p_down,z,z_up,z_down
 				histop.SetPoint(k,k+1,p)
 				histop.SetPointEYhigh(k,p_up-p)
@@ -122,7 +127,6 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 				histoz.SetPoint(k,k+1,z)
 				histoz.SetPointEYhigh(k,z_down-z)
 				histoz.SetPointEYlow(k,z-z_up)
-					
 
 			legend = r.TLegend(0.81, 0.60, 0.99, 0.10)
 			for i in reversed(range(n)):
@@ -187,7 +191,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 			histop.GetYaxis().SetTitleSize(0.18)
 			histop.GetYaxis().SetLabelSize(0.1)
 			histop.GetYaxis().SetTitle('P-Value')
-			histop.GetYaxis().SetRangeUser(1e-2,2)
+			histop.GetYaxis().SetRangeUser(1e-3,2)
 			histop.Draw('AP')
 			plotter.canvas.cd(3)
 			r.gPad.SetRightMargin(0.2)
@@ -197,7 +201,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 			histoz.GetYaxis().SetTitleSize(0.18)
 			histoz.GetYaxis().SetLabelSize(0.1)
 			histoz.GetYaxis().SetTitle('Z-Score')
-			histoz.GetYaxis().SetRangeUser(-3,3)
+			histoz.GetYaxis().SetRangeUser(-5,5)
 			histoz.Draw('AP')
 			plotter.printCanvas()
 			plotter.canvas.Clear()
@@ -215,6 +219,7 @@ def getBkg(counts,cuts):
 	#err_sys=0.5*(max(combs)-min(combs))
 	#b=0.5*(max(combs)+min(combs))
 	err=math.sqrt(pow(err_stat,2)+pow(err_sys,2))
+	#err=err_stat
 	print cuts,round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2),counts[0][0]
 	return b,err
 

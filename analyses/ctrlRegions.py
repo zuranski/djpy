@@ -23,7 +23,7 @@ class ctrlRegions(supy.analysis) :
     ]
 	Cuts=[
         # clean up cuts 
-        {'name':'dijetVtxNRatio','min':0.1},
+        #{'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetVtxmass','min':4},
         {'name':'dijetVtxpt','min':8},
         {'name':'dijetNAvgMissHitsAfterVert','min':2.0001},
