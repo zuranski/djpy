@@ -30,7 +30,7 @@ class abcdHT(supy.analysis) :
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
         {'name':'dijetNoOverlaps','val':True},
-        {'name':'dijetTrueLxy','min':0},
+        #{'name':'dijetTrueLxy','min':0},
     ]
 	ABCDCutsSets = []
 	scanPrompt = [(8,0.45),(7,0.4),(6,0.35),(5,0.3),(4,0.25),(3,0.2),(2,0.15)]
@@ -110,7 +110,7 @@ class abcdHT(supy.analysis) :
 			### filters
 			+[supy.steps.filters.label('data cleanup'),
 			supy.steps.filters.value('primaryVertexFilterFlag',min=1),
-            supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
+            #supy.steps.filters.value('physicsDeclaredFilterFlag',min=1).onlyData(),
             supy.steps.filters.value('beamScrapingFilterFlag',min=1),
             supy.steps.filters.value('beamHaloTightFilterFlag',min=1),
             supy.steps.filters.value('hbheNoiseFilterFlag',min=1),
@@ -150,7 +150,8 @@ class abcdHT(supy.analysis) :
 		qcd_samples = []
 		sig_samples = []
 		for i in range(len(self.qcd_names)):
-			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupTrueNumInteractionsBX0Target']))
+			#qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupTrueNumInteractionsBX0Target']))
+			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3))
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
@@ -162,9 +163,9 @@ class abcdHT(supy.analysis) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
 		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
-		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
+		#org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
-		org.scale(lumiToUseInAbsenceOfData=17)
+		org.scale(lumiToUseInAbsenceOfData=1)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			#anMode=True,

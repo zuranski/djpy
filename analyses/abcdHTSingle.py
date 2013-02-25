@@ -23,7 +23,7 @@ class abcdHTSingle(supy.analysis) :
     ]
 	Cuts=[
         # clean up cuts 
-        {'name':'dijetNAvgMissHitsAfterVert','max':2},
+        #{'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetVtxmass','min':4},
         {'name':'dijetVtxpt','min':8},
         {'name':'dijetVtxNRatio','min':0.1},
@@ -157,7 +157,7 @@ class abcdHTSingle(supy.analysis) :
 			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=63.44) +
 			supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=71.05)
 			+ qcd_samples
-			+ sig_samples 
+			#+ sig_samples 
 		) 
 
 	def conclude(self,pars) :
@@ -174,7 +174,7 @@ class abcdHTSingle(supy.analysis) :
 			doLog=True,
 			pageNumbers=False,
 			#pegMinimum=1,
-			#anMode=True,
+			anMode=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
@@ -185,7 +185,7 @@ class abcdHTSingle(supy.analysis) :
                                               "stepName":"ABCDvars",
                                               "stepDesc":"ABCDvars",
                                               "newTitle":"; Vertex-Cluster discriminant; di-jets / bin",
-                                              "legendCoords": (0.6, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.4, 0.88)
+                                              "legendCoords": (0.7, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.45, 0.88)
                                               },
 											])

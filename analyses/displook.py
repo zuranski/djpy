@@ -19,10 +19,10 @@ class displook(supy.analysis) :
 		# clean up cuts	
 		{'name':'dijetVtxmass','min':4},
 		{'name':'dijetVtxpt','min':8},
-		{'name':'dijetVtxNRatio','min':0.1},
+		#{'name':'dijetVtxNRatio','min':0.1},
 		{'name':'dijetLxysig','min':8},
 		{'name':'dijetNoOverlaps','val':True},
-	  	{'name':'dijetNAvgMissHitsAfterVert','max':2},
+	  	#{'name':'dijetNAvgMissHitsAfterVert','max':2},
 		#{'name':'dijetTrueLxy','min':0},
 	]
 
@@ -83,7 +83,6 @@ class displook(supy.analysis) :
 			### plots
 			+[steps.event.general()]
 			+self.dijetSteps()
-			+[steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v",veto=True),]
 			)
 
 	def listOfCalculables(self,config) :
@@ -119,7 +118,7 @@ class displook(supy.analysis) :
 			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=63.44) +
 			supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=71.05) +
 			qcd_samples 
-			+ sig_samples 
+			#+ sig_samples 
 		) 
 
 	def conclude(self,pars) :
@@ -155,14 +154,14 @@ class displook(supy.analysis) :
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Charged Prompt Energy Fraction; di-jets / bin",
                                               "legendCoords": (0.35, 0.15, 0.9, 0.35),
-                                              "stampCoords": (0.7, 0.88)
+                                              "stampCoords": (0.5, 0.7)
                                               },
                                               {"plotName":"NPromptTracks2_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Number of Prompt Tracks ; di-jets / bin",
                                               "legendCoords": (0.45, 0.15, 0.9, 0.35),
-                                              "stampCoords": (0.7, 0.88)
+                                              "stampCoords": (0.7, 0.7)
                                               },
                                               {"plotName":"VtxN_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
@@ -183,20 +182,20 @@ class displook(supy.analysis) :
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Vertex p_{T} [GeV/c]; di-jets / bin",
                                               "legendCoords": (0.55, 0.45, 0.9, 0.65),
-                                              "stampCoords": (0.7, 0.92)
+                                              "stampCoords": (0.7, 0.88)
                                               },
                                               {"plotName":"bestclusterN_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster Multiplicity; di-jets / bin",
-                                              "legendCoords": (0.55, 0.3, 0.9, 0.5),
-                                              "stampCoords": (0.7, 0.72)
+                                              "legendCoords": (0.55, 0.35, 0.9, 0.55),
+                                              "stampCoords": (0.7, 0.88)
                                               },
                                               {"plotName":"glxyrmsclr_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster RMS; di-jets / bin",
-                                              "legendCoords": (0.55, 0.45, 0.9, 0.65),
+                                              "legendCoords": (0.55, 0.5, 0.9, 0.7),
                                               "stampCoords": (0.7, 0.88)
                                               },
                                               {"plotName":"NAvgMissHitsAfterVert_h_dijetNoOverlaps",
@@ -204,14 +203,14 @@ class displook(supy.analysis) :
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Missing Hits per track after Vertex; di-jets / bin",
                                               "legendCoords": (0.45, 0.15, 0.9, 0.35),
-                                              "stampCoords": (0.7, 0.88)
+                                              "stampCoords": (0.7, 0.7)
                                               },
                                               {"plotName":"Posip2dFrac_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Tracks with positive IP fraction; di-jets / bin",
-                                              "legendCoords": (0.45, 0.15, 0.9, 0.35),
-                                              "stampCoords": (0.5, 0.88)
+                                              "legendCoords": (0.2, 0.15, 0.4, 0.35),
+                                              "stampCoords": (0.7, 0.5)
                                               },
                                             ]
                                )

@@ -61,7 +61,6 @@ class ctrlRegions(supy.analysis) :
 		mysteps=[]
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
-			mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i)).onlySim())
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
 
 	def calcsIndices(self):
@@ -104,8 +103,6 @@ class ctrlRegions(supy.analysis) :
 			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
 				target=("data/pileup/HT300_Double_R12BCD_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
-
-			+[steps.event.effDenom().onlySim()]
 
 			### filters
 			+[supy.steps.filters.label('data cleanup'),

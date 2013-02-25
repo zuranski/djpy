@@ -26,8 +26,6 @@ class displookHT(supy.analysis) :
 		{'name':'dijetVtxmass','min':4},
 		{'name':'dijetVtxpt','min':8},
 	  	{'name':'dijetNAvgMissHitsAfterVert','max':2},
-		#{'name':'dijetVtxmass','min':4},
-		#{'name':'dijetVtxpt','min':8},
 		{'name':'dijetNoOverlaps','val':True},
 		#{'name':'dijetTrueLxy','min':0},
 	]
@@ -130,7 +128,7 @@ class displookHT(supy.analysis) :
 		org = self.organizer(pars)
 		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
 		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
-		org.scale(lumiToUseInAbsenceOfData=11000)
+		org.scale(lumiToUseInAbsenceOfData=18600)
 		supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
