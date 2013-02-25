@@ -10,9 +10,11 @@ class general(analysisStep):
 		self.book.fill(e['nTrks'],'nTrks',100,0,2500,None, title='nTrks ; nTrks ; events / bin')
 
 class effDenom(analysisStep):
+	def __init__(self,indices='gendijetIndices'):
+		self.indices = indices
 	def uponAcceptance(self,e):
 		bin = (e["XpdgId"][0]-6000114)/1000 - 1
-		for i in range(2):	self.book.fill(bin,'effDenom',3,-0.5,2.5,None) # 2 exotic X per event
+		for i in range(len(e[self.indices])):	self.book.fill(bin,'effDenom',3,-0.5,2.5,None) # 2 exotic X per event
 
 class effNum(analysisStep):
 	def __init__(self,indices):
