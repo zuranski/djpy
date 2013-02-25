@@ -45,10 +45,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 	plotter.printCanvas("[")
 	text1 = plotter.printTimeStamp()
 	plotter.flushPage()
-	r.gPad.SetLogy()
-	r.gPad.SetTicky(0)
-	#if not plotter.anMode : r.gPad.SetRightMargin(0.2)
-	r.gPad.SetRightMargin(0.2)
+
 	# get all the counts
 	counts = [[0]*len(analysis.scan) for sample in org.samples]
 	for step in org.steps : 
@@ -67,9 +64,19 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 
 	# plot scans
 	for scan in scans:
+		plotter.canvas=r.TCanvas("c","c",600,600)
+		plotter.canvas.Divide(1,3)
+		plotter.canvas.cd(1).SetPad(0.01,0.36+0.01,0.99,0.99)
+		plotter.canvas.cd(2).SetPad(0.01,0.18+0.01,0.99,0.36)
+		plotter.canvas.cd(3).SetPad(0.01,0.01,0.99,0.18)
+		plotter.canvas.cd(1)
+		r.gPad.SetLogy()
+		#r.gPad.SetTicky(0)
+		r.gPad.SetRightMargin(0.2)
+		r.gStyle.SetTitleX(0.1)
 
 		title = ' '.join(name+'='+string(value) if value else '' for name,value in zip(cutNames,scan))
-		title='- max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
+		title='max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
 		xtitle = 'Vertex/Cluster Discriminant cut'
 		ytitle = 'Number of Events'
 
@@ -89,7 +96,34 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 		# Data/QCD plots with signal efficiency on the same plot
 		for j,sample in enumerate(org.samples):
 			if 'H' in sample['name'] : continue
-			histos = [r.TH1F(name,sample['name']+' '+title,len(indices),0,1) for name in histNames]
+			histos = [r.TH1F(name,title,len(indices),0,1) for name in histNames]
+			histop = r.TGraphAsymmErrors(len(indices))
+			histop.GetYaxis().SetRangeUser(-.1,1.1)
+			histoz = r.TGraphAsymmErrors(len(indices))
+			histoz.GetYaxis().SetRangeUser(-3,3)
+			for k,idx in enumerate(indices):
+				b,berr = getBkg(counts[j][idx],None)
+				values = [r.TMath.Poisson(a,b) for a in range(int(counts[j][idx][0][0])+1,1000)]
+				values_up = [r.TMath.Poisson(a,b+berr) for a in range(int(counts[j][idx][0][0])+1,1000)]
+				values_down = [r.TMath.Poisson(a,b-berr) for a in range(int(counts[j][idx][0][0])+1,1000)]
+				p,p_up,p_down=sum(values),sum(values_up),sum(values_down)
+				#p=r.RooStats.NumberCountingUtils.BinomialWithTauObsP(counts[j][idx][0][0],b,1)
+				#p_up=r.RooStats.NumberCountingUtils.BinomialWithTauObsP(counts[j][idx][0][0],b+berr,1)
+				#p_down=r.RooStats.NumberCountingUtils.BinomialWithTauObsP(counts[j][idx][0][0],b-berr,1)
+				if p>0 and p<1:
+					z=r.RooStats.PValueToSignificance(p)
+					z_up=r.RooStats.PValueToSignificance(p_up)
+					z_down=r.RooStats.PValueToSignificance(p_down)
+				else: z,z_up,z_down=0,0,0
+				print p,p_up,p_down,z,z_up,z_down
+				histop.SetPoint(k,k+1,p)
+				histop.SetPointEYhigh(k,p_up-p)
+				histop.SetPointEYlow(k,p-p_down)
+				histoz.SetPoint(k,k+1,z)
+				histoz.SetPointEYhigh(k,z_down-z)
+				histoz.SetPointEYlow(k,z-z_up)
+					
+
 			legend = r.TLegend(0.81, 0.60, 0.99, 0.10)
 			for i in reversed(range(n)):
 				if blind and 'Data' in sample['name'] and i==0: continue
@@ -97,14 +131,24 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 					histos[i].SetBinContent(k+1,counts[j][idx][i][0])
 					histos[i].SetBinError(k+1,counts[j][idx][i][1])
 					histos[i].GetXaxis().SetBinLabel(k+1,labels[k])
+					histop.GetXaxis().SetBinLabel(k+1,'')
+					histoz.GetXaxis().SetBinLabel(k+1,'')
+					
 				histos[i].GetXaxis().SetTitle(xtitle)
 				histos[i].GetYaxis().SetTitle(ytitle)
 				histos[i].SetStats(False)
+				histos[i].GetXaxis().SetTitleSize(0.05)
+				histos[i].GetYaxis().SetTitleSize(0.05)
+				histos[i].GetYaxis().SetLabelSize(0.04)
+				histop.SetTitle('')
+				histoz.SetTitle('')
+				histop.SetMarkerStyle(8)
+				histoz.SetMarkerStyle(8)
 				histos[i].SetMarkerStyle(25 if i!=0 else 8)
 				if i==(n-1):histos[i].SetMarkerStyle(21)
 				histos[i].SetMarkerColor(i+1)
 				histos[i].SetFillColor(0)
-				histos[i].SetLabelSize(0.06)
+				histos[i].SetLabelSize(0.07)
 				legend.AddEntry(histos[i],histNames[i])
 				option='EX0' if i==(n-1) else 'EX0same'
 				histos[i].Draw(option)
@@ -132,7 +176,29 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 
 			legend.SetFillColor(0)
 			legend.Draw("same")
-			cmsStamp(lumi=org.lumi,coords=(0.55,0.8))
+			cmsStamp(lumi=org.lumi,coords=(0.55,0.85))
+			#cmsStamp(lumi=None,coords=(0.55,0.85))
+			plotter.canvas.cd(2)
+			r.gPad.SetRightMargin(0.2)
+			r.gPad.SetLogy()
+			r.gPad.SetGridy()
+			histop.GetYaxis().SetNdivisions(5,True)
+			histop.GetYaxis().SetTitleOffset(0.28)
+			histop.GetYaxis().SetTitleSize(0.18)
+			histop.GetYaxis().SetLabelSize(0.1)
+			histop.GetYaxis().SetTitle('P-Value')
+			histop.GetYaxis().SetRangeUser(1e-2,2)
+			histop.Draw('AP')
+			plotter.canvas.cd(3)
+			r.gPad.SetRightMargin(0.2)
+			r.gPad.SetGridy()
+			histoz.GetYaxis().SetNdivisions(505,True)
+			histoz.GetYaxis().SetTitleOffset(0.28)
+			histoz.GetYaxis().SetTitleSize(0.18)
+			histoz.GetYaxis().SetLabelSize(0.1)
+			histoz.GetYaxis().SetTitle('Z-Score')
+			histoz.GetYaxis().SetRangeUser(-3,3)
+			histoz.Draw('AP')
 			plotter.printCanvas()
 			plotter.canvas.Clear()
 
@@ -149,7 +215,7 @@ def getBkg(counts,cuts):
 	#err_sys=0.5*(max(combs)-min(combs))
 	#b=0.5*(max(combs)+min(combs))
 	err=math.sqrt(pow(err_stat,2)+pow(err_sys,2))
-	print cuts,round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2)#,counts[0][0]
+	print cuts,round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2),counts[0][0]
 	return b,err
 
 def plotExpLimit(analysis,n,org):
