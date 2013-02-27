@@ -1,128 +1,33 @@
 import supy,samples,calculables,steps,ROOT as r
 
-class efficiency(supy.analysis) :
+class jetmerging(supy.analysis) :
 
-	MH = [1000,1000,400,400,200]
-	MX = [350,150,150,50,50]
-	ctau = [35,10,40,8,20]
+	MH = [1000,1000,1000,400,400,200]
+	MX = [350,150,50,150,50,50]
+	ctau = [35,10,4,40,8,20]
 	sig_names = ['H_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
-	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
-	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
-
-	ToCalculate = ['dijetVtxNRatio']
-	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']   
 
 	AccCuts=[
 		{'name':'gendijet'},
-		{'name':'gendijetLxy','max':50},
-		{'name':'gendijetEta1','max':2},
-		{'name':'gendijetEta2','max':2},
-		{'name':'gendijetPt1','min':40},
-		{'name':'gendijetPt2','min':40},
+		#{'name':'genjetLxy1','max':50},
+		#{'name':'genjetEta1','max':2},
+		#{'name':'genjetPt1','min':40},
 		#{'name':'gendijetDR','min':1.},
 	]
  
-	IniCuts=[
-        {'name':'dijet'},
-		{'name':'dijetTrueLxy','min':0},
-        # vertex minimal
-        {'name':'dijetVtxChi2','min':0,'max':5},
-        {'name':'dijetVtxN1','min':1},
-        {'name':'dijetVtxN2','min':1},
-        # cluster minimal
-        {'name':'dijetbestclusterN','min':2},
-    ]
-	Cuts=[
-        # clean up cuts 
-        {'name':'dijetNAvgMissHitsAfterVert','max':2},
-        {'name':'dijetVtxmass','min':4},
-        {'name':'dijetVtxpt','min':8},
-        {'name':'dijetVtxNRatio','min':0.1},
-        {'name':'dijetLxysig','min':8},
-        {'name':'dijetNoOverlaps','val':True},
-    ]
-	
-	ABCDCutsLow = [
-		{'name':'Prompt1','vars':({'name':'dijetNPromptTracks1','max':1},
-   	                              {'name':'dijetPromptEnergyFrac1','max':0.15})
-		},
-		{'name':'Prompt2','vars':({'name':'dijetNPromptTracks2','max':1},
-	                              {'name':'dijetPromptEnergyFrac2','max':0.15})
-		},
-		{'name':'Disc','vars':({'name':'dijetDiscriminant','min':0.9},)}
-		]
-	
-	ABCDCutsHigh = [
-		{'name':'Prompt1','vars':({'name':'dijetNPromptTracks1','max':1},
-   	                              {'name':'dijetPromptEnergyFrac1','max':0.09})
-		},
-		{'name':'Prompt2','vars':({'name':'dijetNPromptTracks2','max':1},
-	                              {'name':'dijetPromptEnergyFrac2','max':0.09})
-		},
-		{'name':'Disc','vars':({'name':'dijetDiscriminant','min':0.8},)}
-		]
-	ABCDCutsSets=[ABCDCutsLow,ABCDCutsHigh]
-
 	def dijetSteps0(self):
 		mysteps = []
-		for cut in self.AccCuts:
+		for cut in self.AccCuts[1:]:
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
+			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=2))
 		return([supy.steps.filters.label('Acceptance Cuts')]+mysteps)
 	
-	def dijetSteps1(self):
-		mysteps = []
-		for cut in self.IniCuts+self.Cuts:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-			if cut == self.IniCuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-			if cut == self.Cuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-			if cut == self.ABCDCutsHigh[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-		return ([supy.steps.filters.label('dijet multiplicity filters')]+mysteps)
-
-	def dijetSteps2(self):
-		mysteps=[]
-		for i in range(len(self.ABCDCutsSets)) :
-			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
-			mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i)).onlySim())
-		for cut in self.ABCDCutsLow:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.observables(indices=cut['name']+'Indices'))
-		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
-
-
 	def calcsIndices(self):
 		calcs = []
-		cuts = self.IniCuts + self.Cuts +self.ABCDCutsLow
-		for cutPrev,cutNext in zip(cuts[:-1],cuts[1:]):
-			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
-		for i in range(len(self.ABCDCutsSets)) :
-			calcs.append(calculables.Indices.ABCDEFGHIndices(indices=self.Cuts[-1]['name']+'Indices',
-                                                             cuts=self.ABCDCutsSets[i],suffix=str(i)))
 		for cutPrev,cutNext in zip(self.AccCuts[:-1],self.AccCuts[1:]):
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
 		return calcs
 
-	def discs(self):
-		discSamplesRight=[name+'.pileupTrueInteractionsBX0Target' for name in self.sig_names]
-		discSamplesLeft=[name+'.pileupTrueInteractionsBX0Target' for name in self.qcd_names]
-		return([supy.calculables.other.Discriminant(fixes=("dijet",""),
-													right = {"pre":"H","tag":"","samples":discSamplesRight},
-													left = {"pre":"qcd","tag":"","samples":discSamplesLeft},
-													dists = {"dijetVtxN":(7,1.5,8.5),
-															 "dijetglxyrmsclr": (10,0,1),
-															 "dijetbestclusterN": (7,1.5,8.5),
-															 "dijetPosip2dFrac": (5,0.5001,1.001),
-															},
-													indices=self.Cuts[-1]['name']+'Indices',
-													bins = 14),
-			   ])
-
-	def calcsVars(self):
-		calcs = []
-		for calc in self.ToCalculate:
-			calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
-		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
-		return calcs
 
 	def listOfSteps(self,config) :
 		return ([
@@ -134,10 +39,11 @@ class efficiency(supy.analysis) :
 		### filters
 
 		### acceptance filters
-		+[supy.steps.filters.value('mygenHT',min=180)]
+		#+[supy.steps.filters.value('genHT',min=200)]
 		+self.dijetSteps0()
 
 		+[steps.event.effDenom(indices=self.AccCuts[-1]['name']+'Indices')]	
+		#+[supy.steps.filters.value('caloHT',min=325)]
 	
 		+[supy.steps.filters.label('data cleanup'),
 		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
@@ -155,24 +61,21 @@ class efficiency(supy.analysis) :
 		#+[steps.other.genParticleMultiplicity(6003114,min=2)]
 		### trigger
 		+[supy.steps.filters.label("hlt trigger"),
-		steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
-		supy.steps.filters.value('caloHT',min=325),
+		#steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
+		#supy.steps.filters.value('caloHT',min=325),
+		steps.genjets.general()
 		]
 
-		+self.dijetSteps1()
-		+self.discs()
-		+self.dijetSteps2()
 		)
 
 	def listOfCalculables(self,config) :
 		return ( supy.calculables.zeroArgs(supy.calculables) +
 		supy.calculables.zeroArgs(calculables)
-		+self.calcsVars()
 		+self.calcsIndices()
 		)
 
 	def listOfSampleDictionaries(self) :
-		return [samples.qcd,samples.data,samples.sigmc]
+		return [samples.sigmc]
     
 	def listOfSamples(self,config) :
 		nFiles = None # or None for all
@@ -183,36 +86,35 @@ class efficiency(supy.analysis) :
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles, weights = ['pileupTrueNumInteractionsBX0Target']))
 			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 
-		return sig_samples[:2]+sig_samples[3:4]
+		return sig_samples
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "H_1000_X_350")
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "H_400_X_50")
-		org.scale(lumiToUseInAbsenceOfData=16740)
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}, q=uds", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_350")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}, q=uds", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}, q=uds", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_400_X_50")
+		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			anMode=True,
+			#anMode=True,
 			showStatBox=True,
 			pegMinimum=0.5,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
-		#plotter.doLog=False
-		plotter.anMode=True
+		plotter.doLog=False
 		
-		
-		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_Disc",
+		'''
+		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_dijetDiscriminant",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";Mass [GeV/c^{2}];di-jets / bin",
                                               "legendCoords": (0.45, 0.55, 0.9, 0.75),
                                               "stampCoords": (0.7, 0.88)
                                               },
-											  {"plotName":"Lxy_h_Disc",
+											  {"plotName":"Lxy_h_dijetDiscriminant",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";L_{xy} [cm];di-jets / bin",
@@ -221,8 +123,19 @@ class efficiency(supy.analysis) :
                                               },
                                             ]
                                )
-		
-		self.totalEfficiencies(org,dir='acceptance')
+		'''
+		#self.totalEfficiencies(org,dir='final')
+		self.merging(org)
+
+	def merging(self,org):
+		merging = None
+		for step in org.steps:
+			for plotName in sorted(step.keys()):
+				if 'merging' in plotName: merging = step[plotName]
+
+		for histo,sample in zip(merging,org.samples):
+			for i in range(1,histo.GetNbinsX()+1):
+				print i-1,histo.GetBinContent(i)/histo.Integral(), sample['name']
 
 	def totalEfficiencies(self,org,dir=None) :
 		num0,nump,numm,denom=[],[],[],None
