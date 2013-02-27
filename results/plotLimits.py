@@ -8,13 +8,13 @@ def stylize(g):
 	g[1].SetLineStyle(2)
 	g[2].SetFillColor(3)
 	g[3].SetFillColor(5)
+	g[0].SetMarkerStyle(8)
 	for graph in g: graph.SetDrawOption('L')
 
 def limitPlot(MH = None,MX = None,list = None,observed=False):
 	c=r.TCanvas()
-	#list = [obj for obj in dict if (eval(obj['H'])==MH and eval(obj['X'])==MX and obj['eff']>0)]
 	n=len(list)
-	g=[r.TGraph(),r.TGraph(n),r.TGraph(2*n),r.TGraph(2*n)]
+	g=[r.TGraph(n),r.TGraph(n),r.TGraph(2*n),r.TGraph(2*n)]
 	mg=r.TMultiGraph()
 	for i,obj in enumerate(list):
 		if observed : g[0].SetPoint(i,obj['ctau'],obj['obs'])
@@ -28,12 +28,18 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	mg.Add(g[3],'F')
 	mg.Add(g[2],'F')
 	mg.Add(g[1],'L')
-	if observed : mg.Add(g[0],'L')
+	mg.SetMaximum(10*r.TMath.MaxElement(g[3].GetN(),g[3].GetY()))
+	if observed : mg.Add(g[0],'PL')
 	c.SetLogy()
 	c.SetLogx()
 	mg.Draw('A')
 	mg.GetXaxis().SetTitle('c#tau [cm]')
-	mg.GetYaxis().SetTitle('#sigma #times BR [pb] (95% CL)')
+	ctaus=sorted([obj['ctau'] for obj in list])
+	mg.GetXaxis().SetRangeUser(ctaus[0]*0.95,ctaus[-1]*2)
+	if 'acceptance' in plotDir:
+		mg.GetYaxis().SetTitle('#sigma #times BR #times Acceptance [pb] (95% CL)')
+	else:
+		mg.GetYaxis().SetTitle('#sigma #times BR [pb] (95% CL)')
 
 	leg=r.TLegend(0.2,0.61,0.5,0.79)
 	leg.SetFillColor(0)
