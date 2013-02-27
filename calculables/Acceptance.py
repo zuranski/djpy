@@ -1,6 +1,14 @@
 from supy import wrappedChain
 from utils import DeltaR
 
+class genjet1Indices(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [i for i in range(len(self.source['genjetCtau1']))]
+
+class genjet2Indices(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [i for i in range(len(self.source['genjetCtau2']))]
+
 class gendijet(wrappedChain.calculable):
 	def update(self,ignored):
 		self.value=[]

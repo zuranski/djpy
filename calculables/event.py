@@ -9,6 +9,15 @@ class PfHt (wrappedChain.calculable):
                 except KeyError: pass
 		self.value = ht
 
+class mygenHT(wrappedChain.calculable):
+	def update(self,ignored):
+		ht=0
+		try:
+			for pt,eta in zip(self.source['genqPt'],self.source['genqEta']):
+				if abs(eta)<3: ht+=pt
+		except KeyError: pass
+		self.value = ht
+
 class nPfJets (wrappedChain.calculable):
 	def update(self,ignored):
 		try:
