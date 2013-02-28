@@ -31,6 +31,20 @@ def estimate(b,c,a,d=None):
 							4*pow(d[1]/float(d[0]),2))
 	return (est,err)
 
+def pvalue(b,be,obs,ntoys):
+
+	nbins = max(int(b)*10,20)
+	hist=r.TH1F("h","h",nbins,-0.5,nbins-0.5)
+	rand=r.TRandom()
+
+	for i in range(int(ntoys)):
+		bkg=rand.Gaus(b,be)
+		if bkg<=0. : continue
+		hist.Fill(rand.Poisson(bkg),r.TMath.Gaus(bkg,b,be,True))
+
+	hist.Scale(1./hist.Integral())
+	return hist.Integral(hist.FindFixBin(obs),hist.GetNbinsX())
+
 def string(obj): return '('+','.join(str(a) for a in obj)+')' if type(obj)==tuple else str(obj)
 
 def listdiff(a,b): return [i for i,j in zip(a,b) if i!=j]
@@ -98,35 +112,16 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 			if 'H' in sample['name'] : continue
 
 			histos = [r.TH1F(name,title,len(indices),0,1) for name in histNames]
-			histop = r.TGraphAsymmErrors(len(indices))
-			histoz = r.TGraphAsymmErrors(len(indices))
+			histop = r.TGraph(len(indices))
+			histoz = r.TGraph(len(indices))
 
 			for k,idx in enumerate(indices):
 				b,berr = getBkg(counts[j][idx],None)
 				N=int(counts[j][idx][0][0])
-				N_up=int(N+15*math.sqrt(N))
-				print N,N_up
-
-				values = [r.TMath.Poisson(a,b) for a in range(N,N_up)]
-				values_up = [r.TMath.Poisson(a,b+berr) for a in range(N,N_up)]
-				values_down = [r.TMath.Poisson(a,max(0.01,b-berr)) for a in range(N,N_up)]
-				p,p_up,p_down=sum(values),sum(values_up),sum(values_down)
-				if N==0: p,p_up,p_down=1,1,1
-				#p=r.RooStats.NumberCountingUtils.BinomialWithTauObsP(counts[j][idx][0][0],b,1)
-				#p_up=r.RooStats.NumberCountingUtils.BinomialWithTauObsP(counts[j][idx][0][0],b+berr,1)
-				#p_down=r.RooStats.NumberCountingUtils.BinomialWithTauObsP(counts[j][idx][0][0],b-berr,1)
-				if p!=1 :
-					z=r.RooStats.PValueToSignificance(p)
-					z_up=r.RooStats.PValueToSignificance(p_up)
-					z_down=r.RooStats.PValueToSignificance(p_down)
-				else: z,z_up,z_down=1e5,0,0
-				print p,p_up,p_down,z,z_up,z_down
+				p=pvalue(b,berr,N,1e5)
 				histop.SetPoint(k,k+1,p)
-				histop.SetPointEYhigh(k,p_up-p)
-				histop.SetPointEYlow(k,p-p_down)
+				z=r.RooStats.PValueToSignificance(p)
 				histoz.SetPoint(k,k+1,z)
-				histoz.SetPointEYhigh(k,z_down-z)
-				histoz.SetPointEYlow(k,z-z_up)
 
 			legend = r.TLegend(0.81, 0.60, 0.99, 0.10)
 			for i in reversed(range(n)):
@@ -191,7 +186,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 			histop.GetYaxis().SetTitleSize(0.18)
 			histop.GetYaxis().SetLabelSize(0.1)
 			histop.GetYaxis().SetTitle('P-Value')
-			histop.GetYaxis().SetRangeUser(1e-3,2)
+			histop.GetYaxis().SetRangeUser(1e-2,1.5)
 			histop.Draw('AP')
 			plotter.canvas.cd(3)
 			r.gPad.SetRightMargin(0.2)
@@ -201,7 +196,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 			histoz.GetYaxis().SetTitleSize(0.18)
 			histoz.GetYaxis().SetLabelSize(0.1)
 			histoz.GetYaxis().SetTitle('Z-Score')
-			histoz.GetYaxis().SetRangeUser(-5,5)
+			histoz.GetYaxis().SetRangeUser(-4,4)
 			histoz.Draw('AP')
 			plotter.printCanvas()
 			plotter.canvas.Clear()
