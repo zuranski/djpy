@@ -14,16 +14,18 @@ class efficiency(supy.analysis) :
 
 	AccCuts=[
 		{'name':'gendijet'},
-		{'name':'gendijetLxy','max':50},
-		{'name':'gendijetEta1','max':2},
-		{'name':'gendijetEta2','max':2},
-		{'name':'gendijetPt1','min':40},
-		{'name':'gendijetPt2','min':40},
+		#{'name':'gendijetLxy','max':50},
+		#{'name':'gendijetEta1','max':2},
+		#{'name':'gendijetEta2','max':2},
+		#{'name':'gendijetPt1','min':40},
+		#{'name':'gendijetPt2','min':40},
 		#{'name':'gendijetDR','min':1.},
 	]
  
 	IniCuts=[
         {'name':'dijet'},
+        {'name':'dijetPt1','min':40},
+        {'name':'dijetPt2','min':40},
 		{'name':'dijetTrueLxy','min':0},
         # vertex minimal
         {'name':'dijetVtxChi2','min':0,'max':5},
@@ -134,7 +136,7 @@ class efficiency(supy.analysis) :
 		### filters
 
 		### acceptance filters
-		+[supy.steps.filters.value('mygenHT',min=180)]
+		#+[supy.steps.filters.value('mygenHT',min=180)]
 		+self.dijetSteps0()
 
 		+[steps.event.effDenom(indices=self.AccCuts[-1]['name']+'Indices')]	
@@ -183,14 +185,14 @@ class efficiency(supy.analysis) :
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles, weights = ['pileupTrueNumInteractionsBX0Target']))
 			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 
-		return sig_samples[:2]+sig_samples[3:4]
+		return sig_samples
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "H_1000_X_350")
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "H_400_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "H_1000_X_350")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "H_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "H_400_X_50")
 		org.scale(lumiToUseInAbsenceOfData=16740)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
@@ -222,7 +224,7 @@ class efficiency(supy.analysis) :
                                             ]
                                )
 		
-		self.totalEfficiencies(org,dir='acceptance')
+		self.totalEfficiencies(org,dir='final')
 
 	def totalEfficiencies(self,org,dir=None) :
 		num0,nump,numm,denom=[],[],[],None

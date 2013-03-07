@@ -34,7 +34,8 @@ class abcdHTDouble(supy.analysis) :
 	ABCDCutsSets = []
 	scanPrompt = [(2,0.15),(2,0.13),(2,0.11),(2,0.09),(2,0.07),(2,0.05)]
 	scanPrompt += [(1,0.15),(1,0.13),(1,0.11),(1,0.09),(1,0.07),(1,0.05)]
-	scanVtx = [0.5,0.6,0.7,0.8,0.9]
+	scanPrompt += [(0,0.15),(0,0.13),(0,0.11),(0,0.09),(0,0.07),(0,0.05)]
+	scanVtx = [0.7,0.8,0.9,0.95]
 
 	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
 
@@ -157,12 +158,12 @@ class abcdHTDouble(supy.analysis) :
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
-		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4430) 
-			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=495.03) 
-			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3) 
-			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274)
+		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4430*0.9) 
+			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=495.03*0.9) 
+			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3*0.9) 
+			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274*0.9)
 			#+ qcd_samples
-			+sig_samples 
+			#+sig_samples 
 		) 
 
 	def conclude(self,pars) :
