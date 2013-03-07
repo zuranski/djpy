@@ -3,19 +3,31 @@ from supy import analysisStep
 
 class collector(analysisStep) :
     def __init__(self, vars, indices='') :
-        self.vars = vars
         self.indices = indices
         self.collection = set([])
-    def uponAcceptance(self, eventVars) :
-        self.collection.add(tuple([tuple([eventVars[var][idx] for var in self.vars]) for idx in eventVars[self.indices]]))
+        self.iterVars,self.uniqueVars=[],[]
+        [self.iterVars.append(var) if 'jet' in var else self.uniqueVars.append(var) for var in vars]
+        #for var in vars: 
+        #    if 'jet' in var:
+        #        self.iterVars.append(var)
+        #    else:
+        #        self.uniqueVars.append(var)
+        
+    def uponAcceptance(self, e) :
+        iterTuple=tuple([tuple([e[var][idx] for var in self.iterVars]) for idx in e[self.indices]])
+        uniqueTuple=tuple([e[var] for var in self.uniqueVars] if len(e[self.indices])>0 else [])
+        self.collection.add(iterTuple+uniqueTuple)
+
+        #self.collection.add(tuple([tuple([e[var][idx] for var in self.vars]) for idx in e[self.indices]]+[tuple(e[var] for var in self.uniqueVars)]))
     def varsToPickle(self) :
         return ["collection"]
 
-    def outputSuffix(self) : return ".pkl"
+    def outputSuffix(self) : return self.indices+".pkl"
 
     def mergeFunc(self, products) :
         s = set([]).union(*products["collection"])
         pickle.dump(s,open(self.outputFileName,"w"))
+        print sorted(list(s))
 
 class genParticleMultiplicity(analysisStep):
 
