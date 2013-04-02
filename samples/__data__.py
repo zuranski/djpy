@@ -12,7 +12,8 @@ data.add('dataA','%s/%s/%s")'%(pnfs,loc,"DataRun2011A") ,lumi=0.5725) #/pb
 '''
 
 #PU
-loc='/tigress-hsm/zuranski/work/cms/data/DJTuple53x_DEV/'
+#loc='/tigress-hsm/zuranski/work/cms/data/DJTuple53x_PROD/'
+loc='/scratch/gpfs/zuranski/data/DJTuple53x_PROD/'
 data.add('dataB','%s'%(fileListFromDisk(loc+"/DataRun2012B")),lumi=0.5725) #/pb
 data.add('dataC1','%s'%(fileListFromDisk(loc+"/DataRun2012C1")),lumi=0.5725) #/pb
 data.add('dataC2','%s'%(fileListFromDisk(loc+"/DataRun2012C2")),lumi=0.5725) #/pb
