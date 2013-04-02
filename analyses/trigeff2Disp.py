@@ -102,8 +102,8 @@ class trigeff2Disp(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			#samplesForRatios = ("Data","Simulation"),
-			#sampleLabelsForRatios = ("Data","Sim"),
+			samplesForRatios = ("Data","Simulation"),
+			sampleLabelsForRatios = ("Data","Sim"),
 			doLog=True,
 			anMode=True,
 			pageNumbers=False,
@@ -112,8 +112,8 @@ class trigeff2Disp(supy.analysis) :
 		)
 		plotter.plotAll()
 		plotter.doLog=False
-		self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt1", plotter)
-		#self.makeEfficiencyPlots2(org,"jetNPromptTracks","jetTrigPrompt2",plotter)
+		#self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt1", plotter)
+		self.makeEfficiencyPlots2(org,"jetNPromptTracks","jetTrigPrompt2",plotter)
 
 	def makeEfficiencyPlots1(self, org, denomName, numName, plotter):
 

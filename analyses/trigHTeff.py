@@ -123,6 +123,7 @@ class trigHTeff(supy.analysis) :
 			eff_histos[ratio_tpl[0].GetName()]=ratio_tpl
 
 		#print eff_histos
+		'''
 		plotter.individualPlots(plotSpecs = [{"plotName":"effHTPF",
                                               "stepName":"",
                                               "stepDesc":"",
@@ -132,6 +133,7 @@ class trigHTeff(supy.analysis) :
                                             ],
                                 histos=eff_histos["divide_pfHThigher_by_pfHTlower"],
                                )
+		'''
 		plotter.individualPlots(plotSpecs = [{"plotName":"effHTCalo",
                                               "stepName":"",
                                               "stepDesc":"",
