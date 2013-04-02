@@ -2,8 +2,9 @@ from supy import analysisStep
 import itertools
 
 class plots(analysisStep):
-	def __init__(self,njets=2,indices=None,plot2D=False,plot1D=True):
+	def __init__(self,njets=2,indices=None,plot2D=False,plot1D=True,ks=False):
 		self.prefix = ['jet','dijet'][njets-1]
+		if ks: self.prefix='ks'
 		self.indices = indices if indices is not None else self.prefix+'Indices'
 		self.tag = ''.join(self.indices.split('Indices'))
 		self.plot1D = plot1D
@@ -48,7 +49,7 @@ class ABCDEFGHplots(analysisStep):
 
 class general(plots):
 	vars = [
-            {'name':'Pt','bins':100,'low':0,'high':300,'unit':'[GeV]'},
+            {'name':'Pt','bins':50,'low':40,'high':300,'unit':'[GeV]'},
             {'name':'Eta','bins':50,'low':-3,'high':3,'unit':''},
             {'name':'Phi','bins':50,'low':-3.5,'high':3.5,'unit':''},
             {'name':'Energy','bins':50,'low':40,'high':500,'unit':'[GeV]'},
@@ -136,4 +137,21 @@ class trigvars(plots):
             {'name':'Phi','bins':10,'low':-3.15,'high':3.15,'unit':''},
             {'name':'NPromptTracks','bins':11,'low':-0.5,'high':10.5,'unit':''},
             {'name':'PromptEnergyFrac','bins':10,'low':0.,'high':0.5,'unit':''},
+           ]
+
+class kshort(plots):
+	vars = [
+            {'name':'P','bins':50,'low':0,'high':100,'unit':'[GeV]'},
+            {'name':'Pt','bins':50,'low':0,'high':40,'unit':'[GeV]'},
+            {'name':'Eta','bins':50,'low':-2,'high':2,'unit':''},
+            {'name':'Phi','bins':50,'low':-3.15,'high':3.15,'unit':''},
+            {'name':'Mass','bins':100,'low':0.43,'high':0.57,'unit':'[GeV]'},
+            {'name':'Ctau','bins':100,'low':0.,'high':12,'unit':'cm'},
+            {'name':'Lxy','bins':100,'low':0.,'high':60,'unit':'cm'},
+            {'name':'Lxyz','bins':100,'low':0.,'high':120,'unit':'cm'},
+            {'name':'JetPt','bins':100,'low':20.,'high':300,'unit':'[GeV]'},
+            {'name':'Trk1IP2d','bins':50,'low':-2.,'high':20,'unit':''},
+            {'name':'Trk2IP2d','bins':50,'low':-2.,'high':20,'unit':''},
+            {'name':'Trk1IP3d','bins':50,'low':0.,'high':25,'unit':''},
+            {'name':'Trk2IP3d','bins':50,'low':0.,'high':25,'unit':''},
            ]
