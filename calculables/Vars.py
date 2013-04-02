@@ -1,5 +1,5 @@
 from supy import wrappedChain
-from utils import DeltaR
+from utils import DeltaR,p
 import math
 
 class DiJetVar(wrappedChain.calculable):
@@ -81,6 +81,22 @@ class dijetPt2(DiJetVar):
 	def calculate(self,idx):
 		return self.source['jetPt'][self.source['dijetIdx2'][idx]]
 
+class dijetPt1Up(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetPtUp'][self.source['dijetIdx1'][idx]]
+
+class dijetPt2Up(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetPtUp'][self.source['dijetIdx2'][idx]]
+
+class dijetPt1Down(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetPtDown'][self.source['dijetIdx1'][idx]]
+
+class dijetPt2Down(DiJetVar):
+	def calculate(self,idx):
+		return self.source['jetPtDown'][self.source['dijetIdx2'][idx]]
+
 class dijetTrigMatch1(DiJetVar):
 	def calculate(self,idx):
 		if (self.source['jetTrigPrompt1'][self.source['dijetIdx1'][idx]] and self.source['jetTrigPrompt2'][self.source['dijetIdx1'][idx]]) : return True
@@ -102,4 +118,6 @@ class dijetCtau(DiJetVar):
 		R=math.sqrt(x*x+y*y+z*z)
 		return R*m/(pt*math.cosh(eta))
 		
-		
+class ksP(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [p(self.source['ksPt'][idx],self.source['ksEta'][idx]) for idx in self.source['ksIndices']]
