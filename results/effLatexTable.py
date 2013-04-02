@@ -29,7 +29,7 @@ for i,file in enumerate(files):
 	ctau=rnd(main_ctau*eval(factor),3)
 	if int(ctau)==ctau: ctau=int(ctau)
 	dict = pickle.load(open(dir+'/'+file))
-	print "%s & %s & %s & %s$\pm%s$ \\\\"%(H,X,ctau,rnd(100*dict['eff'][0],2),rnd(100*dict['eff'][1],2))#,dict['idx']
+	print "%s & %s & %s & %s$\pm%s$ \\\\"%(H,X,ctau,rnd(100*dict['eff'][0],3),rnd(100*dict['eff'][1],2))#,dict['idx']
 
 print "\hline"
 print "\end{tabular} \n\end{table}" 

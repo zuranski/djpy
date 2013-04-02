@@ -13,6 +13,7 @@ def weightedAvg(x,w):
 
 dir1=sys.argv[1]+'/efficiencies'
 dir2=sys.argv[2]+'/efficiencies'
+dir3=sys.argv[3]+'/efficiencies'
 
 files1=sorted(os.listdir(dir1),key=lambda file: (eval(file[:-4].split('_')[1]),
                            eval(file[:-4].split('_')[3]),
@@ -23,27 +24,25 @@ files2=sorted(os.listdir(dir2),key=lambda file: (eval(file[:-4].split('_')[1]),
                            eval(file[:-4].split('_')[3]),
                            eval(file[:-4].split('_')[4]))
             )
+files3=sorted(os.listdir(dir3),key=lambda file: (eval(file[:-4].split('_')[1]),
+                           eval(file[:-4].split('_')[3]),
+                           eval(file[:-4].split('_')[4]))
+            )
 
 x,w=[],[]
 
-for file1,file2 in zip(files1,files2):
-	dict1,dict2=pickle.load(open(dir1+'/'+file1)),pickle.load(open(dir2+'/'+file2))
+for file1,file2,file3 in zip(files1,files2,files3):
+	dict1,dict2,dict3=pickle.load(open(dir1+'/'+file1)),pickle.load(open(dir2+'/'+file2)),pickle.load(open(dir3+'/'+file3))
 	factor = eval(file1[:-4].split('_')[4])
 	if factor != 0.1 and factor!=1 and factor!=10 : continue
-	e1,e2 = dict1['eff'],dict2['eff']
+	e1,e2,e3 = dict1['eff'],dict2['eff'],dict3['eff']
 	if e1[0]==e2[0]==0 : continue
-	diff = 100* 2*(e1[0]-e2[0])/(e1[0]+e2[0])
-	n1=pow(e1[0]/e1[1],2)
-	n2=pow(e2[0]/e2[1],2)
-	if n1-n2==0: continue
-	diffe = diff*1./math.sqrt(abs(n1-n2))
-	#diffe=1
-	#diffe = 100* 4/pow(e1[0]+e2[0],2)*math.sqrt(pow(e2[0]*e1[1],2)+pow(e1[0]*e2[1],2))
-	x.append(diff)
-	w.append(diffe)
+	#x = 0.5*(max(e1[0]+e1[1],e2[0]+e2[1],e3[0]+e3[1])+min(e1[0]-e1[1],e2[0]-e2[1],e3[0]-e3[1]))
+	#xe = 0.5*(max(e1[0]+e1[1],e2[0]+e2[1],e3[0]+e3[1])-min(e1[0]-e1[1],e2[0]-e2[1],e3[0]-e3[1]))
+	x = 50*(max(e1[0],e2[0],e3[0])+min(e1[0],e2[0],e3[0]))
+	xe = 50*(max(e1[0],e2[0],e3[0])-min(e1[0],e2[0],e3[0]))
+	diffe=1
 	e1=tuple([str(rnd(a,2)) for a in e1])
 	e2=tuple([str(rnd(a,2)) for a in e2])
-	print file1,e1,e2,rnd(diff,2),rnd(diffe,2)
+	print file1,e1,e2,rnd(x,2),rnd(xe,2),rnd(100*xe/x,2)
 
-avg,err = weightedAvg(x,w)
-print round(avg,5),round(err,5)
