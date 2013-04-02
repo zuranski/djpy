@@ -15,6 +15,9 @@ def DeltaR(eta1,phi1,eta2,phi2):
 def Theta(eta):
 	return 2*math.atan(math.exp(-eta))
 
+def p(pt,eta):
+	return pt*math.cosh(eta)
+
 def MatchByDR(eta1_v,phi1_v,eta2_v,phi2_v,DRmax):
 	matched = [None for i in range(len(eta1_v))]
 	for i in range(len(eta1_v)):
