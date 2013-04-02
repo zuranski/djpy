@@ -9,6 +9,10 @@ class dijetIndices(wrappedChain.calculable):
 	def update(self,ignored):
 		self.value = [i for i in range(len(self.source['dijetPt']))]
 
+class ksIndices(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [i for i in range(len(self.source['ksPt']))]
+
 class Indices(wrappedChain.calculable):
 	def __init__(self,cut={},indices='',tag=''):
 		for item in ['cut','indices']: setattr(self,item,eval(item))
