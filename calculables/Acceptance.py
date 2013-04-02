@@ -26,6 +26,10 @@ class gendijetLxy(wrappedChain.calculable):
 	def update(self,ignored):
 		self.value = [self.source['genqLxy'][pair[0]] for pair in self.source['gendijet']]
 
+class gendijetCtau(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [self.source['genqCtau'][pair[0]] for pair in self.source['gendijet']]
+
 class gendijetPt1(wrappedChain.calculable):
 	def update(self,ignored):
 		self.value = [self.source['genqPt'][pair[0]] for pair in self.source['gendijet']]
