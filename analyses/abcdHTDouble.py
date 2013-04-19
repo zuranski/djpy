@@ -127,7 +127,7 @@ class abcdHTDouble(supy.analysis) :
 			+[supy.steps.filters.label("hlt trigger"),
             steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
 			supy.steps.filters.value("caloHT",min=325),
-			steps.event.runModulo(modulo=11,inverted=True).onlyData(),
+			#steps.event.runModulo(modulo=11,inverted=True).onlyData(),
 			]
 
 			### plots
@@ -158,10 +158,12 @@ class abcdHTDouble(supy.analysis) :
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
-		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4430*0.9) 
-			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=495.03*0.9) 
-			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3*0.9) 
-			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274*0.9)
+		factor=1
+
+		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4430*factor) 
+			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=495.03*factor) 
+			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3*factor) 
+			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274*factor)
 			#+ qcd_samples
 			#+sig_samples 
 		) 

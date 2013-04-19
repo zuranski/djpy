@@ -152,7 +152,7 @@ class finSelection(supy.analysis) :
 			+[supy.steps.filters.label("hlt trigger"),
             steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
 			supy.steps.filters.value("caloHT",min=325),
-			steps.event.runModulo(modulo=11,inverted=True).onlyData(),
+			#steps.event.runModulo(modulo=11,inverted=True).onlyData(),
 			]
 
 			### plots

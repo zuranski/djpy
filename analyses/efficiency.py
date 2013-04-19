@@ -14,7 +14,9 @@ class efficiency(supy.analysis) :
 
 	AccCuts=[
 		{'name':'gendijet'},
-		#{'name':'gendijetLxy','max':50},
+		{'name':'gendijetqID1','max':6},
+		{'name':'gendijetqID2','max':6},
+		{'name':'gendijetLxy','max':50},
 		{'name':'gendijetEta1','max':2},		
 		{'name':'gendijetEta2','max':2},
 		{'name':'gendijetPt1','min':40},
@@ -29,18 +31,17 @@ class efficiency(supy.analysis) :
         {'name':'dijetPt2','min':40},
 		{'name':'dijetTrueLxy','min':0},
         # vertex minimal
-        {'name':'dijetVtxChi2','min':0,'max':5},
         {'name':'dijetVtxN1','min':1},
         {'name':'dijetVtxN2','min':1},
         # cluster minimal
         {'name':'dijetbestclusterN','min':2},
+        {'name':'dijetVtxChi2','min':0,'max':5},
     ]
 	Cuts=[
         # clean up cuts 
-        {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetVtxmass','min':4},
         {'name':'dijetVtxpt','min':8},
-        {'name':'dijetVtxNRatio','min':0.1},
+        {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetLxysig','min':8},
         {'name':'dijetNoOverlaps','val':True},
     ]
@@ -68,14 +69,14 @@ class efficiency(supy.analysis) :
 
 	def dijetSteps0(self):
 		mysteps = []
-		for cut in self.AccCuts:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
+		#for cut in self.AccCuts:
+		#	mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
 		return([supy.steps.filters.label('Acceptance Cuts')]+mysteps)
 	
 	def dijetSteps1(self):
 		mysteps = []
 		for cut in self.IniCuts+self.Cuts:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
+			#mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
 			if cut == self.IniCuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			if cut == self.Cuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			if cut == self.ABCDCutsHigh[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
@@ -85,9 +86,9 @@ class efficiency(supy.analysis) :
 		mysteps=[]
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
-			mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i),pdfweights=None,cand=True).onlySim())
+			#mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i),pdfweights=None,cand=True).onlySim())
 		for cut in self.ABCDCutsLow:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
+			#mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
 			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.observables(indices=cut['name']+'Indices'))
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
@@ -135,11 +136,14 @@ class efficiency(supy.analysis) :
                                     target=("data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('H',[])]).onlySim()] 
 		### filters
+		+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=1,max=1)]
+		+[steps.other.genParticleMultiplicity(pdgIds=[13],collection='genqFlavor',min=2,max=2)]
 
 		### acceptance filters
 		+self.dijetSteps0()
 		+[steps.event.general()]
-		+[steps.event.effDenom(indices=self.AccCuts[-1]['name']+'Indices',pdfweights=None,cand=True)]	
+		+[steps.event.NX(pdfweights=None)]	
+		+[steps.event.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
 	
 		+[supy.steps.filters.label('data cleanup'),
 		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
@@ -154,7 +158,6 @@ class efficiency(supy.analysis) :
 		supy.steps.filters.value('trackingFailureFilterFlag',min=1),
 		]
 		
-		#+[steps.other.genParticleMultiplicity(6003114,min=2)]
 		### trigger
 		+[supy.steps.filters.label("hlt trigger"),
 		steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
@@ -165,6 +168,11 @@ class efficiency(supy.analysis) :
 		+self.discs()
 		+self.dijetSteps2()
 		+[steps.event.general(tag='1')]
+		+[
+		  steps.event.NXReco(pdfweights=None,
+			  indicesRecoLow='ABCDEFGHIndices0',
+			  indicesRecoHigh='ABCDEFGHIndices1')
+		 ]
 		)
 
 	def listOfCalculables(self,config) :
@@ -198,7 +206,7 @@ class efficiency(supy.analysis) :
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			anMode=True,
+			#anMode=True,
 			showStatBox=True,
 			pegMinimum=0.01,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
@@ -225,7 +233,7 @@ class efficiency(supy.analysis) :
                                             ]
                                )
 		
-		self.totalEfficiencies(org,dir='acceptance')
+		self.totalEfficiencies(org,dir='eff1mu')
 		#self.puEff(org,plotter)
 
 	def puEff(self,org,plotter):
@@ -246,31 +254,37 @@ class efficiency(supy.analysis) :
                                )
 
 	def totalEfficiencies(self,org,dir=None) :
-		num,denom=[],None
+		recoLow,recoHigh,acceptance,denom=None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'effNum' in plotName : num.append(step[plotName])
-				if 'effDenom' in plotName : denom=step[plotName]
+				if 'NXRecoLow' == plotName : recoLow=step[plotName]
+				if 'NXRecoHigh' == plotName : recoHigh=step[plotName]
+				if 'NXAcc' == plotName : acceptance=step[plotName]
+				if 'NX' == plotName : denom=step[plotName]
 
-		efficiencylow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num[0],denom)])
-		efficiencyhigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num[1],denom)])
+		acc = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(acceptance,denom)])
+		efflow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,denom)])
+		effhigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,denom)])
+		effacclow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,acceptance)])
+		effacchigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,acceptance)])
 	
-		expos = [-0.67,-0.33,0,0.33,0.67]
-		fs = [pow(10,a) for a in expos]
+		fs = [0.5,1,1.5]	
+		#expos = [-1.,-0.8,-0.6,-0.4,-0.2,0]
+		#fs = [pow(10,a) for a in expos]
 		allfs = [0.1*a for a in fs] 
 		allfs += fs 
 		allfs += [10*a for a in fs]
 		allfs = [round(a,5) for a in allfs] 
 		N=len(allfs)
 
-		for i in range(denom[0].GetNbinsX()):
-			n=num[0][0].GetBinContent(i+1)
-			d=denom[0].GetBinContent(i+1)
-			print n,d,n/d,allfs[i]
+		#for i in range(denom[0].GetNbinsX()):
+		#	n=num[0][3].GetBinContent(i+1)
+		#	d=denom[3].GetBinContent(i+1)
+		#	print n,d,n/d,allfs[i]
 
 
-		f=0.89
-		sysmap={'1000350':0.8,'1000150':0.8,'400150':0.1,'40050':0.8,'20050':0.22}
+		f=1
+		sysmap={'1000350':0.08,'1000150':0.08,'400150':0.1,'40050':0.08,'20050':0.22}
 
 		import pickle,math
 		for i,sample in enumerate(org.samples):
@@ -278,29 +292,27 @@ class efficiency(supy.analysis) :
 			H,X=name.split('_')[1],name.split('_')[3]
 			sys=sysmap[H+X]
 			ctau = self.ctau[self.sig_names.index(name)]
-			data={}
-			for factor in set(allfs): data[factor] = []
 			for j in range(N):
 				x,y=r.Double(0),r.Double(0)
-				efficiency = efficiencyhigh
+				eff = effhigh
+				effacc = effacchigh
 				if j<N/3: 
-					efficiency = efficiencylow
-				efficiency[i].GetPoint(j,x,y)
-				eff = f*float(y)
-				effErr = f*efficiency[i].GetErrorY(j)
-				#if eff > 0. : effErr = eff*math.sqrt(sys*sys+pow(effErr/eff,2))
-				#else : effErr = 0.
+					eff = efflow
+					effacc = effacclow
+				eff[i].GetPoint(j,x,y)
+				e = f*float(y)
+				eErr = f*eff[i].GetErrorY(j)
+				effacc[i].GetPoint(j,x,y)
+				ea = f*float(y)
+				eaErr = f*effacc[i].GetErrorY(j)
+				acc[i].GetPoint(j,x,y)
+				a = float(y)
+				aErr = acc[i].GetErrorY(j)
+				#if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
+				#else : eErr = 0.
+				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
+				#else : eaErr = 0.
 				factor=allfs[j]
-				print H,X,factor,eff,effErr
-				data[factor].append((eff,effErr))
-		
-			for factor in sorted(data.keys()):
-				eff=data[factor]
-				e=sum([a[0] for a in eff])/len(eff)
-				ee=sum([a[1] for a in eff])/len(eff)
-				eff=(e,ee)
-				topickle = {}
-				topickle['eff']=eff
-				print H,X,factor,eff
-				pickle.dump(topickle,open('results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
-				
+				print H,X,factor,a,aErr,e,eErr,ea,eaErr
+				data=[(a,aErr),(e,eErr),[ea,eaErr]]
+				pickle.dump(data,open('results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))

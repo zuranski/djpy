@@ -6,14 +6,15 @@ class kshorts(supy.analysis) :
 		{'name':'ks'},
 		{'name':'ksNoOverlaps','val':True},
 		{'name':'ksCtau','max':12},
-		{'name':'ksLxy','max':60},
+		#{'name':'ksLxy','max':2},
 		#{'name':'ksMass','min':0.48,'max':0.52},
 		{'name':'kscolin','min':0},
 		{'name':'ksMass','min':0.48,'max':0.515},
 		# vertex minimal
 	]
+	# obtained scale is 1.495 - the QCD cross-sections need to be multiplied by 1/1.495 factor
 	CutsScale=[
-        {'name':'ksLxyz','max':2.5},
+        {'name':'ksLxy','max':2},
         #{'name':'ksTrk1Pt','min':2.},
         #{'name':'ksTrk2Pt','min':2.},
 	]
@@ -101,7 +102,7 @@ class kshorts(supy.analysis) :
                 indices='ksMassIndices')]
 			
 			+[steps.event.efftrk('ksMassIndices')]
-			+[supy.steps.filters.value('nPV',max=8)]
+			#+[supy.steps.filters.value('nPV',max=8)]
 			+self.ksStepsScale()
 
 			)
@@ -155,12 +156,13 @@ class kshorts(supy.analysis) :
 			anMode=True,
 		)
 		plotter.plotAll()
+		org.lumi=None
 		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_kscolin",
                                               "stepName":"kshort",
                                               "stepDesc":"kshort",
                                               "newTitle":"; K_{s} mass [GeV/c^{2}]; K_{s} / bin",
                                               "legendCoords": (0.65, 0.25, 0.9, 0.45),
-                                              "stampCoords": (0.75, 0.85),},
+                                              "stampCoords": (0.73, 0.9),},
 											 {"plotName":"ksCtau",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
@@ -182,13 +184,13 @@ class kshorts(supy.analysis) :
 											 {"plotName":"kstrkip2d",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
-                                              "newTitle":"; K_{s} track IP 2-d [cm]; K_{s} / bin",
+                                              "newTitle":"; K_{s} track IP_{xy} [cm]; K_{s} / bin",
                                               "legendCoords": (0.65, 0.5, 0.9, 0.7),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"kstrkip3d",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
-                                              "newTitle":"; K_{s} track IP 3-d [cm]; K_{s} / bin",
+                                              "newTitle":"; K_{s} track IP_{xyz} [cm]; K_{s} / bin",
                                               "legendCoords": (0.65, 0.5, 0.9, 0.7),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"ksP",
