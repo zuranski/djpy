@@ -1,5 +1,5 @@
 from supy import analysisStep
-import math,pickle
+import math,pickle,os
 
 class general(analysisStep):
 	def __init__(self,tag=''):
@@ -12,18 +12,15 @@ class general(analysisStep):
 		self.book.fill(e['nPV'],self.tag+'nPV',26,4.5,30.5,None,title='nPV ; nPV ; events / bin')
 		self.book.fill(e['nTrks'],self.tag+'nTrks',100,0,2500,None, title='nTrks ; nTrks ; events / bin')
 
-class effDenom(analysisStep):
-	def __init__(self,indices='gendijetIndices',pdfweights=None,cand=False):
-		self.indices = indices
-		self.pdfweights = pdfweights
+class eff(analysisStep):
+	def __init__(self,indicesAcc='',indicesRecoLow='',indicesRecoHigh='',pdfweights=None):
+		for item in ['indicesAcc','indicesRecoLow','indicesRecoHigh','pdfweights']: setattr(self,item,eval(item))
 		self.trigweights = pickle.load(open("data/trigw"))
-		self.cand = cand
-		expos = [-0.67,-0.33,0.,0.33,0.67]
-		self.fs = [math.pow(10,a) for a in expos]
+		self.fs = [0.5,1.,1.5]
 
 	def ctau(self,file):
-		masses = file.split('_')
-		masses = [a.replace(a[a.find('.'):],"") if '.' in a else a for a in masses]
+		file=os.path.basename(file)
+		masses = [a.replace(a[a.find('.'):],"") if '.' in a else a for a in file.split('_')]
 		map={
             'H_1000_X_350':35,'H_1000_X_150':10,'H_1000_X_50':4,
             'H_400_X_150':40,'H_400_X_50':8,'H_200_X_50':20,
@@ -31,29 +28,82 @@ class effDenom(analysisStep):
 		key = 'H_'+masses[1]+'_X_'+masses[3]
 		return map[key]
 
-	def ctau_w(self,ct,ctau,f):
+	def ctau_cand_w(self,ct,ctau,f):
 		return (1./f) * math.exp(-(ct/ctau)*(1./f - 1.))
 
-	def uponAcceptance(self,e):
+	def X2qqIndices(self,Xs):
+		pdgIds=[6001114,6002114,6003114]
+		return [i for i in range(2) if Xs[i] in pdgIds]
 
-		# determine the ctau of the event in the sample
-		bin = (e["XpdgId"][0]-6000114)/1000 - 1
-		ctau=self.ctau(self.inputFileName)*pow(10,int(bin)-1)
-
-		# event weights
+	def eweights(self,X2qqIndices,ctau,e):
 		ev_w = e['weight']
 		pdf_w = e[self.pdfweights] if self.pdfweights is not None else 1.
 		tot_w = ev_w*pdf_w
+		ctau_ws = [1]*len(self.fs)
+		for i,f in enumerate(self.fs):
+			for idx in X2qqIndices:
+				ctau_ws[i]*=self.ctau_cand_w(e['gendijetCtau'][idx],ctau,f)
+
+		weights = [tot_w*ctau_w for ctau_w in ctau_ws]
+		return weights
+
+class NX(eff):
+	def uponAcceptance(self,e):
+
+		# determine the ctau of the event in the sample
+		bin = round((e["XpdgId"][0]-6000114)/1000.,0) - 1
+		ctau=self.ctau(self.inputFileName)*pow(10,int(bin)-1)
+
+		# determine which Xs decay to dijets
+		X2qqIndices = self.X2qqIndices(e['XpdgId'])
+
 		N=len(self.fs)
+		weights = self.eweights(X2qqIndices,ctau,e)
 
-		indices = e[self.indices] if self.cand else [0,1]
-		for idx in indices:	
-			ctau_event = e['gendijetCtau'][idx]
-			for i,f in enumerate(self.fs):
-				weight = tot_w*self.ctau_w(ctau_event,ctau,f)
-				self.book.fill(bin*N+i,'effDenom',3*N,-0.5,3*N-0.5,w=weight)
+		for i in range(len(self.fs)):
+			for idx in range(len(X2qqIndices)):
+				self.book.fill(bin*N+i,'NX',3*N,-0.5,3*N-0.5,w=weights[i])
 
-class effNum(effDenom):
+
+class NXAcc(eff):
+	def uponAcceptance(self,e):
+
+		# determine the ctau of the event in the sample
+		bin = round((e["XpdgId"][0]-6000114)/1000.,0) - 1
+		ctau=self.ctau(self.inputFileName)*pow(10,int(bin)-1)
+
+		# determine which Xs decay to dijets
+		X2qqIndices = self.X2qqIndices(e['XpdgId'])
+
+		N=len(self.fs)
+		weights = self.eweights(X2qqIndices,ctau,e)
+
+		for i in range(len(self.fs)):
+			for idx in range(len(e[self.indicesAcc])):
+				self.book.fill(bin*N+i,'NXAcc',3*N,-0.5,3*N-0.5,w=weights[i])
+
+class NXReco(eff):
+	def uponAcceptance(self,e):
+
+		# determine the ctau of the event in the sample
+		bin = round((e["XpdgId"][0]-6000114)/1000.,0) - 1
+		ctau=self.ctau(self.inputFileName)*pow(10,int(bin)-1)
+
+		# determine which Xs decay to dijets
+		X2qqIndices = self.X2qqIndices(e['XpdgId'])
+
+		N=len(self.fs)
+		weights = self.eweights(X2qqIndices,ctau,e)
+
+		for i in range(len(self.fs)):
+			for idx in range(len(e[self.indicesRecoLow]['H'])):
+				self.book.fill(bin*N+i,'NXRecoLow',3*N,-0.5,3*N-0.5,w=weights[i])
+			for idx in range(len(e[self.indicesRecoHigh]['H'])):
+				self.book.fill(bin*N+i,'NXRecoHigh',3*N,-0.5,3*N-0.5,w=weights[i])
+				
+
+# OUTDATED
+class effNum(eff):
 	def uponAcceptance(self,e):
 
 		# find trigger weight
@@ -72,7 +122,7 @@ class effNum(effDenom):
 		indices = idx_coll['H'] if type(idx_coll)==dict else idx_coll
 		
 		# determine the ctau of the event in the sample
-		bin = (e["XpdgId"][0]-6000114)/1000 - 1
+		bin = round((e["XpdgId"][0]-6000114)/1000.,0) - 1
 		ctau=self.ctau(self.inputFileName)*pow(10,int(bin)-1)
 
 		# event weights
@@ -82,11 +132,11 @@ class effNum(effDenom):
 		N=len(self.fs)
 
 		if not self.cand: indices=[0,1]
+		#print len(indices)
 		for idx in indices: 
-			ctau_event = e['dijetTrueCtau'][idx] if self.cand else e['gendijetCtau'][idx]
 			for i,f in enumerate(self.fs):
-				weight = tot_w*self.ctau_w(ctau_event,ctau,f)
-				self.book.fill(bin*N+i,'effNum',3*N,-0.5,3*N-0.5,w=weight)
+				weight = tot_w*self.ctau_event_w(e['gendijetCtau'][0],e['gendijetCtau'][1],ctau,f)
+				self.book.fill(bin*N+i,'effNum'+n,3*N,-0.5,3*N-0.5,w=weight)
 
 class runModulo(analysisStep):
 	def __init__(self,modulo,inverted=False):
