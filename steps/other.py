@@ -30,13 +30,15 @@ class collector(analysisStep) :
         print sorted(list(s))
 
 class genParticleMultiplicity(analysisStep):
-
-    def __init__(self,pdgId,min=1):
-        for item in ['pdgId','min']: setattr(self,item,eval(item))
+    def __init__(self,pdgIds=[],collection='',min=None,max=None):
+        for item in ['pdgIds','collection','min','max']: setattr(self,item,eval(item))
+        pdgIds_str=",".join(str(a) for a in pdgIds)
+        self.moreName="%d <= %s"%(min,pdgIds_str) + (" <= %d" % max if max!=None else "")
 
     def select (self,e):
         nObjects = 0
-        for pdgId in e["XpdgId"]:
-            if pdgId == self.pdgId : nObjects += 1
-        if nObjects >= self.min: return True
+        X = [a for a in e[self.collection]]
+        for pdgId in self.pdgIds: nObjects+=X.count(pdgId)
+        if nObjects >= self.min and nObjects <= self.max: 
+             return True
         return False
