@@ -121,3 +121,15 @@ class dijetCtau(DiJetVar):
 class ksP(wrappedChain.calculable):
 	def update(self,ignored):
 		self.value = [p(self.source['ksPt'][idx],self.source['ksEta'][idx]) for idx in self.source['ksIndices']]
+
+class jetgenjetPtDiff(JetVar):
+	def calculate(self,idx):
+		return (self.source['jetPt'][idx]-self.source['jetgenjetPt'][idx])/self.source['jetgenjetPt'][idx]
+
+class jetgenjetEtaDiff(JetVar):
+	def calculate(self,idx):
+		return (self.source['jetEta'][idx]-self.source['jetgenjetEta'][idx])
+
+class jetgenjetPhiDiff(JetVar):
+	def calculate(self,idx):
+		return (self.source['jetPhi'][idx]-self.source['jetgenjetPhi'][idx])

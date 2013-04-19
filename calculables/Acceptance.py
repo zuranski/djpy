@@ -44,7 +44,15 @@ class gendijetEta1(wrappedChain.calculable):
 
 class gendijetEta2(wrappedChain.calculable):
 	def update(self,ignored):
-		self.value = [abs(self.source['genqEta'][pair[1]]) for pair in self.source['gendijet']]
+		self.value = [self.source['genqEta'][pair[1]] for pair in self.source['gendijet']]
+
+class gendijetqID1(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [self.source['genqFlavor'][pair[0]] for pair in self.source['gendijet']]
+
+class gendijetqID2(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [abs(self.source['genqFlavor'][pair[1]]) for pair in self.source['gendijet']]
 
 class gendijetDR(wrappedChain.calculable):
 	def update(self,ignored):
