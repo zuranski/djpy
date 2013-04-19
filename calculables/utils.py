@@ -37,3 +37,9 @@ def passed (e,idx,cut):
 	passMin = (var >= cut['min']) if 'min' in cut else True
 	passMax = (var <= cut['max']) if 'max' in cut else True
 	return (passVal and passMin and passMax)
+
+def mergeVectors(vectors):
+	out=[]
+	for vec in vectors:
+		out+=[a for a in vec]
+	return out
