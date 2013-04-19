@@ -127,7 +127,7 @@ class observables(plots):
 	vars = [
             {'name':'Mass','bins':100,'low':0,'high':500,'unit':'[GeV]'},
             {'name':'Lxy','bins':50,'low':0,'high':60,'unit':'[GeV]'},
-            {'name':'TrueLxy','bins':50,'low':0,'high':60,'unit':'[GeV]'},
+            #{'name':'TrueLxy','bins':50,'low':0,'high':60,'unit':'[GeV]'},
 	       ]
 
 class trigvars(plots):
@@ -155,3 +155,15 @@ class kshort(plots):
             {'name':'Trk1IP3d','bins':50,'low':0.,'high':25,'unit':''},
             {'name':'Trk2IP3d','bins':50,'low':0.,'high':25,'unit':''},
            ]
+
+class genjets(plots):
+	vars = [
+            {'name':'Pt','bins':50,'low':0,'high':500,'unit':'[GeV]'},
+            {'name':'Eta','bins':20,'low':-2,'high':2,'unit':''},
+            {'name':'Phi','bins':20,'low':-3.15,'high':3.15,'unit':''},
+            {'name':'genjetPtDiff','bins':50,'low':-1.,'high':1,'unit':''},
+            #{'name':'genjetEtaDiff','bins':50,'low':-.2,'high':.2,'unit':''},
+            #{'name':'genjetPhiDiff','bins':50,'low':-.2,'high':.2,'unit':''},
+            #{'name':'genjetPt','bins':100,'low':0.,'high':500,'unit':''},
+            {'name':'genjetLxy','bins':25,'low':0.,'high':50,'unit':''},
+		   ]
