@@ -91,8 +91,8 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 
 		title = ' '.join(name+'='+string(value) if value else '' for name,value in zip(cutNames,scan))
 		title='max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
-		xtitle = 'Vertex/Cluster Discriminant cut'
-		ytitle = 'Number of Events'
+		xtitle = 'Vertex/Cluster Discriminant'
+		ytitle = 'Number of Candidates'
 
 		indices = [i for i,cuts in enumerate(analysis.scan) if len(listdiff(cuts,scan))<=1]
 		labels = [string(cuts[scan.index(None)]) for i,cuts in enumerate(analysis.scan) if i in indices]
@@ -175,8 +175,8 @@ def plotABCDscan(analysis,org,plotter,n,blind=True):
 
 			legend.SetFillColor(0)
 			legend.Draw("same")
-			cmsStamp(lumi=org.lumi,coords=(0.55,0.85))
-			#cmsStamp(lumi=None,coords=(0.55,0.85))
+			#cmsStamp(lumi=org.lumi,coords=(0.55,0.85))
+			cmsStamp(lumi=None,coords=(0.55,0.85))
 			plotter.canvas.cd(2)
 			r.gPad.SetRightMargin(0.2)
 			r.gPad.SetLogy()
@@ -209,6 +209,7 @@ def getBkg(counts,cuts):
 	b=list[-1][0]
 	err_stat=list[-1][1]
 	combs = [obj[0] for obj in list]
+	print combs
 	dists= [abs(comb-b) for comb in combs]
 	err_sys = max(dists)
 	#err_sys=0.5*(max(combs)-min(combs))
