@@ -16,12 +16,9 @@ qcd.add('qcd_600_800','%s/%s/%s")'%(pnfs,loc,"QCD_Pt_600to800") ,xs=15.6) #/pb
 '''
 
 #PU
-#loc='/tigress-hsm/zuranski/work/cms/data/DJTuple53x_DEV/'
-#loc='/tigress-hsm/zuranski/work/cms/data/DJTuple53x_PROD/'
-#loc='/scratch/gpfs/zuranski/data/DJTuple53x_PROD/'
-loc='/scratch/gpfs/zuranski/data/DJTuple53x_PROMPT/'
+loc='/scratch/gpfs/zuranski/data/DJTuple53x_PROD/'
 
-scale=65.8
+scale=1.495
 
 qcd.add('qcd_50_80','%s'%(fileListFromDisk(loc+"QCD_Pt_50to80")),xs=8.148778e6/scale) #/pb
 qcd.add('qcd_80_120','%s'%(fileListFromDisk(loc+"QCD_Pt_80to120")),xs=10.3368e5/scale) #/pb
