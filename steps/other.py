@@ -36,6 +36,7 @@ class genParticleMultiplicity(analysisStep):
         self.moreName="%d <= %s"%(min,pdgIds_str) + (" <= %d" % max if max!=None else "")
 
     def select (self,e):
+        if e['realData'] or len(e['XpdgId']) == 0: return True
         nObjects = 0
         X = [a for a in e[self.collection]]
         for pdgId in self.pdgIds: nObjects+=X.count(pdgId)
