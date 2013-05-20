@@ -11,41 +11,46 @@ class jetTrueMatch(wrappedChain.calculable):
 							self.source['genqEta'],
 							self.source['genqPhi'],0.5) 
 
-class jetTrueLxy(wrappedChain.calculable):
+class jetTrue(wrappedChain.calculable):
 	def update(self,ignored):
 		if self.source['realData'] or len(self.source['XpdgId']) == 0: 
 			self.value = [True for i in self.source['jetIndices']]
 			return
-		self.value=[self.source['genqLxy'][self.source['jetTrueMatch'][i]] 
+		self.value=[self.source[self.var][self.source['jetTrueMatch'][i]]
                     if self.source['jetTrueMatch'][i] is not None else None for i in self.source['jetIndices']]
 
-class jetTrueCtau(wrappedChain.calculable):
-	def update(self,ignored):
-		if self.source['realData'] or len(self.source['XpdgId']) == 0: 
-			self.value = [True for i in self.source['jetIndices']]
-			return
-		self.value=[self.source['genqCtau'][self.source['jetTrueMatch'][i]] 
-                    if self.source['jetTrueMatch'][i] is not None else None for i in self.source['jetIndices']]
-
-class dijetTrueLxy(wrappedChain.calculable):
+class dijetTrue(wrappedChain.calculable):
 	def update(self,ignored):
 		if self.source['realData'] or len(self.source['XpdgId']) == 0: 
 			self.value = [True for i in self.source['dijetIndices']]
 			return
-		self.value = [self.source['jetTrueLxy'][self.source['dijetIdx1'][i]]
+		self.value = [(self.source[self.var][self.source['dijetIdx1'][i]] +
+		              self.source[self.var][self.source['dijetIdx2'][i]])/2.
                       if self.source['jetTrueLxy'][self.source['dijetIdx1'][i]] ==
                       self.source['jetTrueLxy'][self.source['dijetIdx2'][i]] != None else None
                       for i in self.source['dijetIndices']]
 
-class dijetTrueCtau(wrappedChain.calculable):
-	def update(self,ignored):
-		if self.source['realData'] or len(self.source['XpdgId']) == 0: 
-			self.value = [True for i in self.source['dijetIndices']]
-			return
-		self.value = [self.source['jetTrueCtau'][self.source['dijetIdx1'][i]] 
-                      if self.source['jetTrueCtau'][self.source['dijetIdx1'][i]] ==
-                      self.source['jetTrueCtau'][self.source['dijetIdx2'][i]] != None else None
-                      for i in self.source['dijetIndices']]
+class jetTrueLxy(jetTrue):
+	var='genqLxy'
+class jetTrueCtau(jetTrue):
+	var='genqCtau'
+class jetTrueFlavor(jetTrue):
+	var='genqFlavor'
+class jetTrueNLep(jetTrue):
+	var='genqNLep'
+class jetTrueBlxyz(jetTrue):
+	var='genqBlxyz'
+
+class dijetTrueLxy(dijetTrue):
+	var='jetTrueLxy'
+class dijetTrueCtau(dijetTrue):
+	var='jetTrueCtau'
+class dijetTrueFlavor(dijetTrue):
+	var='jetTrueFlavor'
+class dijetTrueNLep(dijetTrue):
+	var='jetTrueNLep'
+class dijetTrueBlxyz(dijetTrue):
+	var='jetTrueBlxyz'
 
 class jetTrigPrompt(wrappedChain.calculable):
 	def __init__(self,tag):
