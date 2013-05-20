@@ -90,8 +90,6 @@ class ctrlRegions(supy.analysis) :
 
 	def calcsVars(self):
 		calcs = []
-		for calc in self.ToCalculate:
-			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
@@ -177,4 +175,4 @@ class ctrlRegions(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		plotABCDscan(self,org,plotter,8,blind=False,onlyB=True)
+		plotABCDscan(self,org,plotter,8,blind=False,onlyB=False)
