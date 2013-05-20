@@ -1,9 +1,9 @@
 from supy import wrappedChain
 from utils import p
 
-class ksVar(wrappedChain.calculale):
+class ksVar(wrappedChain.calculable):
 	fixes=('ks','')
-	def update(self,ignored): self.value=[self.calculate(idx) for idx in self.source['jetIndices']
+	def update(self,ignored): self.value=[self.calculate(idx) for idx in self.source['ksIndices']]
 
 class P(ksVar):
 	def calculate(self,idx):
