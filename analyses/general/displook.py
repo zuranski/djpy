@@ -57,7 +57,7 @@ class displook(supy.analysis) :
 
 			### pile-up reweighting
 			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-				target=("data/pileup/HT300_Single_R12BCD_true.root","pileup"),
+				target=(supy.whereami()+"/../data/pileup/HT300_Single_R12BCD_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### filters
@@ -113,18 +113,19 @@ class displook(supy.analysis) :
 		for i in range(len(sig_names)):
 			sig_samples+=(supy.samples.specify(names = sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
-		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=44.3) +
+		return (qcd_samples
+			+supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=44.3) +
 			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.95) +
 			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=63.44) +
-			supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=71.05) +
-			qcd_samples 
+			supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=71.05) 
+			#+ qcd_samples 
 			#+ sig_samples 
 		) 
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
+		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"E2","fillColor":r.kBlue,"fillStyle":3001,"double":True,"markerSize":0}, allWithPrefix = "qcd")
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale(lumiToUseInAbsenceOfData=11000)
@@ -188,15 +189,15 @@ class displook(supy.analysis) :
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster Multiplicity; di-jets / bin",
-                                              "legendCoords": (0.55, 0.35, 0.9, 0.55),
+                                              "legendCoords": (0.55, 0.45, 0.9, 0.65),
                                               "stampCoords": (0.7, 0.88)
                                               },
                                               {"plotName":"glxyrmsclr_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster RMS; di-jets / bin",
-                                              "legendCoords": (0.55, 0.5, 0.9, 0.7),
-                                              "stampCoords": (0.7, 0.88)
+                                              "legendCoords": (0.55, 0.55, 0.9, 0.75),
+                                              "stampCoords": (0.7, 0.9)
                                               },
                                               {"plotName":"NAvgMissHitsAfterVert_h_dijetNoOverlaps",
                                               "stepName":"cutvars",

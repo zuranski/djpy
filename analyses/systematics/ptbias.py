@@ -9,16 +9,13 @@ class ptbias(supy.analysis) :
 
 	AccCuts=[
 		{'name':'gendijet'},
-		#{'name':'genjetLxy1','max':50},
-		#{'name':'genjetEta1','max':2},
-		#{'name':'genjetPt1','min':40},
-		#{'name':'gendijetDR','min':1.},
 	]
 	Cuts=[
 		{'name':'jet'},
-		{'name':'jetgenjetLxy','min':0,'max':50},
-		{'name':'jetPt','min':40},
-		#{'name':'jetgenjetPt','min':40},
+		{'name':'jetgenjetLxy','min':0,'max':60},
+		{'name':'jetgenjetDeltaR','min':0.5},
+		{'name':'jetgenjetAngle','max':100},
+		{'name':'jetgenjetN','min':1},
 	]
  
 	def dijetSteps0(self):
@@ -31,7 +28,8 @@ class ptbias(supy.analysis) :
 	def jetSteps(self):
 		mysteps = []
 		for cut in self.Cuts[-1:]:
-			mysteps.append(steps.plots.genjets(njets=1,indices=cut['name']+'Indices',plot2D=True))
+			mysteps.append(steps.plots.genjets(njets=1,indices=cut['name']+'Indices'))
+			mysteps.append(steps.plots.genjets(njets=1,indices=cut['name']+'Indices',plot2D=True,plot1D=False))
 		return ([supy.steps.filters.label('Jet Cuts')] +mysteps)
 	
 	def calcsIndices(self):
@@ -46,18 +44,9 @@ class ptbias(supy.analysis) :
 	def listOfSteps(self,config) :
 		return ([
 		supy.steps.printer.progressPrinter()]
-		### pile-up reweighting
-		#+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-        #                            target=("data/pileup/HT300_Double_R12BCD_true.root","pileup"),
-        #                            groups=[('H',[])]).onlySim()] 
-		### filters
 
 		### acceptance filters
-		#+[supy.steps.filters.value('genHT',min=200)]
 		+self.dijetSteps0()
-
-		#+[steps.event.effDenom(indices=self.AccCuts[-1]['name']+'Indices')]	
-		#+[supy.steps.filters.value('caloHT',min=325)]
 	
 		+[supy.steps.filters.label('data cleanup'),
 		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
@@ -72,17 +61,7 @@ class ptbias(supy.analysis) :
 		supy.steps.filters.value('trackingFailureFilterFlag',min=1),
 		]
 		
-		#+[steps.other.genParticleMultiplicity(6003114,min=2)]
-		### trigger
-		+[supy.steps.filters.label("hlt trigger"),
-		#steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
-		#supy.steps.filters.value('caloHT',min=325),
-		#steps.genjets.general(),
-		]
-		+[
-		  supy.steps.filters.multiplicity('genjetEta1',min=2,max=2),
-		  supy.steps.filters.multiplicity('genjetEta2',min=2,max=2),
-	    ]
+		+[steps.event.general(),steps.event.genevent()]
 		+self.jetSteps()
 
 		)
@@ -92,6 +71,8 @@ class ptbias(supy.analysis) :
 		supy.calculables.zeroArgs(calculables)
 		+self.calcsIndices()
 		+[
+		  calculables.Vars.jetPtGeom('jetgenjetLxyIndices'),
+		  calculables.Vars.jetgenjetEnergyDiff('jetgenjetLxyIndices'),
 		  calculables.Vars.jetgenjetPtDiff('jetgenjetLxyIndices'),
 		  calculables.Vars.jetgenjetPhiDiff('jetgenjetLxyIndices'),
 		  calculables.Vars.jetgenjetEtaDiff('jetgenjetLxyIndices'),
@@ -107,46 +88,64 @@ class ptbias(supy.analysis) :
 		sig_samples = []
 
 		for i in range(len(self.sig_names)):
-			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles, weights = ['pileupTrueNumInteractionsBX0Target']))
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 
 		merged_samples=[sig_samples[i] for i in [2,3,6,8,10]]
 		nonmerged_samples=[sig_samples[i] for i in [0,1,4,5,7,9]]
+		toPlot=[nonmerged_samples[i] for i in [0,1,2,3,4]]
 
 		#return merged_samples
-		return nonmerged_samples
+		#return nonmerged_samples
+		return toPlot
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}, q=uds", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_350")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}, q=uds", "color":r.kRed,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(50) #rightarrow q#bar{q}, q=uds", "color":r.kBlack,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "Huds_400_X_50")
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H(120)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kYellow,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_120_X_50")                              
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			#anMode=True,
+			anMode=False,
 			showStatBox=True,
-			pegMinimum=0.5,
+			pegMinimum=10,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
-		plotter.doLog=False
-		
+
+		org.lumi=None
 		'''
-		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_dijetDiscriminant",
-                                              "stepName":"observables",
-                                              "stepDesc":"observables",
-                                              "newTitle":";Mass [GeV/c^{2}];di-jets / bin",
-                                              "legendCoords": (0.45, 0.55, 0.9, 0.75),
+		plotter.individualPlots(plotSpecs = [{"plotName":"genjetLxy_h_jetgenjetFromDouble",
+                                              "stepName":"genjets",
+                                              "stepDesc":"genjets",
+                                              "newTitle":";L_{xy} [cm] ; jets / bin",
+                                              "legendCoords": (0.5, 0.7, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
-											  {"plotName":"Lxy_h_dijetDiscriminant",
-                                              "stepName":"observables",
-                                              "stepDesc":"observables",
-                                              "newTitle":";L_{xy} [cm];di-jets / bin",
-                                              "legendCoords": (0.45, 0.55, 0.9, 0.75),
+                                              {"plotName":"genjetDeltaR_h_jetgenjetFromDouble",
+                                              "stepName":"genjets",
+                                              "stepDesc":"genjets",
+                                              "newTitle":";q#bar{q} #Delta R; jets / bin",
+                                              "legendCoords": (0.5, 0.7, 0.9, 0.85),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                              {"plotName":"genjetPtDiff_h_jetgenjetFromDouble",
+                                              "stepName":"genjets",
+                                              "stepDesc":"genjets",
+                                              "newTitle":";( jet p_{T} - true p_{T} ) / true p_{T}; jets / bin",
+                                              "legendCoords": (0.18, 0.7, 0.48, 0.9),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
+                                              {"plotName":"genjetAngle_h_jetgenjetFromDouble",
+                                              "stepName":"genjets",
+                                              "stepDesc":"genjets",
+                                              "newTitle":";approach Angle [deg]; jets / bin",
+                                              "legendCoords": (0.5, 0.7, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
                                             ]
@@ -162,13 +161,14 @@ class ptbias(supy.analysis) :
 		plotter.printCanvas("[")
 		text1 = plotter.printTimeStamp()
 		plotter.flushPage()
+		plotter.doLog=False
 
+		neus,chgs=[],[]
 		profiles = [] 
 		XorY = []
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'genjetPtDiff' not in plotName: continue
-				if issubclass(type(step[plotName][0]),r.TH2) : 
+				if 'genjetPtDiff' in plotName and issubclass(type(step[plotName][0]),r.TH2) : 
 					isX = 0 if plotName.find('genjetPtDiff') == 0 else 1
 					XorY.append(isX)
 					profiles.append(step[plotName])
@@ -176,7 +176,7 @@ class ptbias(supy.analysis) :
 		def removeLowStats(histos):
 			for histo in histos:
 				for i in range(1,histo.GetNbinsX()+1):
-					if histo.GetBinEntries(i)<20: 
+					if histo.GetBinEntries(i)<50: 
 						histo.SetBinContent(i,0)		
 						histo.SetBinError(i,0)		
 
@@ -184,22 +184,22 @@ class ptbias(supy.analysis) :
 		for profile,isX in zip(profiles,XorY):
 			plotter.canvas.Divide(3,2)
 			histosX = [h.ProfileX('',1,-1,'s').Clone() for h in profile]
-			histosY = [h.ProfileY('',1,-1,'').Clone() for h in profile]
+			histosY = [h.ProfileY('',1,-1,'s').Clone() for h in profile]
 			removeLowStats(histosX)
 			removeLowStats(histosY)
 			histos = histosX if isX else histosY
 			for i,sample in enumerate(org.samples):
-				name='M_{H}='+sample['name'].split('_')[1]+' M_{X}='+sample['name'].split('_')[3]
+				name=sample['name']
 				plotter.canvas.cd(i+1)
 				r.gPad.SetLeftMargin(0.15)
 				r.gPad.SetRightMargin(0.05)
+				histos[i].SetMarkerStyle(8)
 				histos[i].SetStats(False)
 				histos[i].SetName(name)
 				histos[i].SetTitle(name)
-				histos[i].GetYaxis().SetTitle('(Jet pt - genJet pt) / genJet pt')
+				histos[i].GetYaxis().SetTitle('(jet p_{T} - true p_{T} )/ true p_{T}')
 				histos[i].GetYaxis().SetTitleOffset(2.)
 				histos[i].Draw()
-
 			plotter.printCanvas()
 			plotter.canvas.Clear()
 		plotter.printCanvas("]")

@@ -102,7 +102,7 @@ class tenpercent(supy.analysis) :
 
 			### pile-up reweighting
 			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-				target=("data/pileup/HT300_Double_R12BCD_true.root","pileup"),
+				target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### filters

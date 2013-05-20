@@ -1,73 +1,100 @@
 import itertools,supy,samples,calculables,steps,ROOT as r
 from utils.ABCDscan import plotABCDscan,plotExpLimit
 
-class abcdMu24(supy.analysis) :
-    
+class finSelection(supy.analysis) :
+   
 	MH = [1000,1000,1000,400,400,200]
 	MX = [350,150,50,150,50,50]
 	sig_names = ["H_"+str(a)+"_X_"+str(b) for a,b in zip(MH,MX)]
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
-
-	ToCalculate=['dijetVtxNRatio']
-	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
+ 
+	ToCalculate = ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
+	ToCalculate +=['dijetPt1','dijetPt2']
 
 	IniCuts=[
         {'name':'dijet'},
         # vertex minimal
-        {'name':'dijetVtxChi2','min':0,'max':5},
         {'name':'dijetVtxN1','min':1},
         {'name':'dijetVtxN2','min':1},
         # cluster minimal
         {'name':'dijetbestclusterN','min':2},
+        {'name':'dijetVtxChi2','min':0,'max':5},
     ]
 	Cuts=[
         # clean up cuts 
-        {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetVtxmass','min':4},
         {'name':'dijetVtxpt','min':8},
-        {'name':'dijetVtxNRatio','min':0.1},
+        {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetLxysig','min':8},
         {'name':'dijetNoOverlaps','val':True},
         {'name':'dijetTrueLxy','min':0},
     ]
-	ABCDCutsSets = []
-	scanPrompt = [(3,0.2),(3,0.17),(3,0.15),(2,0.15),(2,0.13),(2,0.11)]
-	scanVtx = [0.5,0.6,0.7,0.8,0.9]
 
-	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
+	ABCDCutsLow = [
+        {'name':'Prompt1Low','vars':({'name':'dijetNPromptTracks1','max':1},
+                                  {'name':'dijetPromptEnergyFrac1','max':0.15})
+        },
+        {'name':'Prompt2Low','vars':({'name':'dijetNPromptTracks2','max':1},
+                                  {'name':'dijetPromptEnergyFrac2','max':0.15})
+        },
+        {'name':'DiscLow','vars':({'name':'dijetDiscriminant','min':0.9},)}
+        ]
 
-	for val in scan :
-		ABCDCutsSets.append([
-		{'name':'Prompt1','vars':({'name':'dijetNPromptTracks1','max':val[0][0]},
-   	                              {'name':'dijetPromptEnergyFrac1','max':val[0][1]})
-		},
-		{'name':'Prompt2','vars':({'name':'dijetNPromptTracks2','max':val[1][0]},
-	                              {'name':'dijetPromptEnergyFrac2','max':val[1][1]})
-		},
-		{'name':'Disc','vars':({'name':'dijetDiscriminant','min':val[2]},)},
-		])	
-	
+	ABCDCutsHigh = [
+        {'name':'Prompt1High','vars':({'name':'dijetNPromptTracks1','max':1},
+                                  {'name':'dijetPromptEnergyFrac1','max':0.09})
+        },
+        {'name':'Prompt2High','vars':({'name':'dijetNPromptTracks2','max':1},
+                                  {'name':'dijetPromptEnergyFrac2','max':0.09})
+        },
+        {'name':'DiscHigh','vars':({'name':'dijetDiscriminant','min':0.8},)}
+        ]
+	ABCDCutsSets=[ABCDCutsLow,ABCDCutsHigh]
+
 	def dijetSteps1(self):
 		mysteps = []
 		for cut in self.IniCuts+self.Cuts:
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
 			if cut is self.Cuts[-1]:
 				mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-				mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices',plot2D=True))
+				mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices',plot2D=True,plot1D=False))
 		return ([supy.steps.filters.label('dijet multiplicity filters')]+mysteps)
 
 	def dijetSteps2(self):
 		mysteps=[]
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
-			mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i)).onlySim())
+		for cutSet in self.ABCDCutsSets:
+			mysteps.append(steps.plots.cutvars(indices=cutSet[-1]['name']+'Indices'))
+			mysteps.append(steps.plots.observables(indices=cutSet[-1]['name']+'Indices'))
+			mysteps.append(steps.other.collector(indices=cutSet[-1]['name']+'Indices',
+            vars=['dijetDiscriminant',
+				  'dijetNPromptTracks1',
+                  'dijetNPromptTracks2',
+                  'dijetPromptEnergyFrac1',
+				  'dijetPromptEnergyFrac2',
+				  'dijetMass',
+				  'dijetVtxN1',
+				  'dijetVtxN2',
+				  'dijetPt1',
+				  'dijetPt2',
+				  'dijetLxy',
+                  'run',
+                  'lumiSection',
+                  'event']))
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
 
 	def calcsIndices(self):
 		calcs = []
-		cuts = self.IniCuts + self.Cuts + self.ABCDCutsSets[-1]
+		cuts = self.IniCuts + self.Cuts
+		cutsLow = self.Cuts[-1:] + self.ABCDCutsSets[0]
+		cutsHigh = self.Cuts[-1:] + self.ABCDCutsSets[1]
 		for cutPrev,cutNext in zip(cuts[:-1],cuts[1:]):
+			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
+		for cutPrev,cutNext in zip(cutsLow[:-1],cutsLow[1:]):
+			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
+		for cutPrev,cutNext in zip(cutsHigh[:-1],cutsHigh[1:]):
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
 		for i in range(len(self.ABCDCutsSets)) :
 			calcs.append(calculables.Indices.ABCDEFGHIndices(indices=self.Cuts[-1]['name']+'Indices',
@@ -102,10 +129,8 @@ class abcdMu24(supy.analysis) :
 
 			### pile-up reweighting
 			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-				target=("data/pileup/HT300_Double_R12BCD_true.root","pileup"),
+				target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
-
-			+[steps.event.effDenom().onlySim()]
 
 			### filters
 			+[supy.steps.filters.label('data cleanup'),
@@ -123,8 +148,8 @@ class abcdMu24(supy.analysis) :
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
-            steps.trigger.hltFilterWildcard("HLT_IsoMu24_eta2p1_v"),
-			supy.steps.filters.multiplicity("muonTightIdLooseIso",min=1),
+            steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
+			supy.steps.filters.value("caloHT",min=325),
 			#steps.event.runModulo(modulo=11,inverted=True).onlyData(),
 			]
 
@@ -149,26 +174,17 @@ class abcdMu24(supy.analysis) :
 		nFiles = None # or None for all
 		nEvents = None # or None for all
 
-		qcd_samples = []
-		sig_samples = []
-		for i in range(len(self.qcd_names)):
-			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupTrueNumInteractionsBX0Target']))
-		for i in range(len(self.sig_names)):
-			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
-
-		return (supy.samples.specify(names = "mudataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4430) + 
-			supy.samples.specify(names = "mudataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=495.03) +
-			supy.samples.specify(names = "mudataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3) +
-			supy.samples.specify(names = "mudataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274)
-			#+ qcd_samples
-			#+sig_samples 
+		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4430) 
+			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=495.03) 
+			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3) 
+			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274)
 		) 
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
-		org.mergeSamples(targetSpec = {"name":"MuData", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "mudata")
+		#org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
+		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		#org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
@@ -179,5 +195,5 @@ class abcdMu24(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		plotABCDscan(self,org,plotter,8,blind=True)
-		plotExpLimit(self,org)
+		#plotABCDscan(self,org,plotter,8,blind=False)
+		#plotExpLimit(self,8,org)

@@ -69,10 +69,10 @@ class isr(supy.analysis) :
 		supy.steps.printer.progressPrinter()]
 		### pile-up reweighting
 		+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-                                    target=("data/pileup/HT300_Double_R12BCD_true.root","pileup"),
+                                    target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('H',[])]).onlySim()] 
 		+[supy.calculables.other.Target("HPt",thisSample=config['baseSample'],
-                                    target=("data/H200.root","hpt"),
+                                    target=(supy.whereami()+"/../data/H200.root","hpt"),
                                     ).onlySim()] 
 		### filters
 

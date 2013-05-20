@@ -6,6 +6,7 @@ class kshorts(supy.analysis) :
 		{'name':'ks'},
 		{'name':'ksNoOverlaps','val':True},
 		{'name':'ksCtau','max':12},
+		#{'name':'ksEta','max':1.,'min':-1.},
 		#{'name':'ksLxy','max':2},
 		#{'name':'ksMass','min':0.48,'max':0.52},
 		{'name':'kscolin','min':0},
@@ -54,7 +55,7 @@ class kshorts(supy.analysis) :
 
 			### pile-up reweighting
 			#+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-			#	target=("data/pileup/HT300_R12BCD_true.root","pileup"),
+			#	target=(supy.whereami()+"/../data/pileup/HT300_R12BCD_true.root","pileup"),
 			#	groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### filters
@@ -148,7 +149,7 @@ class kshorts(supy.analysis) :
 			pdfFileName = self.pdfFileName(org.tag),
 			samplesForRatios = ("Data","Simulation"),
 			sampleLabelsForRatios = ("Data","Sim"),
-			#doLog=False,
+			doLog=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,
 			doCorrTable=True,
@@ -173,7 +174,7 @@ class kshorts(supy.analysis) :
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} L_{xy} [cm]; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "legendCoords": (0.65, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"ksLxyz",
                                               "stepName":"efftrk",

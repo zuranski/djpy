@@ -55,7 +55,7 @@ class trigeff2Disp(supy.analysis) :
 
 			### pile-up reweighting
 			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-				target=("data/pileup/HT300_R12BCD_true.root","pileup"),
+				target=(supy.whereami()+"/../data/pileup/HT300_R12BCD_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### trigger
@@ -74,7 +74,7 @@ class trigeff2Disp(supy.analysis) :
 		return ( supy.calculables.zeroArgs(supy.calculables) +
 			supy.calculables.zeroArgs(calculables) 
 			+self.calcsIndices()
-			+[calculables.Matching.jetTrigPrompt('hlt2DisplacedHT300L1FastJetL3Filter')]
+			+[calculables.TrigMatching.jetTrigPrompt('hlt2DisplacedHT300L1FastJetL3Filter')]
                  )
     
 	def listOfSampleDictionaries(self) :

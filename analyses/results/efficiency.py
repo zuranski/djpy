@@ -14,14 +14,13 @@ class efficiency(supy.analysis) :
 
 	AccCuts=[
 		{'name':'gendijet'},
-		{'name':'gendijetqID1','max':6},
-		{'name':'gendijetqID2','max':6},
-		{'name':'gendijetLxy','max':50},
+		{'name':'gendijetqID','max':6,'min':0},
+		{'name':'gendijetLxy','max':60},
 		{'name':'gendijetEta1','max':2},		
 		{'name':'gendijetEta2','max':2},
 		{'name':'gendijetPt1','min':40},
 		{'name':'gendijetPt2','min':40},
-		#{'name':'gendijetDR','min':1.},
+		{'name':'gendijetDR','min':0.5},
 	]
  
 	IniCuts=[
@@ -69,14 +68,14 @@ class efficiency(supy.analysis) :
 
 	def dijetSteps0(self):
 		mysteps = []
-		#for cut in self.AccCuts:
-		#	mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
+		for cut in self.AccCuts:
+			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
 		return([supy.steps.filters.label('Acceptance Cuts')]+mysteps)
 	
 	def dijetSteps1(self):
 		mysteps = []
 		for cut in self.IniCuts+self.Cuts:
-			#mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
+			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
 			if cut == self.IniCuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			if cut == self.Cuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			if cut == self.ABCDCutsHigh[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
@@ -86,9 +85,8 @@ class efficiency(supy.analysis) :
 		mysteps=[]
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
-			#mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i),pdfweights=None,cand=True).onlySim())
 		for cut in self.ABCDCutsLow:
-			#mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
+			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
 			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.observables(indices=cut['name']+'Indices'))
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
@@ -133,11 +131,10 @@ class efficiency(supy.analysis) :
 		supy.steps.printer.progressPrinter()]
 		### pile-up reweighting
 		+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-                                    target=("data/pileup/HT300_Double_R12BCD_true.root","pileup"),
+                                    target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('H',[])]).onlySim()] 
 		### filters
-		+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=1,max=1)]
-		+[steps.other.genParticleMultiplicity(pdgIds=[13],collection='genqFlavor',min=2,max=2)]
+		+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
 
 		### acceptance filters
 		+self.dijetSteps0()
@@ -193,22 +190,26 @@ class efficiency(supy.analysis) :
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles, weights = ['pileupTrueNumInteractionsBX0Target']))
 			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
+		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,2,4]]
 
-		return sig_samples
+		return sig_samples[3:4]
+		#return toPlot
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(350) #rightarrow q#bar{q}", "color":r.kBlue,"lineWidth":3,"goptions":""}, allWithPrefix = "H_1000_X_350")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow X(150) #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":""}, allWithPrefix = "H_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow X(150) #rightarrow q#bar{q}", "color":r.kBlack,"lineWidth":3,"goptions":""}, allWithPrefix = "H_400_X_150")
-		org.scale(lumiToUseInAbsenceOfData=16740)
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")                                 
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150")                               
+		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")                               
+		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			#anMode=True,
+			anMode=True,
 			showStatBox=True,
-			pegMinimum=0.01,
+			pegMinimum=0.1,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
@@ -220,20 +221,20 @@ class efficiency(supy.analysis) :
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";Mass [GeV/c^{2}];di-jets / bin",
-                                              "legendCoords": (0.45, 0.55, 0.9, 0.75),
+                                              "legendCoords": (0.55, 0.6, 0.85, 0.8),
                                               "stampCoords": (0.7, 0.88)
                                               },
 											  {"plotName":"Lxy_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";L_{xy} [cm];di-jets / bin",
-                                              "legendCoords": (0.45, 0.55, 0.9, 0.75),
+                                              "legendCoords": (0.55, 0.6, 0.85, 0.8),
                                               "stampCoords": (0.7, 0.88)
                                               },
                                             ]
                                )
 		
-		self.totalEfficiencies(org,dir='eff1mu')
+		self.totalEfficiencies(org,dir='eff2b',flavor='b')
 		#self.puEff(org,plotter)
 
 	def puEff(self,org,plotter):
@@ -246,21 +247,21 @@ class efficiency(supy.analysis) :
 		plotter.individualPlots(plotSpecs = [{"plotName":"effPU",
                                               "stepName":"",
                                               "stepDesc":"",
-                                              "newTitle":"; pile-up vertices; Reconstruction Efficiency",
-                                              "legendCoords": (0.2, 0.2, 0.5, 0.4),
-                                              "stampCoords": (0.42, 0.85),}
+                                              "newTitle":"; pile-up vertices; X#rightarrow q#bar{q} Reconstruction Efficiency",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),}
                                             ],
                                 histos=eff,
                                )
 
-	def totalEfficiencies(self,org,dir=None) :
+	def totalEfficiencies(self,org,dir=None,flavor='') :
 		recoLow,recoHigh,acceptance,denom=None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'NXRecoLow' == plotName : recoLow=step[plotName]
-				if 'NXRecoHigh' == plotName : recoHigh=step[plotName]
-				if 'NXAcc' == plotName : acceptance=step[plotName]
-				if 'NX' == plotName : denom=step[plotName]
+				if 'NXRecoLow'+flavor == plotName : recoLow=step[plotName]
+				if 'NXRecoHigh'+flavor == plotName : recoHigh=step[plotName]
+				if 'NXAcc'+flavor == plotName : acceptance=step[plotName]
+				if 'NX'+flavor == plotName : denom=step[plotName]
 
 		acc = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(acceptance,denom)])
 		efflow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,denom)])
@@ -268,7 +269,7 @@ class efficiency(supy.analysis) :
 		effacclow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,acceptance)])
 		effacchigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,acceptance)])
 	
-		fs = [0.5,1,1.5]	
+		fs = [0.4,0.6,1.,1.4]	
 		#expos = [-1.,-0.8,-0.6,-0.4,-0.2,0]
 		#fs = [pow(10,a) for a in expos]
 		allfs = [0.1*a for a in fs] 
@@ -283,7 +284,7 @@ class efficiency(supy.analysis) :
 		#	print n,d,n/d,allfs[i]
 
 
-		f=1
+		f=0.89
 		sysmap={'1000350':0.08,'1000150':0.08,'400150':0.1,'40050':0.08,'20050':0.22}
 
 		import pickle,math
