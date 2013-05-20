@@ -8,7 +8,6 @@ class kshorts(supy.analysis) :
 		{'name':'ksCtau','max':12},
 		#{'name':'ksEta','max':1.,'min':-1.},
 		#{'name':'ksLxy','max':2},
-		#{'name':'ksMass','min':0.48,'max':0.52},
 		{'name':'kscolin','min':0},
 		{'name':'ksMass','min':0.48,'max':0.515},
 		# vertex minimal
@@ -16,8 +15,6 @@ class kshorts(supy.analysis) :
 	# obtained scale is 1.495 - the QCD cross-sections need to be multiplied by 1/1.495 factor
 	CutsScale=[
         {'name':'ksLxy','max':2},
-        #{'name':'ksTrk1Pt','min':2.},
-        #{'name':'ksTrk2Pt','min':2.},
 	]
 
 	def ksSteps(self):
@@ -44,8 +41,6 @@ class kshorts(supy.analysis) :
 
 	def calcsVars(self):
 		calcs = []
-		#for calc in self.ToCalculate:
-		#	calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
 		calcs.append(calculables.Overlaps.ksNoOverlaps('ksIndices'))
 		return calcs
 
@@ -82,12 +77,6 @@ class kshorts(supy.analysis) :
 			+[supy.calculables.other.Ratio("nPV",binning=(25,4.5,29.5),thisSample=config['baseSample'],
 				target=("data",[]),
 				groups=[('qcd',[])])] 
-
-			#+[supy.calculables.other.Ratio("pfHT",binning=(100,250,1000),thisSample=config['baseSample'],
-			#	target=("data",[]),
-			#	groups=[('qcd',[])])] 
-
-			#+[supy.steps.filters.value('pfHT',min=280),]
 
 			### plots
 			+[steps.event.general(),steps.plots.general(njets=1,indices='jetIndices')]

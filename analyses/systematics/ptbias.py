@@ -70,13 +70,6 @@ class ptbias(supy.analysis) :
 		return ( supy.calculables.zeroArgs(supy.calculables) +
 		supy.calculables.zeroArgs(calculables)
 		+self.calcsIndices()
-		+[
-		  calculables.Vars.jetPtGeom('jetgenjetLxyIndices'),
-		  calculables.Vars.jetgenjetEnergyDiff('jetgenjetLxyIndices'),
-		  calculables.Vars.jetgenjetPtDiff('jetgenjetLxyIndices'),
-		  calculables.Vars.jetgenjetPhiDiff('jetgenjetLxyIndices'),
-		  calculables.Vars.jetgenjetEtaDiff('jetgenjetLxyIndices'),
-		 ]
 		)
 
 	def listOfSampleDictionaries(self) :

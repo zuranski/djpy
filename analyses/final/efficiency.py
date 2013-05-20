@@ -121,8 +121,8 @@ class efficiency(supy.analysis) :
 
 	def calcsVars(self):
 		calcs = []
-		for calc in self.ToCalculate:
-			calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
+		#for calc in self.ToCalculate:
+		#	calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
