@@ -32,7 +32,7 @@ class jetgenjetMatch(wrappedChain.calculable):
 class jetgenjet(wrappedChain.calculable):
 	def update(self,ignored):
 		self.value = [self.source['genjet'+self.var][self.source['jetgenjetMatch'][i]] 
-					  if self.source['jetgenjetMatch'][i] is not None else None for i in self.source['jetIndices']]
+					  if self.source['jetgenjetMatch'][i] is not None else -999 for i in self.source['jetIndices']]
 
 class jetgenjetEta(jetgenjet): var='Eta'
 class jetgenjetPhi(jetgenjet): var='Phi'
