@@ -1,4 +1,5 @@
 from supy.defaults import *
+from supy import whereami
 
 def mainTree():
 	return ("djTree","tree")
@@ -7,4 +8,4 @@ def experiment():
 	return "cms"
 
 def cppFiles() :
-    return ["cpp/dict.cpp"]
+    return [whereami()+"/../cpp/dict.cpp"]
