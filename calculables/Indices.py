@@ -1,17 +1,12 @@
 from supy import wrappedChain
 from utils import passed
 
-class jetIndices(wrappedChain.calculable):
-	def update(self,ignored):
-		self.value = [i for i in range(len(self.source['jetPt']))]
+class List(wrappedChain.calculable):
+	def update(self,ignored): self.value=[idx for idx in range(len(self.source[self.var+'Pt']))]
 
-class dijetIndices(wrappedChain.calculable):
-	def update(self,ignored):
-		self.value = [i for i in range(len(self.source['dijetPt']))]
-
-class ksIndices(wrappedChain.calculable):
-	def update(self,ignored):
-		self.value = [i for i in range(len(self.source['ksPt']))]
+class ksIndices(List): var='ks'
+class jetIndices(List): var='jet'
+class dijetIndices(List): var='dijet'
 
 class Indices(wrappedChain.calculable):
 	def __init__(self,cut={},indices='',tag=''):
