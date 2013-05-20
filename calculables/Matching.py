@@ -30,27 +30,17 @@ class dijetTrue(wrappedChain.calculable):
                       self.source['jetTrueLxy'][self.source['dijetIdx2'][i]] != None else None
                       for i in self.source['dijetIndices']]
 
-class jetTrueLxy(jetTrue):
-	var='genqLxy'
-class jetTrueCtau(jetTrue):
-	var='genqCtau'
-class jetTrueFlavor(jetTrue):
-	var='genqFlavor'
-class jetTrueNLep(jetTrue):
-	var='genqNLep'
-class jetTrueBlxyz(jetTrue):
-	var='genqBlxyz'
+class jetTrueLxy(jetTrue): var='genqLxy'
+class jetTrueCtau(jetTrue): var='genqCtau'
+class jetTrueFlavor(jetTrue): var='genqFlavor'
+class jetTrueNLep(jetTrue):	var='genqNLep'
+class jetTrueBlxyz(jetTrue): var='genqBlxyz'
 
-class dijetTrueLxy(dijetTrue):
-	var='jetTrueLxy'
-class dijetTrueCtau(dijetTrue):
-	var='jetTrueCtau'
-class dijetTrueFlavor(dijetTrue):
-	var='jetTrueFlavor'
-class dijetTrueNLep(dijetTrue):
-	var='jetTrueNLep'
-class dijetTrueBlxyz(dijetTrue):
-	var='jetTrueBlxyz'
+class dijetTrueLxy(dijetTrue): var='jetTrueLxy'
+class dijetTrueCtau(dijetTrue):	var='jetTrueCtau'
+class dijetTrueFlavor(dijetTrue): var='jetTrueFlavor'
+class dijetTrueNLep(dijetTrue):	var='jetTrueNLep'
+class dijetTrueBlxyz(dijetTrue): var='jetTrueBlxyz'
 
 class jetTrigPrompt(wrappedChain.calculable):
 	def __init__(self,tag):
