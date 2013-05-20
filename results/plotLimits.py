@@ -36,12 +36,12 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	mg.GetXaxis().SetTitle('c#tau [cm]')
 	ctaus=sorted([obj['ctau'] for obj in list])
 	mg.GetXaxis().SetRangeUser(ctaus[0]*0.95,ctaus[-1]*2)
-	if 'acceptance' in plotDir:
+	if option=='ea':
 		#mg.GetYaxis().SetTitle('#sigma #times BR #times Acceptance [pb] (95% CL)')
-		mg.GetYaxis().SetTitle('#sigma #times Acceptance [pb] (95% CL)')
+		mg.GetYaxis().SetTitle('#sigma B^{2} #times Acceptance [pb] (95% CL)')
 	else:
 		#mg.GetYaxis().SetTitle('#sigma #times BR [pb] (95% CL)')
-		mg.GetYaxis().SetTitle('#sigma [pb] (95% CL)')
+		mg.GetYaxis().SetTitle('#sigma B^{2} [pb] (95% CL)')
 
 	leg=r.TLegend(0.23,0.56,0.55,0.79)
 	leg.SetFillColor(0)
@@ -55,14 +55,15 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	leg.AddEntry(g[3],'Exp. \\pm 2\\sigma','F')
 	leg.Draw('same')
 	cmsStamp(lumi=18600,coords=(0.45,0.89))
-	name=str(MH)+'_'+str(MX)
+	name=str(MH)+'_'+str(MX)+option
 	os.chdir(plotDir)
 	c.SaveAs(name+'.eps')
 	os.system('epstopdf '+name+'.eps')
 	os.system('rm '+name+'.eps')
 	os.chdir('../../')
 
-limDir=sys.argv[1]+'/limits/'
+option=sys.argv[3]
+limDir=sys.argv[1]+'/limits'+option+'/'
 plotDir=sys.argv[1]+'/plots/'
 files=[f for f in os.listdir(limDir) if '.pkl' in f]
 setupTdrStyle()

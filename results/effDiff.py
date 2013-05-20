@@ -14,6 +14,9 @@ def weightedAvg(x,w):
 dir1=sys.argv[1]+'/efficiencies'
 dir2=sys.argv[2]+'/efficiencies'
 
+option=sys.argv[3]
+dict={'e':('\epsilon',1),'a':('Acceptance',0),'ea':('\epsilon_{InAcceptance}',2)}
+
 files1=sorted(os.listdir(dir1),key=lambda file: (eval(file[:-4].split('_')[1]),
                            eval(file[:-4].split('_')[3]),
                            eval(file[:-4].split('_')[4]))
@@ -27,10 +30,10 @@ files2=sorted(os.listdir(dir2),key=lambda file: (eval(file[:-4].split('_')[1]),
 x,w=[],[]
 
 for file1,file2 in zip(files1,files2):
-	dict1,dict2=pickle.load(open(dir1+'/'+file1)),pickle.load(open(dir2+'/'+file2))
+	data1,data2=pickle.load(open(dir1+'/'+file1)),pickle.load(open(dir2+'/'+file2))
 	factor = eval(file1[:-4].split('_')[4])
 	if factor != 0.1 and factor!=1 and factor!=10 : continue
-	e1,e2 = dict1['eff'],dict2['eff']
+	e1,e2 = data1[dict[option][1]],data2[dict[option][1]]
 	if e1[0]==e2[0]==0 : continue
 	diff = 100* 2*(e1[0]-e2[0])/(e1[0]+e2[0])
 	n1=pow(e1[0]/e1[1],2)

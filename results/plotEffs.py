@@ -32,10 +32,14 @@ def effPlot(MH = None,MX = None,list = None):
 
 	name=str(MH)+'_'+str(MX)
 	os.chdir(plotDir)
-	c.SaveAs('eff'+name+'.eps')
-	os.system('epstopdf eff'+name+'.eps')
-	os.system('rm eff'+name+'.eps')
+	fname=dictionary[option][0]+name
+	c.SaveAs(fname+'.eps')
+	os.system('epstopdf '+fname+'.eps')
+	os.system('rm '+fname+'.eps')
 	os.chdir('../../')
+
+option=sys.argv[2]
+dictionary={'e':('eff',1),'a':('acc',0),'ea':('effacc',2)}
 
 effDir=sys.argv[1]+'/efficiencies/'
 plotDir=sys.argv[1]+'/plots/'
@@ -53,7 +57,8 @@ for H,X,CTAU in zip(MH,MX,CTAUS):
 		h,x,factor=eval(items[1]),eval(items[3]),eval(items[4])
 		if h!=H or x!=X : continue
 		ctau=factor*CTAU
-		dict=pickle.load(open(effDir+f))
+		eff=pickle.load(open(effDir+f))[dictionary[option][1]]
+		dict={'eff':eff}
 		dict['ctau']=ctau
 		data.append(dict)
 	from operator import itemgetter
