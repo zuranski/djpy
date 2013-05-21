@@ -81,6 +81,14 @@ class NXAcc(eff):
 				self.book.fill(bin*N+i,'NXAcc',3*N,-0.5,3*N-0.5,w=weights[i])
 				self.book.fill(bin*N+i,'NXAcc'+self.flavorMap[X2qqFlavors[idx]],3*N,-0.5,3*N-0.5,w=weights[i])
 
+		for idx in e[self.indicesAcc]:
+			self.book.fill(e['gendijetLxy'][idx],'AccLxy',10,0,50)
+			self.book.fill(e['gendijetLxy'][idx],'AccLxy'+self.flavorMap[X2qqFlavors[idx]],10,0,50)
+			self.book.fill(e['gendijetNLep'][idx],'AccNLep',5,-0.5,4.5)
+			self.book.fill(e['gendijetNLep'][idx],'AccNLep'+self.flavorMap[X2qqFlavors[idx]],5,-0.5,4.5)
+			self.book.fill(e['gendijetBlxyz'][idx],'AccBlxyz',10,-0.,5.)
+			self.book.fill(e['gendijetBlxyz'][idx],'AccBlxyz'+self.flavorMap[X2qqFlavors[idx]],10,0.,5.)
+
 class NXReco(eff):
 	def uponAcceptance(self,e):
 
@@ -96,12 +104,18 @@ class NXReco(eff):
 
 		indicesLow = e[self.indicesRecoLow]['H'] if type(e[self.indicesRecoLow])==dict else e[self.indicesRecoLow]
 		indicesHigh = e[self.indicesRecoHigh]['H'] if type(e[self.indicesRecoHigh])==dict else e[self.indicesRecoHigh]
+		indices = indicesLow+indicesHigh
+		names = ['Low']*len(indicesLow) + ['High']*len(indicesHigh)		
 
 		for i in range(len(self.fs)):
-			for idx in indicesLow:
-				self.book.fill(bin*N+i,'NXRecoLow',3*N,-0.5,3*N-0.5,w=weights[i])
-				self.book.fill(bin*N+i,'NXRecoLow'+self.flavorMap[e['dijetTrueFlavor'][idx]],3*N,-0.5,3*N-0.5,w=weights[i])
-			for idx in indicesHigh:
-				self.book.fill(bin*N+i,'NXRecoHigh',3*N,-0.5,3*N-0.5,w=weights[i])
-				self.book.fill(bin*N+i,'NXRecoHigh'+self.flavorMap[e['dijetTrueFlavor'][idx]],3*N,-0.5,3*N-0.5,w=weights[i])
-				
+			for idx,name in zip(indices,names):
+				self.book.fill(bin*N+i,'NX'+name,3*N,-0.5,3*N-0.5,w=weights[i])
+				self.book.fill(bin*N+i,'NX'+name+self.flavorMap[e['dijetTrueFlavor'][idx]],3*N,-0.5,3*N-0.5,w=weights[i])
+
+		for idx,name in zip(indices,names):
+			self.book.fill(e['dijetTrueLxy'][idx],name+'Lxy',10,0,50)
+			self.book.fill(e['dijetTrueLxy'][idx],name+'Lxy'+self.flavorMap[e['dijetTrueFlavor'][idx]],10,0,50)
+			self.book.fill(e['dijetTrueNLep'][idx],name+'NLep',5,-0.5,4.5)
+			self.book.fill(e['dijetTrueNLep'][idx],name+'NLep'+self.flavorMap[e['dijetTrueFlavor'][idx]],5,-0.5,4.5)
+			self.book.fill(e['dijetTrueBlxyz'][idx],name+'Blxyz',10,0.,5.)
+			self.book.fill(e['dijetTrueBlxyz'][idx],name+'Blxyz'+self.flavorMap[e['dijetTrueFlavor'][idx]],10,0.,5.)
