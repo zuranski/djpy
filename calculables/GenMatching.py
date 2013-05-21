@@ -25,7 +25,7 @@ class dijetTrue(wrappedChain.calculable):
 			self.value = [True for i in self.source['dijetIndices']]
 			return
 		self.value = [(self.source[self.var][self.source['dijetIdx1'][i]] +
-		              self.source[self.var][self.source['dijetIdx2'][i]])/2.
+		              self.source[self.var][self.source['dijetIdx2'][i]])/(2. if self.avg else 1.)
                       if self.source['jetTrueLxy'][self.source['dijetIdx1'][i]] ==
                       self.source['jetTrueLxy'][self.source['dijetIdx2'][i]] != None else None
                       for i in self.source['dijetIndices']]
@@ -36,9 +36,9 @@ class jetTrueFlavor(jetTrue): var='genqFlavor'
 class jetTrueNLep(jetTrue):	var='genqNLep'
 class jetTrueBlxyz(jetTrue): var='genqBlxyz'
 
-class dijetTrueLxy(dijetTrue): var='jetTrueLxy'
-class dijetTrueCtau(dijetTrue):	var='jetTrueCtau'
-class dijetTrueFlavor(dijetTrue): var='jetTrueFlavor'
-class dijetTrueNLep(dijetTrue):	var='jetTrueNLep'
-class dijetTrueBlxyz(dijetTrue): var='jetTrueBlxyz'
+class dijetTrueLxy(dijetTrue): var='jetTrueLxy'; avg=True
+class dijetTrueCtau(dijetTrue):	var='jetTrueCtau'; avg=True
+class dijetTrueFlavor(dijetTrue): var='jetTrueFlavor'; avg=True
+class dijetTrueNLep(dijetTrue):	var='jetTrueNLep'; avg=False
+class dijetTrueBlxyz(dijetTrue): var='jetTrueBlxyz'; avg=True
 
