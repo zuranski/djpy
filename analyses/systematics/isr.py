@@ -9,22 +9,20 @@ class isr(supy.analysis) :
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate = ['dijetVtxNRatio','dijetPt1','dijetPt2','dijetPt1Up','dijetPt1Down','dijetPt2Up','dijetPt2Down']
-	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']   
-
 	AccCuts=[
 		{'name':'gendijet'},
-		#{'name':'gendijetLxy','max':50},
-		#{'name':'gendijetEta1','max':2},
-		#{'name':'gendijetEta2','max':2},
-		#{'name':'gendijetPt1','min':40},
-		#{'name':'gendijetPt2','min':40},
-		#{'name':'gendijetDR','min':1.},
+		{'name':'gendijetFlavor','max':6,'min':0},
+		{'name':'gendijetLxy','max':60},
+		{'name':'gendijetEta1','max':2},
+		{'name':'gendijetEta2','max':2},
+		{'name':'gendijetPt1','min':40},
+		{'name':'gendijetPt2','min':40},
+		#{'name':'gendijetDR','min':0.5},
 	]
  
 	IniCuts=[
         {'name':'dijet'},
-		#{'name':'dijetTrueLxy','min':0},
+		{'name':'dijetTrueLxy','min':0},
         {'name':'dijetPt1','min':40},
         {'name':'dijetPt2','min':40},
 		#{'name':'dijetTrueLxy','min':0},
@@ -39,7 +37,7 @@ class isr(supy.analysis) :
 	def dijetSteps0(self):
 		mysteps = []
 		for cut in self.AccCuts:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
+			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
 		return([supy.steps.filters.label('Acceptance Cuts')]+mysteps)
 	
 	def dijetSteps1(self):
@@ -58,12 +56,6 @@ class isr(supy.analysis) :
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
 		return calcs
 
-	def calcsVars(self):
-		calcs = []
-		for calc in self.ToCalculate:
-			calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
-		return calcs
-
 	def listOfSteps(self,config) :
 		return ([
 		supy.steps.printer.progressPrinter()]
@@ -72,15 +64,18 @@ class isr(supy.analysis) :
                                     target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('H',[])]).onlySim()] 
 		+[supy.calculables.other.Target("HPt",thisSample=config['baseSample'],
-                                    target=(supy.whereami()+"/../data/H200.root","hpt"),
+                                    target=(supy.whereami()+"/../data/H400.root","hpt"),
                                     ).onlySim()] 
 		### filters
+		+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
 
 		### acceptance filters
 		#+[supy.steps.filters.value('mygenHT',min=180)]
 		+self.dijetSteps0()
 
-		+[steps.event.effDenom(indices=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
+		+[steps.efficiency.NX(pdfweights=None)]
+		+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
+
 	
 		+[supy.steps.filters.label('data cleanup'),
 		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
@@ -105,13 +100,16 @@ class isr(supy.analysis) :
 
 		+self.dijetSteps1()
 		+[steps.event.general()]
-		+[steps.event.effNum(indices=self.IniCuts[-1]['name']+'Indices',pdfweights=None)]	
+		+[
+          steps.efficiency.NXReco(pdfweights=None,
+              indicesRecoLow=self.IniCuts[-1]['name']+'Indices',
+              indicesRecoHigh=self.IniCuts[-1]['name']+'Indices')
+         ]	
 		)
 
 	def listOfCalculables(self,config) :
 		return ( supy.calculables.zeroArgs(supy.calculables) +
 		supy.calculables.zeroArgs(calculables)
-		+self.calcsVars()
 		+self.calcsIndices()
 		)
 
@@ -144,48 +142,60 @@ class isr(supy.analysis) :
 		plotter.plotAll()
 		plotter.anMode=True
 		
-		self.totalEfficiencies(org,dir='isr200')
+		self.totalEfficiencies(org,dir='isr400')
 
-	def totalEfficiencies(self,org,dir=None) :
-		num,denom=None,None
+	def totalEfficiencies(self,org,dir=None,flavor='') :
+		recoLow,recoHigh,acceptance,denom=None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'effNum' in plotName : num=step[plotName]
-				if 'effDenom' in plotName : denom=step[plotName]
+				if 'NXLow'+flavor == plotName : recoLow=step[plotName]
+				if 'NXHigh'+flavor == plotName : recoHigh=step[plotName]
+				if 'NXAcc'+flavor == plotName : acceptance=step[plotName]
+				if 'NX'+flavor == plotName : denom=step[plotName]
 
-		efficiency = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom)])
-		expos = [-0.67,-0.33,0.,0.33,0.67]
-		fs = [pow(10,a) for a in expos]
+		acc = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(acceptance,denom)])
+		efflow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,denom)])
+		effhigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,denom)])
+		effacclow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,acceptance)])
+		effacchigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,acceptance)])
+	
+		fs = [0.4,0.6,1.,1.4]	
 		allfs = [0.1*a for a in fs] 
 		allfs += fs 
 		allfs += [10*a for a in fs]
 		allfs = [round(a,5) for a in allfs] 
 		N=len(allfs)
 
+		f=1.
+		sysmap={'1000350':0.08,'1000150':0.08,'400150':0.1,'40050':0.08,'20050':0.22}
+
 		import pickle,math
 		for i,sample in enumerate(org.samples):
 			name = sample['name'].split('.')[0]
 			H,X=name.split('_')[1],name.split('_')[3]
+			sys=sysmap[H+X]
 			ctau = self.ctau[self.sig_names.index(name)]
-			data={}
-			for factor in set(allfs): data[factor] = []
 			for j in range(N):
 				x,y=r.Double(0),r.Double(0)
-				efficiency[i].GetPoint(j,x,y)
-				eff = float(y)
-				effErr = efficiency[i].GetErrorY(j)
+				eff = effhigh
+				effacc = effacchigh
+				if j<N/3: 
+					eff = efflow
+					effacc = effacclow
+				eff[i].GetPoint(j,x,y)
+				e = f*float(y)
+				eErr = f*eff[i].GetErrorY(j)
+				effacc[i].GetPoint(j,x,y)
+				ea = f*float(y)
+				eaErr = f*effacc[i].GetErrorY(j)
+				acc[i].GetPoint(j,x,y)
+				a = float(y)
+				aErr = acc[i].GetErrorY(j)
+				#if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
+				#else : eErr = 0.
+				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
+				#else : eaErr = 0.
 				factor=allfs[j]
-				print H,X,factor,eff,effErr
-				data[factor].append((eff,effErr))
-		
-			for factor in sorted(data.keys()):
-				#print factor,data[factor]
-				eff=data[factor]
-				e=sum([a[0] for a in eff])/len(eff)
-				ee=sum([a[1] for a in eff])/len(eff)
-				eff=(e,ee)
-				topickle = {}
-				topickle['eff']=eff
-				print H,X,factor,eff
-				pickle.dump(topickle,open('results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
-				
+				print H,X,factor,a,aErr,e,eErr,ea,eaErr
+				data=[(a,aErr),(e,eErr),[ea,eaErr]]
+				pickle.dump(data,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))

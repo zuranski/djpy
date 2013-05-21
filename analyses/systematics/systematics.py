@@ -145,8 +145,8 @@ class systematics(supy.analysis) :
 		recoLow,recoHigh,acceptance,denom=None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'NXRecoLow'+flavor == plotName : recoLow=step[plotName]
-				if 'NXRecoHigh'+flavor == plotName : recoHigh=step[plotName]
+				if 'NXLow'+flavor == plotName : recoLow=step[plotName]
+				if 'NXHigh'+flavor == plotName : recoHigh=step[plotName]
 				if 'NXAcc'+flavor == plotName : acceptance=step[plotName]
 				if 'NX'+flavor == plotName : denom=step[plotName]
 
