@@ -9,13 +9,9 @@ class systematics(supy.analysis) :
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate = ['dijetVtxNRatio','dijetPt1','dijetPt2','dijetPt1Up','dijetPt1Down','dijetPt2Up','dijetPt2Down']
-	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']   
-	ToCalculate += ['dijetPtBias1','dijetPtBias2']
-
 	AccCuts=[
 		{'name':'gendijet'},
-		{'name':'gendijetqID','max':6},
+		{'name':'gendijetqFlavor','max':6},
 		{'name':'gendijetLxy','max':60},
 		{'name':'gendijetEta1','max':2},		
 		{'name':'gendijetEta2','max':2},
@@ -63,12 +59,6 @@ class systematics(supy.analysis) :
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
 		return calcs
 
-	def calcsVars(self):
-		calcs = []
-		for calc in self.ToCalculate:
-			calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
-		return calcs
-
 	def listOfSteps(self,config) :
 		return ([
 		supy.steps.printer.progressPrinter()]
@@ -82,8 +72,8 @@ class systematics(supy.analysis) :
 		#+[supy.steps.filters.value('mygenHT',min=180)]
 		+self.dijetSteps0()
 
-		+[steps.event.NX(pdfweights=None)]
-		+[steps.event.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
+		+[steps.efficiency.NX(pdfweights=None)]
+		+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
 	
 		+[supy.steps.filters.label('data cleanup'),
 		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
@@ -109,7 +99,7 @@ class systematics(supy.analysis) :
 		+self.dijetSteps1()
 		#+[steps.event.general()]
 		+[
-          steps.event.NXReco(pdfweights=None,
+          steps.efficiency.NXReco(pdfweights=None,
               indicesRecoLow=self.IniCuts[-1]['name']+'Indices',
               indicesRecoHigh=self.IniCuts[-1]['name']+'Indices')
          ]	
@@ -118,7 +108,6 @@ class systematics(supy.analysis) :
 	def listOfCalculables(self,config) :
 		return ( supy.calculables.zeroArgs(supy.calculables) +
 		supy.calculables.zeroArgs(calculables)
-		+self.calcsVars()
 		+self.calcsIndices()
 		)
 

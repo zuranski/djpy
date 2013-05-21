@@ -9,12 +9,9 @@ class efficiency(supy.analysis) :
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
-	ToCalculate = ['dijetVtxNRatio','dijetPt1','dijetPt2']
-	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']   
-
 	AccCuts=[
 		{'name':'gendijet'},
-		{'name':'gendijetqID','max':6,'min':0},
+		{'name':'gendijetFlavor','max':6,'min':0},
 		{'name':'gendijetLxy','max':60},
 		{'name':'gendijetEta1','max':2},		
 		{'name':'gendijetEta2','max':2},
@@ -76,9 +73,9 @@ class efficiency(supy.analysis) :
 		mysteps = []
 		for cut in self.IniCuts+self.Cuts:
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-			if cut == self.IniCuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-			if cut == self.Cuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-			if cut == self.ABCDCutsHigh[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
+			#if cut == self.IniCuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
+			#if cut == self.Cuts[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
+			#if cut == self.ABCDCutsHigh[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 		return ([supy.steps.filters.label('dijet multiplicity filters')]+mysteps)
 
 	def dijetSteps2(self):
@@ -121,8 +118,6 @@ class efficiency(supy.analysis) :
 
 	def calcsVars(self):
 		calcs = []
-		#for calc in self.ToCalculate:
-		#	calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
@@ -139,8 +134,8 @@ class efficiency(supy.analysis) :
 		### acceptance filters
 		+self.dijetSteps0()
 		+[steps.event.general()]
-		+[steps.event.NX(pdfweights=None)]	
-		+[steps.event.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
+		+[steps.efficiency.NX(pdfweights=None)]	
+		+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
 	
 		+[supy.steps.filters.label('data cleanup'),
 		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
@@ -166,7 +161,7 @@ class efficiency(supy.analysis) :
 		+self.dijetSteps2()
 		+[steps.event.general(tag='1')]
 		+[
-		  steps.event.NXReco(pdfweights=None,
+		  steps.efficiency.NXReco(pdfweights=None,
 			  indicesRecoLow='ABCDEFGHIndices0',
 			  indicesRecoHigh='ABCDEFGHIndices1')
 		 ]
@@ -192,31 +187,37 @@ class efficiency(supy.analysis) :
 			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,2,4]]
 
-		return sig_samples[3:4]
+		return sig_samples
 		#return toPlot
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")                                 
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150")                               
-		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
 			showStatBox=True,
-			pegMinimum=0.1,
+			pegMinimum=0.0001,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
 		#plotter.doLog=False
 		plotter.anMode=True
-		
-			
+	
+		self.sigPlots(plotter)	
+		#self.totalEfficiencies(org,dir='eff2b',flavor='b')
+		self.puEff(org,plotter)
+		self.Efficiencies(org,plotter,flavor='uds')
+
+
+	def sigPlots(self,plotter):			
 		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
@@ -233,9 +234,6 @@ class efficiency(supy.analysis) :
                                               },
                                             ]
                                )
-		
-		self.totalEfficiencies(org,dir='eff2b',flavor='b')
-		#self.puEff(org,plotter)
 
 	def puEff(self,org,plotter):
 		num,denom=None,None
@@ -254,12 +252,54 @@ class efficiency(supy.analysis) :
                                 histos=eff,
                                )
 
+	def Efficiencies(sefl,org,plotter,flavor=''):
+		LxyD,LxyN,NLepN,NLepD,BlxyzN,BlxyzD=None,None,None,None,None,None
+		for step in org.steps:
+			for plotName in sorted(step.keys()):
+				if 'AccLxy'+flavor == plotName : LxyD=step[plotName]
+				if 'AccNLep'+flavor == plotName : NLepD=step[plotName]
+				if 'AccBlxyz'+flavor == plotName : BlxyzD=step[plotName]
+				if 'LowLxy'+flavor == plotName : LxyN=step[plotName]
+				if 'LowNLep'+flavor == plotName : NLepN=step[plotName]
+				if 'LowBlxyz'+flavor == plotName : BlxyzN=step[plotName]
+
+		Lxy = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(LxyN,LxyD)])
+		NLep = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(NLepN,NLepD)])
+		Blxyz = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(BlxyzN,BlxyzD)])
+		plotter.individualPlots(plotSpecs = [{"plotName":"effLxy",
+                                              "stepName":"",
+                                              "stepDesc":"",
+                                              "newTitle":"; L_{xy} [cm]; X#rightarrow q#bar{q} (%s) Reconstruction Efficiency"%flavor,
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),}
+                                            ],
+                                histos=Lxy,
+                               )
+		plotter.individualPlots(plotSpecs = [{"plotName":"effNLep",
+                                              "stepName":"",
+                                              "stepDesc":"",
+                                              "newTitle":";N leptons ; X#rightarrow q#bar{q} (%s) Reconstruction Efficiency"%flavor,
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),}
+                                            ],
+                                histos=NLep,
+                               )
+		plotter.individualPlots(plotSpecs = [{"plotName":"effBlxyz",
+                                              "stepName":"",
+                                              "stepDesc":"",
+                                              "newTitle":"; B L_{xyz} [cm]; X#rightarrow q#bar{q} (%s) Reconstruction Efficiency"%flavor,
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),}
+                                            ],
+                                histos=Blxyz,
+                               )
+
 	def totalEfficiencies(self,org,dir=None,flavor='') :
 		recoLow,recoHigh,acceptance,denom=None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'NXRecoLow'+flavor == plotName : recoLow=step[plotName]
-				if 'NXRecoHigh'+flavor == plotName : recoHigh=step[plotName]
+				if 'NXLow'+flavor == plotName : recoLow=step[plotName]
+				if 'NXHigh'+flavor == plotName : recoHigh=step[plotName]
 				if 'NXAcc'+flavor == plotName : acceptance=step[plotName]
 				if 'NX'+flavor == plotName : denom=step[plotName]
 
