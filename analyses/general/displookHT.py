@@ -2,9 +2,6 @@ import supy,samples,calculables,steps,ROOT as r
 
 class displookHT(supy.analysis) :
     
-	ToCalculateAny=['dijetPt1','dijetPt2','dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
-	ToCalculateVtx=['dijetVtxNRatio']
-
 	IniCuts=[
 		{'name':'dijet'},
 		{'name':'dijetTrueLxy','min':0},
@@ -46,15 +43,6 @@ class displookHT(supy.analysis) :
 		for cutPrev,cutNext in zip(cuts[:-1],cuts[1:]):
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext)
 			)
-		return calcs
-
-	def calcsVars(self):
-		calcs = []
-		for calc in self.ToCalculateVtx:
-			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
-		for calc in self.ToCalculateAny:
-			calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
-		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -101,7 +89,6 @@ class displookHT(supy.analysis) :
 		return ( supy.calculables.zeroArgs(supy.calculables) +
 			supy.calculables.zeroArgs(calculables) 
 			+self.calcsIndices()
-			+self.calcsVars()
                  )
     
 	def listOfSampleDictionaries(self) :
@@ -159,14 +146,14 @@ class displookHT(supy.analysis) :
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-											  {"plotName":"PromptEnergyFrac2_h_dijetVtxNRatio",
+											  {"plotName":"PromptEnergyFrac2_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Charged Prompt Energy Fraction; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                              {"plotName":"NPromptTracks2_h_dijetVtxNRatio",
+                                              {"plotName":"NPromptTracks2_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Number of Prompt Tracks ; dijets / bin",

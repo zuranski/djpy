@@ -193,11 +193,11 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
-		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
@@ -212,9 +212,9 @@ class efficiency(supy.analysis) :
 		plotter.anMode=True
 	
 		self.sigPlots(plotter)	
-		#self.totalEfficiencies(org,dir='eff2b',flavor='b')
-		self.puEff(org,plotter)
-		self.Efficiencies(org,plotter,flavor='uds')
+		self.totalEfficiencies(org,dir='eff2',flavor='')
+		#self.puEff(org,plotter)
+		#self.Efficiencies(org,plotter,flavor='uds')
 
 
 	def sigPlots(self,plotter):			
@@ -325,7 +325,7 @@ class efficiency(supy.analysis) :
 
 
 		f=0.89
-		sysmap={'1000350':0.08,'1000150':0.08,'400150':0.1,'40050':0.08,'20050':0.22}
+		sysmap={'1000350':0.08,'1000150':0.08,'400150':0.11,'40050':0.10,'20050':0.23}
 
 		import pickle,math
 		for i,sample in enumerate(org.samples):
@@ -349,11 +349,11 @@ class efficiency(supy.analysis) :
 				acc[i].GetPoint(j,x,y)
 				a = float(y)
 				aErr = acc[i].GetErrorY(j)
-				#if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
-				#else : eErr = 0.
-				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
-				#else : eaErr = 0.
+				if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
+				else : eErr = 0.
+				if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
+				else : eaErr = 0.
 				factor=allfs[j]
 				print H,X,factor,a,aErr,e,eErr,ea,eaErr
 				data=[(a,aErr),(e,eErr),[ea,eaErr]]
-				pickle.dump(data,open('results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
+				pickle.dump(data,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
