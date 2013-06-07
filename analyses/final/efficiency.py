@@ -193,26 +193,27 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
-		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
 			showStatBox=True,
-			pegMinimum=0.0001,
+			pegMinimum=0.1,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
 		#plotter.doLog=False
 		plotter.anMode=True
 	
-		self.sigPlots(plotter)	
-		self.totalEfficiencies(org,dir='eff2',flavor='')
+		self.meanLxy(org)
+		#self.sigPlots(plotter)	
+		#self.totalEfficiencies(org,dir='eff2',flavor='')
 		#self.puEff(org,plotter)
 		#self.Efficiencies(org,plotter,flavor='uds')
 
@@ -232,8 +233,26 @@ class efficiency(supy.analysis) :
                                               "legendCoords": (0.55, 0.6, 0.85, 0.8),
                                               "stampCoords": (0.7, 0.88)
                                               },
+											  {"plotName":"TrkAvgPt_h_Disc",
+                                              "stepName":"observables",
+                                              "stepDesc":"observables",
+                                              "newTitle":";Average Track p_{T} [GeV/c];di-jets / bin",
+                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
+                                              "stampCoords": (0.35, 0.88)
+                                              },
                                             ]
                                )
+
+	def meanLxy(self,org):
+		lxy0,lxy1,lxy2=None,None,None
+		for step in org.steps:
+			for plotName in sorted(step.keys()):
+				if 'Lxy0.0' in plotName: lxy0=step[plotName]
+				if 'Lxy1.0' in plotName: lxy1=step[plotName]
+				if 'Lxy2.0' in plotName: lxy2=step[plotName]
+		for i,sample in enumerate(org.samples):
+			print sample['name'],round(lxy0[i].GetMean(),2),round(lxy1[i].GetMean(),2),round(lxy2[i].GetMean(),2)
+
 
 	def puEff(self,org,plotter):
 		num,denom=None,None
@@ -349,10 +368,10 @@ class efficiency(supy.analysis) :
 				acc[i].GetPoint(j,x,y)
 				a = float(y)
 				aErr = acc[i].GetErrorY(j)
-				if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
-				else : eErr = 0.
-				if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
-				else : eaErr = 0.
+				#if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
+				#else : eErr = 0.
+				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
+				#else : eaErr = 0.
 				factor=allfs[j]
 				print H,X,factor,a,aErr,e,eErr,ea,eaErr
 				data=[(a,aErr),(e,eErr),[ea,eaErr]]

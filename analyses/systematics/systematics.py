@@ -11,7 +11,7 @@ class systematics(supy.analysis) :
 
 	AccCuts=[
 		{'name':'gendijet'},
-		{'name':'gendijetqFlavor','max':6},
+		{'name':'gendijetFlavor','max':6},
 		{'name':'gendijetLxy','max':60},
 		{'name':'gendijetEta1','max':2},		
 		{'name':'gendijetEta2','max':2},
@@ -22,8 +22,8 @@ class systematics(supy.analysis) :
 	IniCuts=[
         {'name':'dijet'},
 		{'name':'dijetTrueLxy','min':0},
-        {'name':'dijetPt1','min':40},
-        {'name':'dijetPt2','min':40},
+        {'name':'dijetPt1','min':50*1.1},
+        {'name':'dijetPt2','min':50*1.1},
         #{'name':'dijetNPromptTracks1','max':2},
         #{'name':'dijetNPromptTracks2','max':2},
 		#{'name':'dijetPromptEnergyFrac1','max':0.15},
@@ -139,7 +139,7 @@ class systematics(supy.analysis) :
 		plotter.plotAll()
 		plotter.anMode=True
 		
-		self.totalEfficiencies(org,dir='ref')
+		self.totalEfficiencies(org,dir='highpt')
 
 	def totalEfficiencies(self,org,dir=None,flavor='') :
 		recoLow,recoHigh,acceptance,denom=None,None,None,None
@@ -195,4 +195,4 @@ class systematics(supy.analysis) :
 				factor=allfs[j]
 				print H,X,factor,a,aErr,e,eErr,ea,eaErr
 				data=[(a,aErr),(e,eErr),[ea,eaErr]]
-				pickle.dump(data,open('results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
+				pickle.dump(data,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
