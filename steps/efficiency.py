@@ -61,6 +61,9 @@ class NX(eff):
 				self.book.fill(bin*N+i,'NX',3*N,-0.5,3*N-0.5,w=weights[i])
 				self.book.fill(bin*N+i,'NX'+self.flavorMap[X2qqFlavors[idx]],3*N,-0.5,3*N-0.5,w=weights[i])
 
+		for idx in X2qqIndices:
+			self.book.fill(e['gendijetLxy'][idx],'Lxy'+str(bin),100,0,100*pow(10,bin))
+
 
 class NXAcc(eff):
 	def uponAcceptance(self,e):

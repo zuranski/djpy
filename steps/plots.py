@@ -127,6 +127,7 @@ class observables(plots):
 	vars = [
             {'name':'Mass','bins':50,'low':0,'high':500,'label':'Dijet Invariant Mass [GeV]'},
             {'name':'Lxy','bins':50,'low':0,'high':60,'label':'L_{xy}[GeV]'},
+            {'name':'TrkAvgPt','bins':30,'low':0,'high':20,'label':'average track p_{T} [GeV]'},
 	       ]
 
 class trigvars(plots):
