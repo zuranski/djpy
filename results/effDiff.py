@@ -28,10 +28,16 @@ files2=sorted(os.listdir(dir2),key=lambda file: (eval(file[:-4].split('_')[1]),
             )
 
 x,w=[],[]
+H,X=0,0
 
 for file1,file2 in zip(files1,files2):
 	data1,data2=pickle.load(open(dir1+'/'+file1)),pickle.load(open(dir2+'/'+file2))
-	factor = eval(file1[:-4].split('_')[4])
+	strings=file1[:-4].split('_')
+	if ((H!=strings[1] or X!=strings[3]) and H!=0):
+		avg,err=weightedAvg(x,w)
+		print round(avg,5),round(err,5)
+		x,w=[],[]	
+	H,X,factor = strings[1],strings[3],eval(strings[4])
 	if factor != 0.1 and factor!=1 and factor!=10 : continue
 	e1,e2 = data1[dict[option][1]],data2[dict[option][1]]
 	if e1[0]==e2[0]==0 : continue
