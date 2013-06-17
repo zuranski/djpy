@@ -136,9 +136,9 @@ class kshorts(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=11000)
 		plotter=supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			samplesForRatios = ("Data","Simulation"),
-			sampleLabelsForRatios = ("Data","Sim"),
-			doLog=False,
+			#samplesForRatios = ("Data","Simulation"),
+			#sampleLabelsForRatios = ("Data","Sim"),
+			doLog=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,
 			doCorrTable=True,
@@ -189,9 +189,27 @@ class kshorts(supy.analysis) :
                                               "newTitle":"; K_{s} momentum [GeV/c]; K_{s} / bin",
                                               "legendCoords": (0.65, 0.55, 0.9, 0.75),
                                               "stampCoords": (0.7, 0.9),},
+											 {"plotName":"ksLxysig",
+                                              "stepName":"efftrk",
+                                              "stepDesc":"efftrk",
+                                              "newTitle":"; K_{s} L_{xy} significance (L_{xy}>2cm); K_{s} / bin",
+                                              "legendCoords": (0.65, 0.6, 0.9, 0.8),
+                                              "stampCoords": (0.7, 0.9),},
+											 {"plotName":"ksChi2",
+                                              "stepName":"efftrk",
+                                              "stepDesc":"efftrk",
+                                              "newTitle":"; K_{s} vertex #chi^{2}/dof (L_{xy}>2cm); K_{s} / bin",
+                                              "legendCoords": (0.65, 0.6, 0.9, 0.8),
+                                              "stampCoords": (0.7, 0.9),},
+											 {"plotName":"ksTrkPt",
+                                              "stepName":"efftrk",
+                                              "stepDesc":"efftrk",
+                                              "newTitle":"; K_{s} track p_{T} [GeV/c]; K_{s} / bin",
+                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "stampCoords": (0.7, 0.9),},
                                             ],
                                )
-		self.makeEfficiencyPlots(org,'den','num',plotter)
+		#self.makeEfficiencyPlots(org,'den','num',plotter)
 
 	def makeEfficiencyPlots(self, org, denomName, numName, plotter):
 		plotter.pdfFileName += 'effs'

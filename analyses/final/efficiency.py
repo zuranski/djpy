@@ -12,7 +12,7 @@ class efficiency(supy.analysis) :
 	AccCuts=[
 		{'name':'gendijet'},
 		{'name':'gendijetFlavor','max':6,'min':0},
-		{'name':'gendijetLxy','max':60},
+		#{'name':'gendijetLxy','max':60},
 		{'name':'gendijetEta1','max':2},		
 		{'name':'gendijetEta2','max':2},
 		{'name':'gendijetPt1','min':40},
@@ -193,15 +193,15 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")                                 
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150")                               
-		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=True,
+			doLog=False,
 			anMode=True,
 			showStatBox=True,
 			pegMinimum=0.1,
@@ -212,6 +212,7 @@ class efficiency(supy.analysis) :
 		plotter.anMode=True
 	
 		self.meanLxy(org)
+		self.accPt(org,plotter)
 		#self.sigPlots(plotter)	
 		#self.totalEfficiencies(org,dir='eff2',flavor='')
 		#self.puEff(org,plotter)
@@ -253,6 +254,50 @@ class efficiency(supy.analysis) :
 		for i,sample in enumerate(org.samples):
 			print sample['name'],round(lxy0[i].GetMean(),2),round(lxy1[i].GetMean(),2),round(lxy2[i].GetMean(),2)
 
+	def accPt(self,org,plotter):
+		ptn,ptd=[],[]
+		for step in org.steps:
+			for plotName in sorted(step.keys()):
+				if plotName.startswith('XPt'): ptd.append(step[plotName])
+				if plotName.startswith('AccXPt'): ptn.append(step[plotName])
+
+		accpt=[ tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom) ]) for num,denom in zip(ptn,ptd) ]
+		plotter.individualPlots(plotSpecs = [{"plotName":"accPt",
+                                              "stepName":"",
+                                              "stepDesc":"",
+                                              "newTitle":"; X^{0} p_{T} [GeV/c] ; X#rightarrow q#bar{q} Acceptance",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),}
+                                            ],
+                                histos=accpt[0],
+                               )
+		plotter.individualPlots(plotSpecs = [{"plotName":"accPt0",
+                                              "stepName":"",
+                                              "stepDesc":"",
+                                              "newTitle":"; X^{0} p_{T} [GeV/c] ; X#rightarrow q#bar{q} Acceptance",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),}
+                                            ],
+                                histos=accpt[1],
+                               )
+		plotter.individualPlots(plotSpecs = [{"plotName":"accPt1",
+                                              "stepName":"",
+                                              "stepDesc":"",
+                                              "newTitle":"; X^{0} p_{T} [GeV/c] ; X#rightarrow q#bar{q} Acceptance",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),}
+                                            ],
+                                histos=accpt[2],
+                               )
+		plotter.individualPlots(plotSpecs = [{"plotName":"accPt2",
+                                              "stepName":"",
+                                              "stepDesc":"",
+                                              "newTitle":"; X^{0} p_{T} [GeV/c] ; X#rightarrow q#bar{q} Acceptance",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),}
+                                            ],
+                                histos=accpt[3],
+                               )
 
 	def puEff(self,org,plotter):
 		num,denom=None,None
