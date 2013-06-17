@@ -5,7 +5,7 @@ class eff(analysisStep):
 	def __init__(self,indicesAcc='',indicesRecoLow='',indicesRecoHigh='',pdfweights=None):
 		for item in ['indicesAcc','indicesRecoLow','indicesRecoHigh','pdfweights']: setattr(self,item,eval(item))
 		self.trigweights = pickle.load(open(whereami()+"/../data/trigw"))
-		self.flavorMap={1:'uds',2:'uds',3:'uds',4:'c',5:'b'}
+		self.flavorMap={1:'uds',2:'uds',3:'uds',4:'c',5:'b',11:'e',13:'mu'}
 		self.fs = [0.4,0.6,1.,1.4]
 
 	def ctau(self,file):
@@ -63,6 +63,8 @@ class NX(eff):
 
 		for idx in X2qqIndices:
 			self.book.fill(e['gendijetLxy'][idx],'Lxy'+str(bin),100,0,100*pow(10,bin))
+			self.book.fill(e['XPt'][idx],'XPt'+str(bin),20,0,500)
+			self.book.fill(e['XPt'][idx],'XPt',20,0,500)
 
 
 class NXAcc(eff):
@@ -85,6 +87,8 @@ class NXAcc(eff):
 				self.book.fill(bin*N+i,'NXAcc'+self.flavorMap[X2qqFlavors[idx]],3*N,-0.5,3*N-0.5,w=weights[i])
 
 		for idx in e[self.indicesAcc]:
+			self.book.fill(e['XPt'][idx],'AccXPt'+str(bin),20,0,500)
+			self.book.fill(e['XPt'][idx],'AccXPt',20,0,500)
 			self.book.fill(e['gendijetLxy'][idx],'AccLxy',10,0,50)
 			self.book.fill(e['gendijetLxy'][idx],'AccLxy'+self.flavorMap[X2qqFlavors[idx]],10,0,50)
 			self.book.fill(e['gendijetNLep'][idx],'AccNLep',5,-0.5,4.5)
