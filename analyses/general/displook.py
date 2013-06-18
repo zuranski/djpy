@@ -2,9 +2,6 @@ import supy,samples,calculables,steps,ROOT as r
 
 class displook(supy.analysis) :
     
-	ToCalculate=['dijetVtxNRatio']
-	ToCalculate += ['dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
-
 	IniCuts=[
 		{'name':'dijet'},
 		{'name':'dijetTrueLxy','min':0},
@@ -42,13 +39,6 @@ class displook(supy.analysis) :
 		for cutPrev,cutNext in zip(cuts[:-1],cuts[1:]):
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext)
 			)
-		return calcs
-
-	def calcsVars(self):
-		calcs = []
-		for calc in self.ToCalculate:
-			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
-		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -89,7 +79,6 @@ class displook(supy.analysis) :
 		return ( supy.calculables.zeroArgs(supy.calculables) +
 			supy.calculables.zeroArgs(calculables) 
 			+self.calcsIndices()
-			+self.calcsVars()
                  )
     
 	def listOfSampleDictionaries(self) :
@@ -167,7 +156,7 @@ class displook(supy.analysis) :
                                               {"plotName":"VtxN_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Vertex Multiplicity ; di-jets / bin",
+                                              "newTitle":"; Vertex Track Multiplicity ; di-jets / bin",
                                               "legendCoords": (0.55, 0.35, 0.9, 0.55),
                                               "stampCoords": (0.7, 0.8)
                                               },
@@ -188,7 +177,7 @@ class displook(supy.analysis) :
                                               {"plotName":"bestclusterN_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Cluster Multiplicity; di-jets / bin",
+                                              "newTitle":"; Cluster Track Multiplicity; di-jets / bin",
                                               "legendCoords": (0.55, 0.45, 0.9, 0.65),
                                               "stampCoords": (0.7, 0.88)
                                               },

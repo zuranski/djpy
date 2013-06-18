@@ -163,7 +163,7 @@ class displookHT(supy.analysis) :
                                               {"plotName":"VtxN_h_dijetVtxNRatio",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Vertex Multiplicity ; dijets / bin",
+                                              "newTitle":"; Vertex Track Multiplicity ; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
@@ -184,7 +184,7 @@ class displookHT(supy.analysis) :
                                               {"plotName":"bestclusterN_h_dijetVtxNRatio",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Cluster Multiplicity; dijets / bin",
+                                              "newTitle":"; Cluster Track Multiplicity; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
@@ -212,14 +212,14 @@ class displookHT(supy.analysis) :
                                               {"plotName":"VtxN_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Vertex Multiplicity ; dijets / bin",
+                                              "newTitle":"; Vertex Track Multiplicity ; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
                                               {"plotName":"bestclusterN_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Cluster Multiplicity; dijets / bin",
+                                              "newTitle":"; Cluster Track Multiplicity; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
