@@ -5,30 +5,32 @@ class kshorts(supy.analysis) :
 	Cuts=[
 		{'name':'ks'},
 		{'name':'ksNoOverlaps','val':True},
-		{'name':'ksCtau','max':12},
-		#{'name':'ksEta','max':1.,'min':-1.},
-		#{'name':'ksLxy','max':2},
 		{'name':'kscolin','min':0},
-		{'name':'ksMass','min':0.48,'max':0.515},
+		{'name':'ksCtau','max':12},
+		{'name':'ksChi2','max':3.},
+		{'name':'ksTrk1Pt','min':4},
+		{'name':'ksTrk2Pt','min':4},
+		#{'name':'ksMass','min':0.48,'max':0.515},
+		{'name':'ksMass','min':0.4,'max':0.6},
 		# vertex minimal
 	]
-	# obtained scale is 1.495 - the QCD cross-sections need to be multiplied by 1/1.495 factor
+	# obtained scale for trk pt >1 is 1.495 - the QCD cross-sections need to be multiplied by 1/1.495 factor
 	CutsScale=[
         {'name':'ksLxy','max':2},
 	]
 
 	def ksSteps(self):
 		mysteps = []
-		cutsToPlot1D = self.Cuts[-2:] 
 		for cut in self.Cuts:
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
-			if cut in cutsToPlot1D: mysteps.append(steps.plots.kshort(indices=cut['name']+'Indices',ks=True))
+			mysteps.append(steps.plots.kshort(indices=cut['name']+'Indices',ks=True))
 		return ([supy.steps.filters.label('kshort multiplicity filters')]+mysteps)
 
 	def ksStepsScale(self):
 		mysteps = []
 		for cut in self.CutsScale:
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
+			mysteps.append(steps.plots.kshort(indices=cut['name']+'Indices',ks=True))
 		return ([supy.steps.filters.label('kshort Scale multiplicity filters')]+mysteps)
 
 	def calcsIndices(self):
@@ -85,11 +87,13 @@ class kshorts(supy.analysis) :
 			+[supy.calculables.other.Ratio("ksPt",binning=(20,0,40),thisSample=config['baseSample'],
                 target=("data",[]),
                 groups=[('qcd',[])],
-                indices='ksMassIndices')]
+                #indices='ksMassIndices')]
+                indices=self.Cuts[-1]['name']+'Indices')]
 			+[supy.calculables.other.Ratio("ksEta",binning=(20,-2.5,2.5),thisSample=config['baseSample'],
                 target=("data",[]),
                 groups=[('qcd',[])],
-                indices='ksMassIndices')]
+                #indices='ksMassIndices')]
+                indices=self.Cuts[-1]['name']+'Indices')]
 			
 			+[steps.event.efftrk('ksMassIndices')]
 			#+[supy.steps.filters.value('nPV',max=8)]
@@ -111,7 +115,7 @@ class kshorts(supy.analysis) :
 		nFiles = None # or None for all
 		nEvents = None # or None for all
 
-		qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
+		qcd_bins = [str(q) for q in [80,120,170,300,470,	600,800]]
 		qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
 		qcd_samples = []
@@ -131,13 +135,13 @@ class kshorts(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd")
+		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.044/1.495]*6)
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.scale(lumiToUseInAbsenceOfData=11000)
 		plotter=supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			#samplesForRatios = ("Data","Simulation"),
-			#sampleLabelsForRatios = ("Data","Sim"),
+			samplesForRatios = ("Data","Simulation"),
+			sampleLabelsForRatios = ("Data","Sim"),
 			doLog=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,

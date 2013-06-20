@@ -57,7 +57,6 @@ class efftrk(analysisStep):
 			if e['ksJetPt'][idx]>0:
 				self.book.fill(e['ksJetPt'][idx],'numksJetPt',50,40,300,w=ctau_ws[idx],title=';jet p_T [GeV/c]; K_{s} / bin')
 			self.book.fill(e['nPV'],'numnPV',26,4.5,30.5,w=ctau_ws[idx],title=';pile-up vertices; K_{s} / bin')
-			if e['ksLxy'][idx]>2:
-				self.book.fill(e['ksLxysig'][idx],'ksLxysig',100,0,1000,w=ctau_ws[idx],title=';L_{xy} significance; K_{s} / bin')
-				self.book.fill(e['ksChi2'][idx],'ksChi2',50,0,7,w=ctau_ws[idx],title=';#chi^{2}/dof ; K_{s} / bin')
+			self.book.fill(e['ksLxysig'][idx],'ksLxysig',100,0,1000,w=ctau_ws[idx],title=';L_{xy} significance; K_{s} / bin')
+			self.book.fill(e['ksChi2'][idx],'ksChi2',50,0,7,w=ctau_ws[idx],title=';#chi^{2}/dof ; K_{s} / bin')
 
