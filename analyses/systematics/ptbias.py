@@ -12,6 +12,7 @@ class ptbias(supy.analysis) :
 	]
 	Cuts=[
 		{'name':'jet'},
+		{'name':'jetPt','min':40},
 		{'name':'jetgenjetLxy','min':0,'max':60},
 		{'name':'jetgenjetDeltaR','min':0.5},
 		{'name':'jetgenjetAngle','max':100},
@@ -104,7 +105,7 @@ class ptbias(supy.analysis) :
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			anMode=False,
+			anMode=True,
 			showStatBox=True,
 			pegMinimum=10,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
@@ -112,38 +113,45 @@ class ptbias(supy.analysis) :
 		plotter.plotAll()
 
 		org.lumi=None
-		'''
-		plotter.individualPlots(plotSpecs = [{"plotName":"genjetLxy_h_jetgenjetFromDouble",
+		
+		plotter.individualPlots(plotSpecs = [{"plotName":"genjetLxy_h_jetgenjetN",
                                               "stepName":"genjets",
                                               "stepDesc":"genjets",
                                               "newTitle":";L_{xy} [cm] ; jets / bin",
                                               "legendCoords": (0.5, 0.7, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
-                                              {"plotName":"genjetDeltaR_h_jetgenjetFromDouble",
+                                              {"plotName":"genjetDeltaR_h_jetgenjetN",
                                               "stepName":"genjets",
                                               "stepDesc":"genjets",
                                               "newTitle":";q#bar{q} #Delta R; jets / bin",
                                               "legendCoords": (0.5, 0.7, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
-                                              {"plotName":"genjetPtDiff_h_jetgenjetFromDouble",
+                                              {"plotName":"genjetPtDiff_h_jetgenjetN",
                                               "stepName":"genjets",
                                               "stepDesc":"genjets",
                                               "newTitle":";( jet p_{T} - true p_{T} ) / true p_{T}; jets / bin",
                                               "legendCoords": (0.18, 0.7, 0.48, 0.9),
                                               "stampCoords": (0.7, 0.88)
                                               },
-                                              {"plotName":"genjetAngle_h_jetgenjetFromDouble",
+                                              {"plotName":"genjetAngle_h_jetgenjetN",
                                               "stepName":"genjets",
                                               "stepDesc":"genjets",
                                               "newTitle":";approach Angle [deg]; jets / bin",
                                               "legendCoords": (0.5, 0.7, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
+                                              {"plotName":"PtFracTh1_h_jetgenjetN",
+                                              "stepName":"genjets",
+                                              "stepDesc":"genjets",
+                                              "newTitle":";jet energy fraction tracks<0.8GeV [%]; jets / bin",
+                                              "legendCoords": (0.5, 0.7, 0.9, 0.85),
+                                              "stampCoords": (0.7, 0.88)
+                                              },
                                             ]
                                )
-		'''
+		
 		self.profiles(org,plotter)
 
 	def profiles(self,org,plotter):

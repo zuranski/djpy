@@ -8,10 +8,10 @@ class kshorts(supy.analysis) :
 		{'name':'kscolin','min':0},
 		{'name':'ksCtau','max':12},
 		{'name':'ksChi2','max':3.},
-		{'name':'ksTrk1Pt','min':4},
-		{'name':'ksTrk2Pt','min':4},
-		#{'name':'ksMass','min':0.48,'max':0.515},
-		{'name':'ksMass','min':0.4,'max':0.6},
+		{'name':'ksTrk1Pt','min':3},
+		{'name':'ksTrk2Pt','min':3},
+		{'name':'ksMass','min':0.48,'max':0.515},
+		#{'name':'ksMass','min':0.4,'max':0.6},
 		# vertex minimal
 	]
 	# obtained scale for trk pt >1 is 1.495 - the QCD cross-sections need to be multiplied by 1/1.495 factor
@@ -135,7 +135,7 @@ class kshorts(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.044/1.495]*6)
+		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.02/1.495]*6)
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.scale(lumiToUseInAbsenceOfData=11000)
 		plotter=supy.plotter( org,

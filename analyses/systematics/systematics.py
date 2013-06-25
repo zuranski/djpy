@@ -22,19 +22,8 @@ class systematics(supy.analysis) :
 	IniCuts=[
         {'name':'dijet'},
 		{'name':'dijetTrueLxy','min':0},
-        {'name':'dijetPt1','min':50*1.1},
-        {'name':'dijetPt2','min':50*1.1},
-        #{'name':'dijetNPromptTracks1','max':2},
-        #{'name':'dijetNPromptTracks2','max':2},
-		#{'name':'dijetPromptEnergyFrac1','max':0.15},
-		#{'name':'dijetPromptEnergyFrac2','max':0.15},
-		#{'name':'dijetTrueLxy','min':0},
-        # vertex minimal
-        #{'name':'dijetVtxChi2','min':0,'max':5},
-        #{'name':'dijetVtxN1','min':1},
-        #{'name':'dijetVtxN2','min':1},
-        # cluster minimal
-        #{'name':'dijetbestclusterN','min':2},
+        {'name':'dijetPt1','min':40},
+        {'name':'dijetPt2','min':40},
     ]
 	
 	def dijetSteps0(self):
@@ -139,7 +128,7 @@ class systematics(supy.analysis) :
 		plotter.plotAll()
 		plotter.anMode=True
 		
-		self.totalEfficiencies(org,dir='highpt')
+		self.totalEfficiencies(org,dir='ref')
 
 	def totalEfficiencies(self,org,dir=None,flavor='') :
 		recoLow,recoHigh,acceptance,denom=None,None,None,None
