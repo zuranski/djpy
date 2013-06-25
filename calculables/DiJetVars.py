@@ -7,12 +7,14 @@ class dijetJetVar(wrappedChain.calculable):
 
 class Pt1(dijetJetVar): var='Pt';jet=1
 class Pt2(dijetJetVar): var='Pt';jet=2
-class dijetPt1Up(dijetJetVar): var='PtUp';jet=1
-class dijetPt2Up(dijetJetVar): var='PtUp';jet=2
-class dijetPt1Down(dijetJetVar): var='PtDown';jet=1
-class dijetPt2Down(dijetJetVar): var='PtDown';jet=2
-class dijetPt1Bias(dijetJetVar): var='PtBias';jet=1
-class dijetPt2Bias(dijetJetVar): var='PtBias';jet=2
+class Pt1Up(dijetJetVar): var='PtUp';jet=1
+class Pt2Up(dijetJetVar): var='PtUp';jet=2
+class Pt1Reduced(dijetJetVar): var='PtReduced';jet=1
+class Pt2Reduced(dijetJetVar): var='PtReduced';jet=2
+class Pt1Down(dijetJetVar): var='PtDown';jet=1
+class Pt2Down(dijetJetVar): var='PtDown';jet=2
+class Pt1Bias(dijetJetVar): var='PtBias';jet=1
+class Pt2Bias(dijetJetVar): var='PtBias';jet=2
 class PromptEnergyFrac1(dijetJetVar): var='PromptEnergyFrac';jet=1
 class PromptEnergyFrac2(dijetJetVar): var='PromptEnergyFrac';jet=2
 class NPromptTracks1(dijetJetVar): var='NPromptTracks';jet=1
