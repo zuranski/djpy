@@ -1,4 +1,5 @@
 from supy import analysisStep
+import math
 
 class general(analysisStep):
 	def __init__(self,tag=''):
