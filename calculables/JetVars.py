@@ -45,6 +45,10 @@ class genjetPtDiff(jetVar):
 	def calculate(self,idx):
 		return (self.source['jetPt'][idx]-self.source['jetgenjetPt'][idx])/self.source['jetgenjetPt'][idx]
 
+class genjetEnergyDiff(jetVar):
+	def calculate(self,idx):
+		return (self.source['jetEnergy'][idx]-self.source['jetgenjetEnergy'][idx])/self.source['jetgenjetEnergy'][idx]
+
 class jetgenjetMatch(wrappedChain.calculable):
 	def update(self,ignored):
 		if self.source['realData'] or len(self.source['XpdgId']) == 0: 
