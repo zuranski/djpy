@@ -166,9 +166,11 @@ class genjets(plots):
             {'name':'Eta','bins':10,'low':-2,'high':2,'label':'#eta'},
             {'name':'Phi','bins':10,'low':-3.15,'high':3.15,'label':'#phi'},
             {'name':'genjetPtDiff','bins':50,'low':-1.,'high':1,'label':'(jet p_{T} - true p_{T} )/ true p_{T}'},
+            {'name':'genjetEnergyDiff','bins':50,'low':-1.,'high':1,'label':'(jet energy - true energy )/ true energy'},
             {'name':'genjetLxy','bins':30,'low':0.,'high':60,'label':'L_{xy} [cm]'},
             {'name':'genjetAngle','bins':36,'low':0.,'high':12,'label':'approach Angle [deg]'},
             {'name':'genjetDeltaR','bins':30,'low':0.,'high':3.15,'label':'q#bar{q} #Delta R'},
             {'name':'NeuFrac','bins':15,'low':0.1,'high':1,'label':'Neutral Energy Fraction'},
             {'name':'NDispTracks','bins':15,'low':-0.5,'high':29.5,'label':'N tracks'},
+            {'name':'PtFracTh1','bins':50,'low':0,'high':15,'label':'jet energy fraction of tracks<0.8GeV [%]'},
 		   ]
