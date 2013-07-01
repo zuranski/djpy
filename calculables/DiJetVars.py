@@ -28,7 +28,13 @@ class VtxNRatio(dijetVar):
 	def calculate(self,idx):
 		VtxN=self.source['dijetVtxN'][idx]
 		N=self.source['dijetNDispTracks'][idx]
-		return VtxN/N if N>0 else -1
+		return VtxN/float(N) if N>0 else -1
+
+class ClrNRatio(dijetVar):
+	def calculate(self,idx):
+		ClrN=self.source['dijetbestclusterN'][idx]
+		N=self.source['dijetNDispTracks'][idx]
+		return ClrN/float(N) if N>0 else -1
 
 class VtxDelta(dijetVar):
 	def calculate(self,idx):
