@@ -13,8 +13,8 @@ class efficiency(supy.analysis) :
 		{'name':'gendijet'},
 		{'name':'gendijetFlavor','max':6,'min':0},
 		{'name':'gendijetLxy','max':60},
-		{'name':'gendijetEta1','max':2},		
-		{'name':'gendijetEta2','max':2},
+		{'name':'gendijetEta1','max':2.1},		
+		{'name':'gendijetEta2','max':2.1},
 		{'name':'gendijetPt1','min':40},
 		{'name':'gendijetPt2','min':40},
 		{'name':'gendijetDR','min':0.5},
@@ -31,6 +31,8 @@ class efficiency(supy.analysis) :
         {'name':'dijetVtxN2','min':1},
         # cluster minimal
         {'name':'dijetbestclusterN','min':2},
+        #{'name':'dijetbestclusterN1','min':1},
+        #{'name':'dijetbestclusterN2','min':1},
         {'name':'dijetVtxChi2','min':0,'max':5},
     ]
 	Cuts=[
@@ -130,6 +132,7 @@ class efficiency(supy.analysis) :
                                     groups=[('H',[])]).onlySim()] 
 		### filters
 		+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
+		#+[steps.other.genParticleMultiplicity(pdgIds=[6003114],collection='XpdgId',min=2,max=2)]
 
 		### acceptance filters
 		+self.dijetSteps0()
@@ -193,30 +196,30 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_1000_X_350")                                 
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_400_X_150")                               
-		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_200_X_50")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_400_X_50")                               
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=False,
 			anMode=True,
 			showStatBox=True,
-			pegMinimum=0.1,
+			pegMinimum=0.001,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
 		#plotter.doLog=False
 		plotter.anMode=True
 	
-		self.meanLxy(org)
-		#self.accPt(org,plotter)
+		#self.meanLxy(org)
+		self.accPt(org,plotter)
 		#self.sigPlots(plotter)	
 		self.totalEfficiencies(org,dir='eff2',flavor='')
 		#self.puEff(org,plotter)
-		#self.Efficiencies(org,plotter,flavor='uds')
+		self.Efficiencies(org,plotter,flavor='')
 
 
 	def sigPlots(self,plotter):			
@@ -238,6 +241,34 @@ class efficiency(supy.analysis) :
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";Average Track p_{T} [GeV/c];di-jets / bin",
+                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
+                                              "stampCoords": (0.35, 0.88)
+                                              },
+											  {"plotName":"VtxNRatio_h_Disc",
+                                              "stepName":"observables",
+                                              "stepDesc":"observables",
+                                              "newTitle":";Fraction of displaced tracks in the Vertex;di-jets / bin",
+                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
+                                              "stampCoords": (0.35, 0.88)
+                                              },
+											  {"plotName":"ClrNRatio_h_Disc",
+                                              "stepName":"observables",
+                                              "stepDesc":"observables",
+                                              "newTitle":";Fraction of displaced tracks in the Cluster;di-jets / bin",
+                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
+                                              "stampCoords": (0.35, 0.88)
+                                              },
+											  {"plotName":"VtxN_h_Disc",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":";Vertex Track Multiplicity;di-jets / bin",
+                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
+                                              "stampCoords": (0.35, 0.88)
+                                              },
+											  {"plotName":"bestclusterN_h_Disc",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":";Cluster Track Multiplicity;di-jets / bin",
                                               "legendCoords": (0.55, 0.72, 0.85, 0.92),
                                               "stampCoords": (0.35, 0.88)
                                               },
@@ -333,7 +364,7 @@ class efficiency(supy.analysis) :
 		plotter.individualPlots(plotSpecs = [{"plotName":"effLxy",
                                               "stepName":"",
                                               "stepDesc":"",
-                                              "newTitle":"; L_{xy} [cm]; X#rightarrow q#bar{q} (%s) Reconstruction Efficiency"%flavor,
+                                              "newTitle":"; L_{xy} [cm]; X#rightarrow q#bar{q} %s Reconstruction Efficiency"%flavor,
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),}
                                             ],
@@ -389,7 +420,8 @@ class efficiency(supy.analysis) :
 
 
 		f=0.89
-		sysmap={'1000350':0.08,'1000150':0.08,'400150':0.11,'40050':0.10,'20050':0.23}
+		#sysmap={'1000350':0.08,'1000150':0.08,'400150':0.11,'40050':0.10,'20050':0.23}
+		sysmap={'1000350':0.075,'1000150':0.075,'400150':0.096,'40050':0.091,'20050':0.10}
 
 		import pickle,math
 		for i,sample in enumerate(org.samples):
@@ -413,10 +445,10 @@ class efficiency(supy.analysis) :
 				acc[i].GetPoint(j,x,y)
 				a = float(y)
 				aErr = acc[i].GetErrorY(j)
-				#if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
-				#else : eErr = 0.
-				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
-				#else : eaErr = 0.
+				if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
+				else : eErr = 0.
+				if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
+				else : eaErr = 0.
 				factor=allfs[j]
 				print H,X,factor,a,aErr,e,eErr,ea,eaErr
 				data=[(a,aErr),(e,eErr),[ea,eaErr]]
