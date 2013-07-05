@@ -151,6 +151,7 @@ class kshort(plots):
             {'name':'Ctau','bins':100,'low':0.,'high':12,'label':'c#tau [cm]'},
             {'name':'Chi2','bins':50,'low':0.,'high':7,'label':'#chi^{2}/dof'},
             {'name':'Lxy','bins':100,'low':0.,'high':60,'label':'L_{xy} [cm]'},
+            {'name':'Lxysig','bins':50,'low':0.,'high':500,'label':'L_{xy} significance'},
             {'name':'Lxyz','bins':100,'low':0.,'high':120,'label':'L_{xyz} [cm]'},
             {'name':'JetPt','bins':100,'low':20.,'high':300,'label':'Jet p_{T} [GeV]'},
             {'name':'Trk1Pt','bins':50,'low':0.,'high':20,'label':'Trk1 p_{T} [GeV]'},
