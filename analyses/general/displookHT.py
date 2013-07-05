@@ -137,7 +137,7 @@ class displookHT(supy.analysis) :
 		)
 		plotter.plotAll()
 
-		
+		org.lumi=None	
 		plotter.individualPlots(plotSpecs = [
 											  {"plotName":"Lxysig_h_dijetVtxNRatio",
                                               "stepName":"cutvars",

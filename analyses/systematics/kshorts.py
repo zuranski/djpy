@@ -7,14 +7,15 @@ class kshorts(supy.analysis) :
 		{'name':'ksNoOverlaps','val':True},
 		{'name':'kscolin','min':0},
 		{'name':'ksCtau','max':12},
-		{'name':'ksChi2','max':3.},
+		#{'name':'ksEta','min':-1.1,'max':1.1},
+		{'name':'ksChi2','max':3.}, #chi2<3 for trk pt>3
 		{'name':'ksTrk1Pt','min':3},
 		{'name':'ksTrk2Pt','min':3},
 		{'name':'ksMass','min':0.48,'max':0.515},
 		#{'name':'ksMass','min':0.4,'max':0.6},
 		# vertex minimal
 	]
-	# obtained scale for trk pt >1 is 1.495 - the QCD cross-sections need to be multiplied by 1/1.495 factor
+	# obtained scale for trk pt >1 is 1.495
 	CutsScale=[
         {'name':'ksLxy','max':2},
 	]
@@ -209,6 +210,18 @@ class kshorts(supy.analysis) :
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} track p_{T} [GeV/c]; K_{s} / bin",
+                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "stampCoords": (0.7, 0.9),},
+											 {"plotName":"Lxysig_h_ksLxy",
+                                              "stepName":"kshort",
+                                              "stepDesc":"kshort",
+                                              "newTitle":"; K_{s} L_{xy} significance (L_{xy}<2cm) ; K_{s} / bin",
+                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "stampCoords": (0.7, 0.9),},
+											 {"plotName":"Chi2_h_ksLxy",
+                                              "stepName":"kshort",
+                                              "stepDesc":"kshort",
+                                              "newTitle":"; K_{s} vertex #chi^{2}/dof (L_{xy}<2cm) ; K_{s} / bin",
                                               "legendCoords": (0.65, 0.5, 0.9, 0.7),
                                               "stampCoords": (0.7, 0.9),},
                                             ],
