@@ -62,9 +62,10 @@ class NX(eff):
 				self.book.fill(bin*N+i,'NX'+self.flavorMap[X2qqFlavors[idx]],3*N,-0.5,3*N-0.5,w=weights[i])
 
 		for idx in X2qqIndices:
+			self.book.fill(e['gendijetLxy'][idx],'Lxy',10,0,50)
 			self.book.fill(e['gendijetLxy'][idx],'Lxy'+str(bin),100,0,100*pow(10,bin))
-			self.book.fill(e['XPt'][idx],'XPt'+str(bin),20,0,500)
-			self.book.fill(e['XPt'][idx],'XPt',20,0,500)
+			self.book.fill(e['XPt'][idx],'XPt'+str(bin),20,0,700)
+			self.book.fill(e['XPt'][idx],'XPt',20,0,700)
 
 
 class NXAcc(eff):
@@ -87,8 +88,8 @@ class NXAcc(eff):
 				self.book.fill(bin*N+i,'NXAcc'+self.flavorMap[X2qqFlavors[idx]],3*N,-0.5,3*N-0.5,w=weights[i])
 
 		for idx in e[self.indicesAcc]:
-			self.book.fill(e['XPt'][idx],'AccXPt'+str(bin),20,0,500)
-			self.book.fill(e['XPt'][idx],'AccXPt',20,0,500)
+			self.book.fill(e['XPt'][idx],'AccXPt'+str(bin),20,0,700)
+			self.book.fill(e['XPt'][idx],'AccXPt',20,0,700)
 			self.book.fill(e['gendijetLxy'][idx],'AccLxy',10,0,50)
 			self.book.fill(e['gendijetLxy'][idx],'AccLxy'+self.flavorMap[X2qqFlavors[idx]],10,0,50)
 			self.book.fill(e['gendijetNLep'][idx],'AccNLep',5,-0.5,4.5)
@@ -122,6 +123,8 @@ class NXReco(eff):
 		for idx,name in zip(indices,names):
 			self.book.fill(e['dijetTrueLxy'][idx],name+'Lxy',10,0,50)
 			self.book.fill(e['dijetTrueLxy'][idx],name+'Lxy'+self.flavorMap[e['dijetTrueFlavor'][idx]],10,0,50)
+			self.book.fill(e['dijetTrueXPt'][idx],name+'XPt',20,0,700)
+			self.book.fill(e['dijetTrueXPt'][idx],name+'XPt'+str(bin),20,0,700)
 			self.book.fill(e['dijetTrueNLep'][idx],name+'NLep',5,-0.5,4.5)
 			self.book.fill(e['dijetTrueNLep'][idx],name+'NLep'+self.flavorMap[e['dijetTrueFlavor'][idx]],5,-0.5,4.5)
 			self.book.fill(e['dijetTrueBlxyz'][idx],name+'Blxyz',10,0.,5.)
