@@ -1,10 +1,5 @@
-import os,sys,pickle,math
-
-def rnd(num,sig_figs):
-    if num != 0:
-        return round(num, -int(math.floor(math.log10(abs(num))) - (sig_figs - 1)))
-    else:
-        return 0
+import os,sys,pickle
+from utils.other import stringValue
 
 dir=sys.argv[1]+'/efficiencies'
 
@@ -27,12 +22,11 @@ for file in files:
 	H,X,factor=strings[1],strings[3],strings[4]
 	if factor not in ['0.1','1.0','10.0'] : continue
 	main_ctau=map['_'.join(strings[:4])]
-	ctau=rnd(main_ctau*eval(factor),3)
+	ctau=main_ctau*eval(factor)
 	if int(ctau)==ctau: ctau=int(ctau)
 	data = pickle.load(open(dir+'/'+file))
-	string = " & ".join("$"+str(rnd(100*a[0],2))+'\pm'+str(rnd(100*a[1],1))+"$" for a in data)
+	string = " & ".join(stringValue(100*a[0],100*a[1],1) for a in data)
 	print "%s & %s & %s & %s \\\\"%(H,X,ctau,string)
-	#print "%s & %s & %s & %s$\pm%s$ \\\\"%(H,X,ctau,rnd(100*dict['eff'][0],3),rnd(100*dict['eff'][1],2))#,dict['idx']
 
 print "\hline"
 print "\end{tabular} \n\end{table}" 
