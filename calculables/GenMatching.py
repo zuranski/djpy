@@ -30,10 +30,14 @@ class dijetTrue(wrappedChain.calculable):
                       self.source['jetTrueLxy'][self.source['dijetIdx2'][i]] != None else None
                       for i in self.source['dijetIndices']]
 
-# A special case
+#  special case
 class genqXPt(wrappedChain.calculable):
 	def update(self,ignored):
 		self.value=[self.source['XPt'][i/2] for i in range(len(self.source['genqPt']))]
+
+class genqHPt(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value=[self.source['HPt'] for i in range(len(self.source['genqPt']))]
 
 class jetTrueLxy(jetTrue): var='genqLxy'
 class jetTrueCtau(jetTrue): var='genqCtau'
@@ -41,6 +45,7 @@ class jetTrueFlavor(jetTrue): var='genqFlavor'
 class jetTrueNLep(jetTrue):	var='genqNLep'
 class jetTrueBlxyz(jetTrue): var='genqBlxyz'
 class jetTrueXPt(jetTrue): var='genqXPt'
+class jetTrueHPt(jetTrue): var='genqHPt'
 
 class dijetTrueLxy(dijetTrue): var='jetTrueLxy'; avg=True
 class dijetTrueCtau(dijetTrue):	var='jetTrueCtau'; avg=True
@@ -48,4 +53,5 @@ class dijetTrueFlavor(dijetTrue): var='jetTrueFlavor'; avg=True
 class dijetTrueNLep(dijetTrue):	var='jetTrueNLep'; avg=False
 class dijetTrueBlxyz(dijetTrue): var='jetTrueBlxyz'; avg=True
 class dijetTrueXPt(dijetTrue): var='jetTrueXPt'; avg=True
+class dijetTrueHPt(dijetTrue): var='jetTrueHPt'; avg=True
 
