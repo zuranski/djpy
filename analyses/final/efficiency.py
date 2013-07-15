@@ -196,11 +196,11 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
-		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
@@ -228,14 +228,14 @@ class efficiency(supy.analysis) :
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";Mass [GeV];di-jets / bin",
-                                              "legendCoords": (0.55, 0.6, 0.85, 0.8),
+                                              "legendCoords": (0.5, 0.6, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
 											  {"plotName":"Lxy_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";L_{xy} [cm];di-jets / bin",
-                                              "legendCoords": (0.55, 0.6, 0.85, 0.8),
+                                              "legendCoords": (0.5, 0.6, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
 											  {"plotName":"TrkAvgPt_h_Disc",
