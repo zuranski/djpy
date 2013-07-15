@@ -92,14 +92,16 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 		r.gPad.SetLogy()
 		#r.gPad.SetTicky(0)
 		if onlyB:
-			#r.gPad.SetRightMargin(0.2)
-			r.gStyle.SetTitleX(0.15)
+			r.gPad.SetRightMargin(0.03)
+			r.gPad.SetTopMargin(0.05)
+			r.gStyle.SetTitleX(0.19)
 			
 		else:
 			r.gPad.SetRightMargin(0.2)
 			r.gStyle.SetTitleX(0.1)
 
-		title = ' '.join(name+'='+string(value) if value else '' for name,value in zip(cutNames,scan))
+		title=''
+		#title = ' '.join(name+'='+string(value) if value else '' for name,value in zip(cutNames,scan))
 		title='max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
 		xtitle = 'Vertex/Cluster Discriminant'
 		ytitle = 'Number of Candidates'
@@ -134,13 +136,13 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histob0.SetBinContent(k+1,b)
 				histob0.SetBinError(k+1,0.00001)
 				N=int(counts[j][idx][0][0])
-				p=pvalue(b,berr,N,1e5)
+				p=pvalue(b,berr,N,1e4)
 				histop.SetPoint(k,k+1,p)
 				z=r.RooStats.PValueToSignificance(p)
 				histoz.SetPoint(k,k+1,z)
 
 			if onlyB:
-				legend = r.TLegend(0.55, 0.55, 0.88, 0.75)
+				legend = r.TLegend(0.6, 0.6, 0.95, 0.8)
 			else:
 				legend = r.TLegend(0.81, 0.60, 0.99, 0.10)
 			for i in reversed(range(n)):
@@ -219,7 +221,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 			if onlyB: legend.SetBorderSize(0)
 			legend.Draw("same")
 			if onlyB:
-				cmsStamp(lumi=org.lumi,coords=(0.7,0.85))
+				cmsStamp(lumi=org.lumi,coords=(0.78,0.88))
 				#cmsStamp(lumi=None,coords=(0.55,0.85))
 			else:
 				cmsStamp(lumi=org.lumi,coords=(0.55,0.85))
@@ -237,6 +239,8 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histop.GetYaxis().SetRangeUser(1e-2,1.5)
 				histop.Draw('AP')
 				plotter.canvas.cd(3)
+			else:
+				r.gPad.SetRightMargin(0.03)
 			if not onlyB:
 				r.gPad.SetRightMargin(0.2)
 			r.gPad.SetGridy()
@@ -248,7 +252,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histoz.GetYaxis().SetTitleOffset(0.28)
 				histoz.GetYaxis().SetTitleSize(0.18)
 			histoz.GetYaxis().SetLabelSize(0.1)
-			histoz.GetYaxis().SetTitle('Z-Score')
+			histoz.GetYaxis().SetTitle('Significance')
 			histoz.GetYaxis().SetRangeUser(-4,4)
 			histoz.Draw('AP')
 			plotter.printCanvas()
