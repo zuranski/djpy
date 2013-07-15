@@ -78,17 +78,26 @@ class jetmerging(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
+
+		# analysis samples
 		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")                                 
 		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150")                               
 		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
 		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
 		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")                               
 		
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_1000_X_50")
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_400_X_50")
+
+		# gen plots samples
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")
 		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
 		#org.mergeSamples(targetSpec = {"name":"H(120)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_120_X_50")
+
+		# dR samples
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(20)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_20")
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
@@ -100,37 +109,36 @@ class jetmerging(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
-		plotter.doLog=False
 		org.lumi=None
-		self.merging(org,plotter)
 
-		plotter.individualPlots(plotSpecs = [
+		'''
+		plotter.individualPlots(simulation=True, plotSpecs = [
                                               {"plotName":"caloHT",
                                               "stepName":"general",
                                               "stepDesc":"general",
                                               "newTitle":"; H_{T} [GeV]; events / bin",
-                                              "legendCoords": (0.5, 0.58, 0.9, 0.78),
+                                              "legendCoords": (0.5, 0.65, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
                                               {"plotName":"HPt",
                                               "stepName":"genevent",
                                               "stepDesc":"genevent",
                                               "newTitle":"; H^{0} p_{T} [GeV]; events / bin",
-                                              "legendCoords": (0.5, 0.58, 0.9, 0.78),
+                                              "legendCoords": (0.5, 0.65, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
                                               {"plotName":"betagamma",
                                               "stepName":"genevent",
                                               "stepDesc":"genevent",
                                               "newTitle":"; H^{0} #beta#gamma; events / bin",
-                                              "legendCoords": (0.5, 0.58, 0.9, 0.78),
+                                              "legendCoords": (0.5, 0.65, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
                                               {"plotName":"XPt",
                                               "stepName":"genevent",
                                               "stepDesc":"genevent",
                                               "newTitle":"; X^{0} p_{T} [GeV]; X^{0} / bin",
-                                              "legendCoords": (0.5, 0.58, 0.9, 0.78),
+                                              "legendCoords": (0.5, 0.65, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
                                               {"plotName":"XEta",
@@ -140,53 +148,34 @@ class jetmerging(supy.analysis) :
                                               "legendCoords": (0.35, 0.15, 0.75, 0.45),
                                               "stampCoords": (0.7, 0.88)
                                               },
-                                              {"plotName":"dRdenom",
-                                              "stepName":"general",
-                                              "stepDesc":"general",
+                                              {"plotName":"XDR",
+                                              "stepName":"genevent",
+                                              "stepDesc":"genevent",
                                               "newTitle":"; q#bar{q} #Delta R; X^{0} / bin",
-                                              "legendCoords": (0.35, 0.15, 0.7, 0.35),
+                                              "legendCoords": (0.5, 0.65, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
-                                              {"plotName":"dPhi",
-                                              "stepName":"general",
-                                              "stepDesc":"general",
-                                              "newTitle":"; #Delta #phi (dijet, X^{0}); X^{0} / bin",
-                                              "legendCoords": (0.2, 0.68, 0.5, 0.88),
-                                              "stampCoords": (0.72, 0.88)
-                                              },
-                                              {"plotName":"dPhiReduced",
-                                              "stepName":"general",
-                                              "stepDesc":"general",
-                                              "newTitle":"; #Delta #phi (dijet, X^{0}) / #Delta #phi (q#bar{q}); X^{0} / bin",
-                                              "legendCoords": (0.2, 0.68, 0.5, 0.88),
-                                              "stampCoords": (0.72, 0.88)
-                                              },
+                                              #{"plotName":"dPhi",
+                                              #"stepName":"general",
+                                              #"stepDesc":"general",
+                                              #"newTitle":"; #Delta #phi (dijet, X^{0}); X^{0} / bin",
+                                              #"legendCoords": (0.2, 0.68, 0.5, 0.88),
+                                              #"stampCoords": (0.72, 0.88)
+                                              #},
+                                              #{"plotName":"dPhiReduced",
+                                              #"stepName":"general",
+                                              #"stepDesc":"general",
+                                              #"newTitle":"; #Delta #phi (dijet, X^{0}) / #Delta #phi (q#bar{q}); X^{0} / bin",
+                                              #"legendCoords": (0.2, 0.68, 0.5, 0.88),
+                                              #"stampCoords": (0.72, 0.88)
+                                              #},
                                             ]
                                )
-
+		'''
+		self.merging(org,plotter)
 
 	def merging(self,org,plotter):
-		merging = None
-		for step in org.steps:
-			for plotName in sorted(step.keys()):
-				if 'merging' in plotName: merging = step[plotName]
-		'''
-		for histo,sample in zip(merging,org.samples):
-			H,X=sample['name'].split('_')[1],sample['name'].split('_')[3]
-			list = [histo.GetBinContent(i) for i in range(1,histo.GetNbinsX()+1) ]
-			list = [int(round(a/histo.Integral(),2)*100) for a in list ]
-			objects = [H,X]+list
-			string = " & ".join(str(a) for a in objects) + " \\\\"
-			print string
-		'''
-		plotter.pdfFileName = plotter.pdfFileName.replace(self.name+'.pdf','Profiles_'+self.name+'.pdf')
-		plotter.pageNumbers=False
-		plotter.canvas.Clear()
-		plotter.printCanvas("[")
-		text1 = plotter.printTimeStamp()
-		plotter.flushPage()
-
-		profile=None
+		#plotter.doLog=False
 		num,denom=None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
@@ -209,18 +198,18 @@ class jetmerging(supy.analysis) :
 		#eff=tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom)])
 		eff=tuple([n.Divide(d) for n,d in zip(num,denom)])
 		eff=num
-		histos = tuple([h.ProfileY('',1,-1,'').Clone() for h in profile])
-		plotter.onePlotFunction(histos)
-		plotter.onePlotFunction(eff)
-		plotter.individualPlots(plotSpecs = [
+		plotter.individualPlots(simulation=True, plotSpecs = [
                                               {"plotName":"effDijet",
-                                              "stepName":"",
-                                              "stepDesc":"",
+                                              "histos":eff,
                                               "newTitle":"; q#bar{q} #Delta R;dijet efficiency",
+                                              "legendCoords": (0.2, 0.58, 0.55, 0.78),
+                                              "stampCoords": (0.4, 0.88)
+                                              },
+                                              {"plotName":"dRdenom",
+                                              "histos":denom,
+                                              "newTitle":"; q#bar{q} #Delta R; X^{0} / bin",
                                               "legendCoords": (0.2, 0.58, 0.55, 0.78),
                                               "stampCoords": (0.4, 0.88)
                                               }
 											],
-								histos=eff,
 								)
-		plotter.printCanvas("]")	

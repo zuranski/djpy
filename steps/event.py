@@ -22,6 +22,7 @@ class genevent(analysisStep):
 		for i in range(len(e['XPt'])):
 			self.book.fill(e['XPt'][i],'XPt',100,0,800,None,title=' ; X p_{T} [GeV] ; events / bin' )
 			self.book.fill(e['XEta'][i],'XEta',30,-5,5,None,title=' ; X #eta ; events / bin' )
+			self.book.fill(e['gendijetDR'][i],'XDR',30,0,3,None,title=' ; q#bar{q} #Delta R ; events / bin' )
 
 class runModulo(analysisStep):
 	def __init__(self,modulo,inverted=False):
