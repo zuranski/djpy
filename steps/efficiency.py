@@ -63,7 +63,11 @@ class NX(eff):
 
 		for idx in X2qqIndices:
 			self.book.fill(e['gendijetLxy'][idx],'Lxy',10,0,50)
-			self.book.fill(e['gendijetLxy'][idx],'Lxy'+str(bin),100,0,100*pow(10,bin))
+			self.book.fill(e['gendijetLxy'][idx],'Lxy'+self.flavorMap[X2qqFlavors[idx]],10,0,50)
+			self.book.fill(e['gendijetNLep'][idx],'NLep',5,-0.5,4.5)
+			self.book.fill(e['gendijetNLep'][idx],'NLep'+self.flavorMap[X2qqFlavors[idx]],5,-0.5,4.5)
+			self.book.fill(e['gendijetBlxyz'][idx],'Blxyz',5,-0.,5.)
+			self.book.fill(e['gendijetBlxyz'][idx],'Blxyz'+self.flavorMap[X2qqFlavors[idx]],5,0.,5.)
 			self.book.fill(e['XPt'][idx],'XPt'+str(bin),20,0,700)
 			self.book.fill(e['XPt'][idx],'XPt',20,0,700)
 			self.book.fill(e['HPt'],'HPt'+str(bin),10,0,500)
@@ -98,8 +102,8 @@ class NXAcc(eff):
 			self.book.fill(e['gendijetLxy'][idx],'AccLxy'+self.flavorMap[X2qqFlavors[idx]],10,0,50)
 			self.book.fill(e['gendijetNLep'][idx],'AccNLep',5,-0.5,4.5)
 			self.book.fill(e['gendijetNLep'][idx],'AccNLep'+self.flavorMap[X2qqFlavors[idx]],5,-0.5,4.5)
-			self.book.fill(e['gendijetBlxyz'][idx],'AccBlxyz',10,-0.,5.)
-			self.book.fill(e['gendijetBlxyz'][idx],'AccBlxyz'+self.flavorMap[X2qqFlavors[idx]],10,0.,5.)
+			self.book.fill(e['gendijetBlxyz'][idx],'AccBlxyz',5,-0.,5.)
+			self.book.fill(e['gendijetBlxyz'][idx],'AccBlxyz'+self.flavorMap[X2qqFlavors[idx]],5,0.,5.)
 
 class NXReco(eff):
 	def uponAcceptance(self,e):
@@ -133,5 +137,5 @@ class NXReco(eff):
 			self.book.fill(e['dijetTrueHPt'][idx],name+'HPt'+str(bin),10,0,500)
 			self.book.fill(e['dijetTrueNLep'][idx],name+'NLep',5,-0.5,4.5)
 			self.book.fill(e['dijetTrueNLep'][idx],name+'NLep'+self.flavorMap[e['dijetTrueFlavor'][idx]],5,-0.5,4.5)
-			self.book.fill(e['dijetTrueBlxyz'][idx],name+'Blxyz',10,0.,5.)
-			self.book.fill(e['dijetTrueBlxyz'][idx],name+'Blxyz'+self.flavorMap[e['dijetTrueFlavor'][idx]],10,0.,5.)
+			self.book.fill(e['dijetTrueBlxyz'][idx],name+'Blxyz',5,0.,5.)
+			self.book.fill(e['dijetTrueBlxyz'][idx],name+'Blxyz'+self.flavorMap[e['dijetTrueFlavor'][idx]],5,0.,5.)

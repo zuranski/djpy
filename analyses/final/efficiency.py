@@ -131,8 +131,8 @@ class efficiency(supy.analysis) :
                                     target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('H',[])]).onlySim()] 
 		### filters
-		+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
-		#+[steps.other.genParticleMultiplicity(pdgIds=[6003114],collection='XpdgId',min=2,max=2)]
+		#+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
+		+[steps.other.genParticleMultiplicity(pdgIds=[6002114],collection='XpdgId',min=2,max=2)]
 
 		### acceptance filters
 		+self.dijetSteps0()
@@ -188,7 +188,7 @@ class efficiency(supy.analysis) :
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles, weights = ['pileupTrueNumInteractionsBX0Target']))
 			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
-		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,2,4]]
+		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,1,2]]
 
 		return sig_samples
 		#return toPlot
@@ -196,18 +196,18 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
-		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=False,
+			doLog=True,
 			anMode=True,
 			showStatBox=True,
-			pegMinimum=0.001,
+			pegMinimum=0.1,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
@@ -215,18 +215,19 @@ class efficiency(supy.analysis) :
 		plotter.anMode=True
 	
 		#self.meanLxy(org)
-		self.accPt(org,plotter)
-		#self.sigPlots(plotter)	
-		self.totalEfficiencies(org,dir='eff2',flavor='')
-		#self.puEff(org,plotter)
-		self.Efficiencies(org,plotter,flavor='')
+		org.lumi=None
+		#self.accPt(org,plotter)
+		self.sigPlots(plotter)	
+		#self.totalEfficiencies(org,dir='eff2',flavor='')
+		self.puEff(org,plotter)
+		self.Efficiencies(org,plotter,flavor='b')
 
 
 	def sigPlots(self,plotter):			
-		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_Disc",
+		plotter.individualPlots(simulation=True, plotSpecs = [{"plotName":"Mass_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
-                                              "newTitle":";Mass [GeV/c^{2}];di-jets / bin",
+                                              "newTitle":";Mass [GeV];di-jets / bin",
                                               "legendCoords": (0.55, 0.6, 0.85, 0.8),
                                               "stampCoords": (0.7, 0.88)
                                               },
@@ -240,7 +241,7 @@ class efficiency(supy.analysis) :
 											  {"plotName":"TrkAvgPt_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
-                                              "newTitle":";Average Track p_{T} [GeV/c];di-jets / bin",
+                                              "newTitle":";Average Track p_{T} [GeV];di-jets / bin",
                                               "legendCoords": (0.55, 0.72, 0.85, 0.92),
                                               "stampCoords": (0.35, 0.88)
                                               },
@@ -289,45 +290,41 @@ class efficiency(supy.analysis) :
 		ptn,ptd=[],[]
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if plotName.startswith('XPt'): ptd.append(step[plotName])
-				if plotName.startswith('AccXPt'): ptn.append(step[plotName])
+				if plotName.startswith('HPt'): ptd.append(step[plotName])
+				if plotName.startswith('LowHPt'): ptn.append(step[plotName])
+
+		def removeLowStats(histos):
+			for histo in histos:
+				for i in range(1,histo.GetNbinsX()+1):
+					print histo.GetBinContent(i)	
+					if histo.GetBinContent(i)<1:
+						histo.SetBinContent(i,0)
+						histo.SetBinError(i,0)
+
+		removeLowStats(ptn[0])
 
 		accpt=[ tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom) ]) for num,denom in zip(ptn,ptd) ]
-		plotter.individualPlots(plotSpecs = [{"plotName":"accPt",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; X^{0} p_{T} [GeV/c] ; X#rightarrow q#bar{q} Acceptance",
+		plotter.individualPlots(simulation=True, plotSpecs = [{"plotName":"accPt",
+                                              "histos":accpt[0],
+                                              "newTitle":"; H^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),},
+											 {"plotName":"accPt0",
+                                              "histos":accpt[1],
+                                              "newTitle":"; X^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),},
+											 {"plotName":"accPt1",
+                                              "histos":accpt[2],
+                                              "newTitle":"; X^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),},
+											 {"plotName":"accPt2",
+                                              "histos":accpt[3],
+                                              "newTitle":"; X^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),}
                                             ],
-                                histos=accpt[0],
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"accPt0",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; X^{0} p_{T} [GeV/c] ; X#rightarrow q#bar{q} Acceptance",
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),}
-                                            ],
-                                histos=accpt[1],
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"accPt1",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; X^{0} p_{T} [GeV/c] ; X#rightarrow q#bar{q} Acceptance",
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),}
-                                            ],
-                                histos=accpt[2],
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"accPt2",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; X^{0} p_{T} [GeV/c] ; X#rightarrow q#bar{q} Acceptance",
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),}
-                                            ],
-                                histos=accpt[3],
                                )
 
 	def puEff(self,org,plotter):
@@ -337,23 +334,21 @@ class efficiency(supy.analysis) :
 				if plotName == '1nPV': num=step[plotName]
 				if plotName == 'nPV': denom=step[plotName]
 		eff=tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom)])
-		plotter.individualPlots(plotSpecs = [{"plotName":"effPU",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; pile-up vertices; X#rightarrow q#bar{q} Reconstruction Efficiency",
+		plotter.individualPlots(simulation=True, plotSpecs = [{"plotName":"effPU",
+                                              "histos":eff,
+                                              "newTitle":"; pile-up vertices; X#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),}
                                             ],
-                                histos=eff,
                                )
 
 	def Efficiencies(sefl,org,plotter,flavor=''):
 		LxyD,LxyN,NLepN,NLepD,BlxyzN,BlxyzD=None,None,None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'AccLxy'+flavor == plotName : LxyD=step[plotName]
-				if 'AccNLep'+flavor == plotName : NLepD=step[plotName]
-				if 'AccBlxyz'+flavor == plotName : BlxyzD=step[plotName]
+				if 'Lxy'+flavor == plotName : LxyD=step[plotName]
+				if 'NLep'+flavor == plotName : NLepD=step[plotName]
+				if 'Blxyz'+flavor == plotName : BlxyzD=step[plotName]
 				if 'LowLxy'+flavor == plotName : LxyN=step[plotName]
 				if 'LowNLep'+flavor == plotName : NLepN=step[plotName]
 				if 'LowBlxyz'+flavor == plotName : BlxyzN=step[plotName]
@@ -361,32 +356,22 @@ class efficiency(supy.analysis) :
 		Lxy = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(LxyN,LxyD)])
 		NLep = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(NLepN,NLepD)])
 		Blxyz = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(BlxyzN,BlxyzD)])
-		plotter.individualPlots(plotSpecs = [{"plotName":"effLxy",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; L_{xy} [cm]; X#rightarrow q#bar{q} %s Reconstruction Efficiency"%flavor,
+		plotter.individualPlots(simulation=True, plotSpecs = [{"plotName":"effLxy",
+                                              "histos":Lxy,
+                                              "newTitle":"; L_{xy} [cm]; X#rightarrow q#bar{q} (%s) efficiency #times Acceptance"%flavor,
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),},
+											  {"plotName":"effNLep",
+                                              "histos":NLep,
+                                              "newTitle":";N leptons ; X#rightarrow q#bar{q} (%s) efficiency #times Acceptance"%flavor,
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),},
+											  {"plotName":"effBlxyz",
+                                              "histos":Blxyz,
+                                              "newTitle":"; B L_{xyz} [cm]; X#rightarrow q#bar{q} (%s) efficiency #times Acceptance"%flavor,
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),}
                                             ],
-                                histos=Lxy,
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"effNLep",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":";N leptons ; X#rightarrow q#bar{q} (%s) Reconstruction Efficiency"%flavor,
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),}
-                                            ],
-                                histos=NLep,
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"effBlxyz",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; B L_{xyz} [cm]; X#rightarrow q#bar{q} (%s) Reconstruction Efficiency"%flavor,
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),}
-                                            ],
-                                histos=Blxyz,
                                )
 
 	def totalEfficiencies(self,org,dir=None,flavor='') :
@@ -445,10 +430,10 @@ class efficiency(supy.analysis) :
 				acc[i].GetPoint(j,x,y)
 				a = float(y)
 				aErr = acc[i].GetErrorY(j)
-				if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
-				else : eErr = 0.
-				if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
-				else : eaErr = 0.
+				#if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
+				#else : eErr = 0.
+				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
+				#else : eaErr = 0.
 				factor=allfs[j]
 				print H,X,factor,a,aErr,e,eErr,ea,eaErr
 				data=[(a,aErr),(e,eErr),[ea,eaErr]]
