@@ -8,9 +8,9 @@ class kshorts(supy.analysis) :
 		{'name':'kscolin','min':0},
 		{'name':'ksCtau','max':12},
 		#{'name':'ksEta','min':-1.1,'max':1.1},
-		{'name':'ksChi2','max':3.}, #chi2<3 for trk pt>3
-		{'name':'ksTrk1Pt','min':3},
-		{'name':'ksTrk2Pt','min':3},
+		{'name':'ksChi2','max':7.}, #chi2<3 for trk pt>3
+		{'name':'ksTrk1Pt','min':1},
+		{'name':'ksTrk2Pt','min':1},
 		{'name':'ksMass','min':0.48,'max':0.515},
 		#{'name':'ksMass','min':0.4,'max':0.6},
 		# vertex minimal
@@ -136,7 +136,7 @@ class kshorts(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.02/1.495]*6)
+		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.00/1.495]*6)
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.scale(lumiToUseInAbsenceOfData=11000)
 		plotter=supy.plotter( org,
@@ -152,10 +152,11 @@ class kshorts(supy.analysis) :
 		)
 		plotter.plotAll()
 		org.lumi=None
+		
 		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_kscolin",
                                               "stepName":"kshort",
                                               "stepDesc":"kshort",
-                                              "newTitle":"; K_{s} mass [GeV/c^{2}]; K_{s} / bin",
+                                              "newTitle":"; K_{s} mass [GeV]; K_{s} / bin",
                                               "legendCoords": (0.65, 0.25, 0.9, 0.45),
                                               "stampCoords": (0.73, 0.9),},
 											 {"plotName":"ksCtau",
@@ -191,7 +192,7 @@ class kshorts(supy.analysis) :
 											 {"plotName":"ksP",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
-                                              "newTitle":"; K_{s} momentum [GeV/c]; K_{s} / bin",
+                                              "newTitle":"; K_{s} momentum [GeV]; K_{s} / bin",
                                               "legendCoords": (0.65, 0.55, 0.9, 0.75),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"ksLxysig",
@@ -209,7 +210,7 @@ class kshorts(supy.analysis) :
 											 {"plotName":"ksTrkPt",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
-                                              "newTitle":"; K_{s} track p_{T} [GeV/c]; K_{s} / bin",
+                                              "newTitle":"; K_{s} track p_{T} [GeV]; K_{s} / bin",
                                               "legendCoords": (0.65, 0.5, 0.9, 0.7),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"Lxysig_h_ksLxy",
@@ -226,20 +227,12 @@ class kshorts(supy.analysis) :
                                               "stampCoords": (0.7, 0.9),},
                                             ],
                                )
-		#self.makeEfficiencyPlots(org,'den','num',plotter)
+		
+		self.makeEfficiencyPlots(org,'den','num',plotter)
 
 	def makeEfficiencyPlots(self, org, denomName, numName, plotter):
-		plotter.pdfFileName += 'effs'
-		plotter.doLog=False
-		plotter.printCanvas("[")
-		text1 = plotter.printTimeStamp()
-		text2 = plotter.printNEventsIn()
-		plotter.flushPage()
-
-		plotter.printCanvas("[")
-
-		names_denom=['Pt_h_jet','nPV']
-		names_num=['numksJetPt','numnPV']
+		names_denom=['Pt_h_jet','nPV'][:1]
+		names_num=['numksJetPt','numnPV'][:1]
 		hists_denom = []
 		hists_num = []
 		for step in org.steps:
@@ -259,28 +252,18 @@ class kshorts(supy.analysis) :
 				ratio.GetXaxis().SetLimits(num.GetXaxis().GetXmin(),num.GetXaxis().GetXmax())
 			eff_histos[ratio_tpl[0].GetName()]=ratio_tpl
 			print ratio_tpl[0].GetName()
-			plotter.onePlotFunction(ratio_tpl)
-
-		plotter.printCanvas("]")
-		print plotter.pdfFileName +' has been written.'
 
 		
 		plotter.individualPlots(plotSpecs = [{"plotName":"effJetPt",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; jet p_{T} [GeV/c] ; <K_{s}> ",
+											  "histos":eff_histos["divide_numksJetPt_by_Pt_h_jet"],
+                                              "newTitle":"; jet p_{T} [GeV] ; <K_{s}> ",
                                               "legendCoords": (0.65, 0.55, 0.8, 0.75),
-                                              "stampCoords": (0.7, 0.9),}
+                                              "stampCoords": (0.7, 0.9),},
+                                             #{"plotName":"effnPV",
+                                             # "histos":eff_histos["divide_numnPV_by_nPV"],
+                                             # "newTitle":"; pileup vertices ; <K_{s}>",
+                                             # "legendCoords": (0.6, 0.45, 0.85, 0.65),
+                                             # "stampCoords": (0.7, 0.85),}
                                             ],
-                                histos=eff_histos["divide_numksJetPt_by_Pt_h_jet"],
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"effnPV",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; pileup vertices ; <K_{s}>",
-                                              "legendCoords": (0.6, 0.45, 0.85, 0.65),
-                                              "stampCoords": (0.7, 0.85),}
-                                            ],
-                                histos=eff_histos["divide_numnPV_by_nPV"],
                                )
 		

@@ -103,8 +103,8 @@ class trigeff2DispPF(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=11)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			samplesForRatios = ("Data","Simulation"),
-			sampleLabelsForRatios = ("Data","Sim"),
+			#samplesForRatios = ("Data","Simulation"),
+			#sampleLabelsForRatios = ("Data","Sim"),
 			doLog=True,
 			anMode=True,
 			pageNumbers=False,
@@ -113,7 +113,7 @@ class trigeff2DispPF(supy.analysis) :
 		)
 		plotter.plotAll()
 		plotter.doLog=False
-		#self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt1", plotter)
+		self.makeEfficiencyPlots1(org,"jetPt","jetTrigPrompt1", plotter)
 		self.makeEfficiencyPlots2(org,"jetPromptEnergyFrac","jetTrigPrompt2",plotter)
 
 	def makeEfficiencyPlots1(self, org, denomName, numName, plotter):
@@ -135,13 +135,11 @@ class trigeff2DispPF(supy.analysis) :
 
 		print eff_histos
 		plotter.individualPlots(plotSpecs = [{"plotName":"effPromptEnergyFrac",
-                                              "stepName":"",
-                                              "stepDesc":"",
+                                              "histos":eff_histos["divide_PromptEnergyFrac_h_jetTrigPrompt1_by_PromptEnergyFrac_h_jetPt"],
                                               "newTitle":"; Prompt Energy Fraction; Trigger Efficiency",
                                               "legendCoords": (0.55, 0.45, 0.9, 0.65),
                                               "stampCoords": (0.67, 0.85),}
                                             ],
-                                histos=eff_histos["divide_PromptEnergyFrac_h_jetTrigPrompt1_by_PromptEnergyFrac_h_jetPt"],
                                )
 
 	def makeEfficiencyPlots2(self, org, denomName, numName, plotter):
@@ -162,29 +160,19 @@ class trigeff2DispPF(supy.analysis) :
 			eff_histos[ratio_tpl[0].GetName()]=ratio_tpl
 
 		plotter.individualPlots(plotSpecs = [{"plotName":"effEta",
-                                              "stepName":"",
-                                              "stepDesc":"",
+                                              "histos":eff_histos["divide_Eta_h_jetTrigPrompt2_by_Eta_h_jetPromptEnergyFrac"],
                                               "newTitle":"; jet #eta; Trigger Efficiency",
                                               "legendCoords": (0.35, 0.15, 0.7, 0.35),
-                                              "stampCoords": (0.6, 0.65),}
-                                            ],
-                                histos=eff_histos["divide_Eta_h_jetTrigPrompt2_by_Eta_h_jetPromptEnergyFrac"],
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"effPhi",
-                                              "stepName":"",
-                                              "stepDesc":"",
+                                              "stampCoords": (0.6, 0.65),},
+											 {"plotName":"effPt",
+                                              "histos":eff_histos["divide_Pt_h_jetTrigPrompt2_by_Pt_h_jetPromptEnergyFrac"],
+                                              "newTitle":"; jet p_{T} [GeV]; Trigger Efficiency",
+                                              "legendCoords": (0.35, 0.15, 0.7, 0.35),
+                                              "stampCoords": (0.6, 0.65),},
+											 {"plotName":"effPhi",
+                                              "histos":eff_histos["divide_Phi_h_jetTrigPrompt2_by_Phi_h_jetPromptEnergyFrac"],
                                               "newTitle":"; jet #phi; Trigger Efficiency",
                                               "legendCoords": (0.35, 0.15, 0.7, 0.35),
                                               "stampCoords": (0.6, 0.65),}
                                             ],
-                                histos=eff_histos["divide_Phi_h_jetTrigPrompt2_by_Phi_h_jetPromptEnergyFrac"],
-                               )
-		plotter.individualPlots(plotSpecs = [{"plotName":"effPt",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; jet p_{T} [GeV/c]; Trigger Efficiency",
-                                              "legendCoords": (0.35, 0.15, 0.7, 0.35),
-                                              "stampCoords": (0.6, 0.65),}
-                                            ],
-                                histos=eff_histos["divide_Pt_h_jetTrigPrompt2_by_Pt_h_jetPromptEnergyFrac"],
                                )

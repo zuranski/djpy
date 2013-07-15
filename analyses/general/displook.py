@@ -41,6 +41,11 @@ class displook(supy.analysis) :
 			)
 		return calcs
 
+	def calcsVars(self):
+		calcs = []
+		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
+		return calcs
+
 	def listOfSteps(self,config) :
 		return ([
 			supy.steps.printer.progressPrinter(),]
@@ -79,6 +84,7 @@ class displook(supy.analysis) :
 		return ( supy.calculables.zeroArgs(supy.calculables) +
 			supy.calculables.zeroArgs(calculables) 
 			+self.calcsIndices()
+			+self.calcsVars()
                  )
     
 	def listOfSampleDictionaries(self) :
@@ -163,14 +169,14 @@ class displook(supy.analysis) :
                                               {"plotName":"Vtxmass_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Vertex Invariant Mass [GeV/c^{2}]; di-jets / bin",
+                                              "newTitle":"; Vertex Invariant Mass [GeV]; di-jets / bin",
                                               "legendCoords": (0.45, 0.15, 0.9, 0.35),
                                               "stampCoords": (0.7, 0.88)
                                               },
                                               {"plotName":"Vtxpt_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Vertex p_{T} [GeV/c]; di-jets / bin",
+                                              "newTitle":"; Vertex p_{T} [GeV]; di-jets / bin",
                                               "legendCoords": (0.55, 0.45, 0.9, 0.65),
                                               "stampCoords": (0.7, 0.88)
                                               },
@@ -185,8 +191,8 @@ class displook(supy.analysis) :
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster RMS; di-jets / bin",
-                                              "legendCoords": (0.55, 0.55, 0.9, 0.75),
-                                              "stampCoords": (0.7, 0.9)
+                                              "legendCoords": (0.45, 0.15, 0.9, 0.35),
+                                              "stampCoords": (0.7, 0.7)
                                               },
                                               {"plotName":"NAvgMissHitsAfterVert_h_dijetNoOverlaps",
                                               "stepName":"cutvars",

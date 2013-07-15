@@ -122,25 +122,11 @@ class trigHTeff(supy.analysis) :
 				ratio.GetXaxis().SetLimits(num.GetXaxis().GetXmin(),num.GetXaxis().GetXmax())
 			eff_histos[ratio_tpl[0].GetName()]=ratio_tpl
 
-		#print eff_histos
-		'''
-		plotter.individualPlots(plotSpecs = [{"plotName":"effHTPF",
-                                              "stepName":"",
-                                              "stepDesc":"",
-                                              "newTitle":"; PF H_{T} [GeV]; Trigger Efficiency",
-                                              "legendCoords": (0.45, 0.25, 0.8, 0.45),
-                                              "stampCoords": (0.67, 0.7),}
-                                            ],
-                                histos=eff_histos["divide_pfHThigher_by_pfHTlower"],
-                               )
-		'''
 		plotter.individualPlots(plotSpecs = [{"plotName":"effHTCalo",
-                                              "stepName":"",
-                                              "stepDesc":"",
+											  "histos":eff_histos["divide_caloHThigher_by_caloHTlower"],
                                               "newTitle":"; Calo H_{T} [GeV]; Trigger Efficiency",
                                               "legendCoords": (0.45, 0.25, 0.8, 0.45),
                                               "stampCoords": (0.67, 0.7),}
                                             ],
-                                histos=eff_histos["divide_caloHThigher_by_caloHTlower"],
                                )
 			
