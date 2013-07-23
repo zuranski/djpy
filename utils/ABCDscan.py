@@ -79,29 +79,21 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 	# plot scans
 	for scan in scans:
 		plotter.canvas=r.TCanvas("c","c",600,600)
-		if onlyB:
-			plotter.canvas.Divide(1,2)
-			plotter.canvas.cd(1).SetPad(0.01,0.30+0.01,0.99,0.99)
-			plotter.canvas.cd(2).SetPad(0.01,0.01,0.99,0.30)
-		else:
-			plotter.canvas.Divide(1,3)
-			plotter.canvas.cd(1).SetPad(0.01,0.36+0.01,0.99,0.99)
-			plotter.canvas.cd(2).SetPad(0.01,0.18+0.01,0.99,0.36)
-			plotter.canvas.cd(3).SetPad(0.01,0.01,0.99,0.18)
+		plotter.canvas.Divide(1,2)
+		plotter.canvas.cd(1).SetPad(0.01,0.30+0.0,0.99,0.99)
+		plotter.canvas.cd(1).SetBottomMargin(0.)
+		plotter.canvas.cd(2).SetPad(0.01,0.01,0.99,0.30)
+		plotter.canvas.cd(2).SetTopMargin(0.)
+		plotter.canvas.cd(2).SetBottomMargin(0.3)
 		plotter.canvas.cd(1)
 		r.gPad.SetLogy()
 		#r.gPad.SetTicky(0)
-		if onlyB:
-			r.gPad.SetRightMargin(0.03)
-			r.gPad.SetTopMargin(0.05)
-			r.gStyle.SetTitleX(0.19)
-			
-		else:
-			r.gPad.SetRightMargin(0.2)
-			r.gStyle.SetTitleX(0.1)
+		r.gPad.SetTopMargin(0.07)
+		r.gPad.SetRightMargin(0.03)
+		r.gStyle.SetTitleX(0.19)
+		r.gStyle.SetTitleBorderSize(0)
 
 		title=''
-		#title = ' '.join(name+'='+string(value) if value else '' for name,value in zip(cutNames,scan))
 		title='max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
 		xtitle = 'Vertex/Cluster Discriminant'
 		ytitle = 'Number of Candidates'
@@ -126,8 +118,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 			histos = [r.TH1F(name,title,len(indices),0,1) for name in histNames]
 			histob = r.TH1F('predicted bkg.',title,len(indices),0,1)
 			histob0 = r.TH1F('predicted bkg.',title,len(indices),0,1)
-			histop = r.TGraph(len(indices))
-			histoz = r.TGraph(len(indices))
+			histoz = r.TH1F('','',len(indices),0,1)
 
 			for k,idx in enumerate(indices):
 				b,berr = getBkg(counts[j][idx],None)
@@ -136,23 +127,25 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histob0.SetBinContent(k+1,b)
 				histob0.SetBinError(k+1,0.00001)
 				N=int(counts[j][idx][0][0])
+				if N==0: 
+					histoz.SetBinContent(k+1,-1e5)
+					continue
 				p=pvalue(b,berr,N,1e4)
-				histop.SetPoint(k,k+1,p)
 				z=r.RooStats.PValueToSignificance(p)
-				histoz.SetPoint(k,k+1,z)
+				histoz.SetBinContent(k+1,z)
+				histoz.SetBinError(k+1,0.)
 
 			if onlyB:
-				legend = r.TLegend(0.6, 0.6, 0.95, 0.8)
+				legend = r.TLegend(0.6, 0.55, 0.95, 0.75)
 			else:
-				legend = r.TLegend(0.81, 0.60, 0.99, 0.10)
+				legend = r.TLegend(0.75, 0.45, 0.95, 0.9)
 			for i in reversed(range(n)):
 				if blind and 'Data' in sample['name'] and i==0: continue
 				for k,idx in enumerate(indices):
 					histos[i].SetBinContent(k+1,counts[j][idx][i][0])
 					histos[i].SetBinError(k+1,counts[j][idx][i][1])
 					histos[i].GetXaxis().SetBinLabel(k+1,labels[k])
-					histop.GetXaxis().SetBinLabel(k+1,'')
-					histoz.GetXaxis().SetBinLabel(k+1,'')
+					histoz.GetXaxis().SetBinLabel(k+1,labels[k])
 					histob.GetXaxis().SetBinLabel(k+1,'')
 					histob0.GetXaxis().SetBinLabel(k+1,'')
 					
@@ -163,9 +156,9 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histos[i].GetXaxis().SetTitleSize(0.05)
 				histos[i].GetYaxis().SetTitleSize(0.05)
 				histos[i].GetYaxis().SetLabelSize(0.04)
-				histop.SetTitle('')
+				histoz.GetXaxis().SetTitle(xtitle)
 				histoz.SetTitle('')
-				histop.SetMarkerStyle(8)
+				histoz.SetStats(0)
 				histoz.SetMarkerStyle(8)
 				histob.SetMarkerSize(0)
 				histos[i].SetMarkerStyle(25 if i!=0 else 8)
@@ -197,9 +190,14 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 			histos_tmp=tuple([histos[i] for i in range(n)])
 			plotter.setRanges(histos_tmp,*plotter.getExtremes(1,histos_tmp,[False]*n))
 			
+			if onlyB:
+				cmsStamp(lumi=org.lumi,coords=(0.78,0.88))
+				#cmsStamp(lumi=None,coords=(0.78,0.88))
+			else:
+				cmsStamp(lumi=org.lumi,coords=(0.45,0.85))
+				#cmsStamp(lumi=None,coords=(0.45,0.85))
+			
 			pad = r.TPad("pad2","",0,0,1,1)
-			if not onlyB:
-				pad.SetRightMargin(0.2)
 			pad.SetFillStyle(4000)
 			pad.SetFrameFillStyle(0)
 			pad.SetLogy(0)
@@ -216,47 +214,29 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				sigeff[i].GetYaxis().SetTitle('efficiency [%]')
 				sigeff[i].Draw(option)
 				legend.AddEntry(sigeff[i],sample['name'].split('.')[0])
-
+			
 			legend.SetFillColor(0)
-			if onlyB: legend.SetBorderSize(0)
+			legend.SetBorderSize(0)
 			legend.Draw("same")
-			if onlyB:
-				cmsStamp(lumi=org.lumi,coords=(0.78,0.88))
-				#cmsStamp(lumi=None,coords=(0.55,0.85))
-			else:
-				cmsStamp(lumi=org.lumi,coords=(0.55,0.85))
-				#cmsStamp(lumi=None,coords=(0.55,0.85))
+
 			plotter.canvas.cd(2)
-			if not onlyB:
-				r.gPad.SetRightMargin(0.2)
-				r.gPad.SetLogy()
-				r.gPad.SetGridy()
-				histop.GetYaxis().SetNdivisions(5,True)
-				histop.GetYaxis().SetTitleOffset(0.28)
-				histop.GetYaxis().SetTitleSize(0.18)
-				histop.GetYaxis().SetLabelSize(0.1)
-				histop.GetYaxis().SetTitle('P-Value')
-				histop.GetYaxis().SetRangeUser(1e-2,1.5)
-				histop.Draw('AP')
-				plotter.canvas.cd(3)
-			else:
-				r.gPad.SetRightMargin(0.03)
-			if not onlyB:
-				r.gPad.SetRightMargin(0.2)
+			r.gPad.SetRightMargin(0.03)
 			r.gPad.SetGridy()
 			histoz.GetYaxis().SetNdivisions(505,True)
-			if onlyB:
-				histoz.GetYaxis().SetTitleOffset(0.4)
-				histoz.GetYaxis().SetTitleSize(0.12)
-			else:
-				histoz.GetYaxis().SetTitleOffset(0.28)
-				histoz.GetYaxis().SetTitleSize(0.18)
+			histoz.GetYaxis().SetTitleOffset(0.4)
+			histoz.GetYaxis().SetTitleSize(0.12)
+			histoz.GetXaxis().SetTitleOffset(1.2)
+			histoz.GetXaxis().SetTitleSize(0.12)
 			histoz.GetYaxis().SetLabelSize(0.1)
+			histoz.GetYaxis().SetTickLength(1.3*histoz.GetYaxis().GetTickLength())
+			histoz.GetXaxis().SetTickLength(2.*histoz.GetXaxis().GetTickLength())
+			histoz.GetXaxis().SetLabelSize(0.15)
 			histoz.GetYaxis().SetTitle('Significance')
-			histoz.GetYaxis().SetRangeUser(-4,4)
-			histoz.Draw('AP')
+			histoz.GetYaxis().CenterTitle()
+			histoz.GetYaxis().SetRangeUser(-3.99,3.99)
+			histoz.Draw('P')
 			plotter.printCanvas()
-			plotter.canvas.Clear()
+			#plotter.canvas.Clear()
 
 	plotter.printCanvas("]")
 	print plotter.pdfFileName, "has been written."
@@ -266,14 +246,13 @@ def getBkg(counts,cuts):
 	b=list[-1][0]
 	err_stat=list[-1][1]
 	combs = [obj[0] for obj in list]
-	print combs
 	dists= [abs(comb-b) for comb in combs]
 	err_sys = max(dists)
 	#err_sys=0.5*(max(combs)-min(combs))
 	#b=0.5*(max(combs)+min(combs))
 	err=math.sqrt(pow(err_stat,2)+pow(err_sys,2))
 	#err=err_stat
-	print cuts,round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2),counts[0][0]
+	#print cuts,round(b,2),round(err,2),round(err_stat/b,2), round(err_sys/b,2),counts[0][0]
 	return b,err
 
 def plotExpLimit(analysis,n,org):

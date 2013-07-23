@@ -170,8 +170,9 @@ class abcdHT(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		plotABCDscan(self,org,plotter,8)
+		plotABCDscan(self,org,plotter,8,blind=False,onlyB=False)
 
+		'''
 		plotter.individualPlots(plotSpecs = [{"plotName":"NPromptTracks1_h_dijetTrueLxy",
                                               "stepName":"ABCDvars",
                                               "stepDesc":"ABCDvars",
@@ -193,5 +194,5 @@ class abcdHT(supy.analysis) :
                                               "legendCoords": (0.58, 0.7, 0.78, 0.9),
                                               "stamp": False 
                                               },])
-
+		'''
 
