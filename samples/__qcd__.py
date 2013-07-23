@@ -27,11 +27,11 @@ qcd.add('qcd_470_600','%s'%(fileListFromDisk(loc+"QCD_Pt_470to600")),xs=113.8791
 qcd.add('qcd_600_800','%s'%(fileListFromDisk(loc+"QCD_Pt_600to800")),xs=26.9921) #/pb
 
 '''
-qcd.add('qcd_50_80','%s'%(fileListFromDisk(loc+"QCD_Pt_50to80")),xs=1) #/pb
-qcd.add('qcd_80_120','%s'%(fileListFromDisk(loc+"QCD_Pt_80to120")),xs=1) #/pb
-qcd.add('qcd_120_170','%s'%(fileListFromDisk(loc+"QCD_Pt_120to170")),xs=1) #/pb
-qcd.add('qcd_170_300','%s'%(fileListFromDisk(loc+"QCD_Pt_170to300")),xs=1) #/pb
-qcd.add('qcd_300_470','%s'%(fileListFromDisk(loc+"QCD_Pt_300to470")),xs=1) #/pb
-qcd.add('qcd_470_600','%s'%(fileListFromDisk(loc+"QCD_Pt_470to600")),xs=1) #/pb
-qcd.add('qcd_600_800','%s'%(fileListFromDisk(loc+"QCD_Pt_600to800")),xs=1) #/pb
+qcd.add('qcd_50_80','%s'%(fileListFromDisk(loc+"QCD_Pt_50to80")),lumi=1) #/pb
+qcd.add('qcd_80_120','%s'%(fileListFromDisk(loc+"QCD_Pt_80to120")),lumi=1) #/pb
+qcd.add('qcd_120_170','%s'%(fileListFromDisk(loc+"QCD_Pt_120to170")),lumi=1) #/pb
+qcd.add('qcd_170_300','%s'%(fileListFromDisk(loc+"QCD_Pt_170to300")),lumi=1) #/pb
+qcd.add('qcd_300_470','%s'%(fileListFromDisk(loc+"QCD_Pt_300to470")),lumi=1) #/pb
+qcd.add('qcd_470_600','%s'%(fileListFromDisk(loc+"QCD_Pt_470to600")),lumi=1) #/pb
+qcd.add('qcd_600_800','%s'%(fileListFromDisk(loc+"QCD_Pt_600to800")),lumi=1) #/pb
 '''
