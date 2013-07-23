@@ -86,7 +86,7 @@ class ptbias(supy.analysis) :
 
 		merged_samples=[sig_samples[i] for i in [2,3,6,8,10]]
 		nonmerged_samples=[sig_samples[i] for i in [0,1,4,5,7,9]]
-		toPlot=[nonmerged_samples[i] for i in [0,1,2,3,4]]
+		toPlot=[nonmerged_samples[i] for i in [1]]
 
 		#return merged_samples
 		#return nonmerged_samples
@@ -104,7 +104,7 @@ class ptbias(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=True,
+			doLog=False,
 			anMode=True,
 			showStatBox=True,
 			pegMinimum=10,
@@ -183,24 +183,30 @@ class ptbias(supy.analysis) :
 
 
 		for profile,isX in zip(profiles,XorY):
-			plotter.canvas.Divide(3,2)
+			#plotter.canvas.Divide(3,2)
 			histosX = [h.ProfileX('',1,-1,'s').Clone() for h in profile]
 			histosY = [h.ProfileY('',1,-1,'s').Clone() for h in profile]
 			removeLowStats(histosX)
 			removeLowStats(histosY)
 			histos = histosX if isX else histosY
+			latex=r.TLatex()
+			latex.SetNDC()
+			latex.SetTextSize(0.035)
 			for i,sample in enumerate(org.samples):
 				name=sample['name']
 				plotter.canvas.cd(i+1)
-				r.gPad.SetLeftMargin(0.15)
+				r.gPad.SetTopMargin(0.08)
+				r.gPad.SetLeftMargin(0.2)
 				r.gPad.SetRightMargin(0.05)
-				histos[i].SetMarkerStyle(8)
+				histos[i].SetMarkerStyle(20)
+				histos[i].SetMarkerSize(2)
 				histos[i].SetStats(False)
 				histos[i].SetName(name)
 				histos[i].SetTitle(name)
 				histos[i].GetYaxis().SetTitle('(jet p_{T} - true p_{T} )/ true p_{T}')
 				histos[i].GetYaxis().SetTitleOffset(2.)
 				histos[i].Draw()
+				latex.DrawLatex(0.22,0.95,name)
 			plotter.printCanvas()
 			plotter.canvas.Clear()
 		plotter.printCanvas("]")

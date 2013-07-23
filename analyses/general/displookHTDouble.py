@@ -1,6 +1,6 @@
 import supy,samples,calculables,steps,ROOT as r
 
-class displookHT(supy.analysis) :
+class displookHTDouble(supy.analysis) :
     
 	IniCuts=[
 		{'name':'dijet'},
@@ -56,7 +56,7 @@ class displookHT(supy.analysis) :
 
 			### pile-up reweighting
 			+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
-				target=(supy.whereami()+"/../data/pileup/HT300_R12BCD_true.root","pileup"),
+				target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
 			### filters
@@ -79,7 +79,7 @@ class displookHT(supy.analysis) :
 
 			### trigger
 			+[supy.steps.filters.label("hlt trigger"),
-			steps.trigger.hltFilterWildcard("HLT_HT300_v"),
+			steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
 			#supy.steps.filters.value('caloHT',min=325),
 			]
 
@@ -122,6 +122,10 @@ class displookHT(supy.analysis) :
 			#supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=5.769) +
 			#supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6.427) +
 			
+		    supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4430) 
+			+ supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=495.03) 
+			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3) 
+			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274) +
 			qcd_samples 
 			+[sig_samples[i] for i in [0,2,4]]
 		) 
@@ -131,94 +135,93 @@ class displookHT(supy.analysis) :
 		org = self.organizer(pars)
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"E2","fillColor":r.kBlue,"fillStyle":3001,"double":True,"markerSize":0}, allWithPrefix = "qcd",scaleFactors=[1.]*6)
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350",scaleFactors=[1e4])                                 
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150",scaleFactors=[1e4])                               
-		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50",scaleFactors=[1e4])
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350",scaleFactors=[1e1])                                 
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150",scaleFactors=[1e1])                               
+		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50",scaleFactors=[1e1])
 		#org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter=supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
-			#samplesForRatios = ("Data","QCD"),
-			#sampleLabelsForRatios = ("Data","QCD"),
+			samplesForRatios = ("Data","QCD"),
+			sampleLabelsForRatios = ("Data","QCD"),
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,
 			doCorrTable=True,
-			#pegMinimum=0.3,
-			pegMinimum=1000,
+			pegMinimum=1,
 		)
 		plotter.plotAll()
 
 		#org.lumi=None	
 		plotter.individualPlots(plotSpecs = [
-											  {"plotName":"Lxysig_h_dijetVtxNRatio",
+											  {"plotName":"Lxysig_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; L_{xy} significance; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-											  {"plotName":"PromptEnergyFrac2_h_dijetVtxNRatio",
+											  {"plotName":"PromptEnergyFrac2_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Charged Prompt Energy Fraction; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.55, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                              {"plotName":"NPromptTracks2_h_dijetVtxNRatio",
+                                              {"plotName":"NPromptTracks2_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Number of Prompt Tracks ; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.55, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                              {"plotName":"VtxN_h_dijetVtxNRatio",
+                                              {"plotName":"VtxN_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Vertex Track Multiplicity ; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                              {"plotName":"Vtxmass_h_dijetVtxNRatio",
+                                              {"plotName":"Vtxmass_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Vertex Invariant Mass [GeV]; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                              {"plotName":"Vtxpt_h_dijetVtxNRatio",
+                                              {"plotName":"Vtxpt_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Vertex p_{T} [GeV]; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                              {"plotName":"bestclusterN_h_dijetVtxNRatio",
+                                              {"plotName":"bestclusterN_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster Track Multiplicity; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                              {"plotName":"glxyrmsclr_h_dijetVtxNRatio",
+                                              {"plotName":"glxyrmsclr_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster RMS; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                              {"plotName":"NAvgMissHitsAfterVert_h_dijetVtxNRatio",
+                                              {"plotName":"NAvgMissHitsAfterVert_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Missing Hits per track after Vertex; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                              {"plotName":"Posip2dFrac_h_dijetVtxNRatio",
+                                              {"plotName":"Posip2dFrac_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Fraction of tracks with positive Impact Parameter; dijets / bin",
+                                              "newTitle":"; Tracks with positive IP fraction; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
@@ -226,29 +229,29 @@ class displookHT(supy.analysis) :
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Vertex Track Multiplicity ; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
+                                              "legendCoords": (0.18, 0.77, 0.55, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
                                               {"plotName":"bestclusterN_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster Track Multiplicity; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
+                                              "legendCoords": (0.18, 0.77, 0.55, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
                                               {"plotName":"glxyrmsclr_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster RMS; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
+                                              "legendCoords": (0.18, 0.77, 0.55, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
                                               {"plotName":"Posip2dFrac_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Fraction of tracks with positive Impact Parameter; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
+                                              "newTitle":"; Tracks with positive IP fraction; dijets / bin",
+                                              "legendCoords": (0.18, 0.77, 0.55, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                            ], simulation = True
+                                            ], simulation = False
                                )

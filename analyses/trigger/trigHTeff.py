@@ -124,8 +124,8 @@ class trigHTeff(supy.analysis) :
 
 		plotter.individualPlots(plotSpecs = [{"plotName":"effHTCalo",
 											  "histos":eff_histos["divide_caloHThigher_by_caloHTlower"],
-                                              "newTitle":"; Calo H_{T} [GeV]; Trigger Efficiency",
-                                              "legendCoords": (0.45, 0.25, 0.8, 0.45),
+                                              "newTitle":"; H_{T} [GeV]; Trigger Efficiency",
+                                              "legendCoords": (0.45, 0.2, 0.8, 0.4),
                                               "stampCoords": (0.67, 0.7),}
                                             ],
                                )

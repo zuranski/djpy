@@ -136,14 +136,14 @@ class kshorts(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.00/1.495]*6)
+		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":""}, allWithPrefix = "qcd",scaleFactors=[1.00/1.495]*6)
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.scale(lumiToUseInAbsenceOfData=11000)
 		plotter=supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			samplesForRatios = ("Data","Simulation"),
 			sampleLabelsForRatios = ("Data","Sim"),
-			doLog=True,
+			doLog=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,
 			doCorrTable=True,
@@ -152,87 +152,87 @@ class kshorts(supy.analysis) :
 		)
 		plotter.plotAll()
 		org.lumi=None
-		
+		'''
 		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_kscolin",
                                               "stepName":"kshort",
                                               "stepDesc":"kshort",
                                               "newTitle":"; K_{s} mass [GeV]; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.25, 0.9, 0.45),
+                                              "legendCoords": (0.6, 0.6, 0.95, 0.8),
                                               "stampCoords": (0.73, 0.9),},
 											 {"plotName":"ksCtau",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} c#tau [cm]; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"ksLxy",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
-                                              "newTitle":"; K_{s} L_{xy} [cm]; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.6, 0.9, 0.8),
+                                              "newTitle":"; K_{s} Transverse Decay Length [cm]; K_{s} / bin",
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"ksLxyz",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
-                                              "newTitle":"; K_{s} L_{xyz} [cm]; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "newTitle":"; K_{s} Decay Length [cm]; K_{s} / bin",
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"kstrkip2d",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} track IP_{xy} [cm]; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"kstrkip3d",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} track IP_{xyz} [cm]; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"ksP",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} momentum [GeV]; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.55, 0.9, 0.75),
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"ksLxysig",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} L_{xy} significance (L_{xy}>2cm); K_{s} / bin",
-                                              "legendCoords": (0.65, 0.6, 0.9, 0.8),
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"ksChi2",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} vertex #chi^{2}/dof (L_{xy}>2cm); K_{s} / bin",
-                                              "legendCoords": (0.65, 0.6, 0.9, 0.8),
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"ksTrkPt",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} track p_{T} [GeV]; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"Lxysig_h_ksLxy",
                                               "stepName":"kshort",
                                               "stepDesc":"kshort",
                                               "newTitle":"; K_{s} L_{xy} significance (L_{xy}<2cm) ; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
 											 {"plotName":"Chi2_h_ksLxy",
                                               "stepName":"kshort",
                                               "stepDesc":"kshort",
                                               "newTitle":"; K_{s} vertex #chi^{2}/dof (L_{xy}<2cm) ; K_{s} / bin",
-                                              "legendCoords": (0.65, 0.5, 0.9, 0.7),
+                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
                                               "stampCoords": (0.7, 0.9),},
                                             ],
                                )
-		
+		'''
 		self.makeEfficiencyPlots(org,'den','num',plotter)
 
 	def makeEfficiencyPlots(self, org, denomName, numName, plotter):
-		names_denom=['Pt_h_jet','nPV'][:1]
-		names_num=['numksJetPt','numnPV'][:1]
+		names_denom=['Pt_h_jet','nPV']
+		names_num=['numksJetPt','numnPV']
 		hists_denom = []
 		hists_num = []
 		for step in org.steps:
@@ -259,11 +259,11 @@ class kshorts(supy.analysis) :
                                               "newTitle":"; jet p_{T} [GeV] ; <K_{s}> ",
                                               "legendCoords": (0.65, 0.55, 0.8, 0.75),
                                               "stampCoords": (0.7, 0.9),},
-                                             #{"plotName":"effnPV",
-                                             # "histos":eff_histos["divide_numnPV_by_nPV"],
-                                             # "newTitle":"; pileup vertices ; <K_{s}>",
-                                             # "legendCoords": (0.6, 0.45, 0.85, 0.65),
-                                             # "stampCoords": (0.7, 0.85),}
+                                             {"plotName":"effnPV",
+                                              "histos":eff_histos["divide_numnPV_by_nPV"],
+                                              "newTitle":"; pileup vertices ; <K_{s}>",
+                                              "legendCoords": (0.6, 0.45, 0.9, 0.65),
+                                              "stampCoords": (0.7, 0.85),}
                                             ],
                                )
 		

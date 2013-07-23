@@ -132,7 +132,7 @@ class displook(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			dependence2D=True,
 			doCorrTable=True,
-			pegMinimum=1,
+			pegMinimum=0.3,
 			anMode=True,
 		)
 		plotter.plotAll()
@@ -204,7 +204,7 @@ class displook(supy.analysis) :
                                               {"plotName":"Posip2dFrac_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Tracks with positive IP fraction; di-jets / bin",
+                                              "newTitle":"; Fraction of tracks with positive Impact Parameter ; di-jets / bin",
                                               "legendCoords": (0.2, 0.15, 0.4, 0.35),
                                               "stampCoords": (0.7, 0.5)
                                               },

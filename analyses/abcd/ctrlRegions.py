@@ -175,4 +175,4 @@ class ctrlRegions(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		plotABCDscan(self,org,plotter,8,blind=False,onlyB=False)
+		plotABCDscan(self,org,plotter,8,blind=False,onlyB=True)

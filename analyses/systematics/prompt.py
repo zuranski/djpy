@@ -3,10 +3,6 @@ import supy,samples,calculables,steps,ROOT as r
 class prompt(supy.analysis) :
    
 	# scale for QCD 65.8
- 
-	ToCalculateAny=['dijetPt1','dijetPt2','dijetNPromptTracks1','dijetNPromptTracks2','dijetPromptEnergyFrac1','dijetPromptEnergyFrac2']
-	ToCalculateVtx=['dijetVtxNRatio']
-
 	IniCuts=[
 		{'name':'dijet'},
 		#{'name':'dijetPt1','min':65},
@@ -52,10 +48,6 @@ class prompt(supy.analysis) :
 
 	def calcsVars(self):
 		calcs = []
-		for calc in self.ToCalculateVtx:
-			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
-		for calc in self.ToCalculateAny:
-			calcs.append(getattr(calculables.Vars,calc)('dijetIndices'))
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 
