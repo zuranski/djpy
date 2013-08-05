@@ -117,10 +117,10 @@ class displookHT(supy.analysis) :
 			sig_samples+=(supy.samples.specify(names = sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
 		return (
-		    #supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.04) +
-			#supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=0.4437) +
-			#supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=5.769) +
-			#supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6.427) +
+		    supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.04) +
+			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=0.4437) +
+			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=5.769) +
+			supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6.427) +
 			
 			qcd_samples 
 			+[sig_samples[i] for i in [0,2,4]]
@@ -130,7 +130,7 @@ class displookHT(supy.analysis) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
-		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"E2","fillColor":r.kBlue,"fillStyle":3001,"double":True,"markerSize":0}, allWithPrefix = "qcd",scaleFactors=[1.]*6)
+		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"E2","fillColor":r.kBlue,"fillStyle":3001,"double":True,"markerSize":0}, allWithPrefix = "qcd",scaleFactors=[0.75]*6)
 		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350",scaleFactors=[1e4])                                 
 		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150",scaleFactors=[1e4])                               
 		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50",scaleFactors=[1e4])
@@ -140,13 +140,13 @@ class displookHT(supy.analysis) :
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
-			#samplesForRatios = ("Data","QCD"),
-			#sampleLabelsForRatios = ("Data","QCD"),
+			samplesForRatios = ("Data","QCD"),
+			sampleLabelsForRatios = ("Data","QCD"),
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,
 			doCorrTable=True,
-			#pegMinimum=0.3,
-			pegMinimum=1000,
+			pegMinimum=0.3,
+			#pegMinimum=1000,
 		)
 		plotter.plotAll()
 
@@ -250,5 +250,19 @@ class displookHT(supy.analysis) :
                                               "legendCoords": (0.18, 0.72, 0.55, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
-                                            ], simulation = True
+											  {"plotName":"PromptEnergyFrac2_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Charged Prompt Energy Fraction; dijets / bin",
+                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
+                                              "stampCoords": (0.73, 0.88)
+                                              },
+                                              {"plotName":"NPromptTracks2_h_dijetNoOverlaps",
+                                              "stepName":"cutvars",
+                                              "stepDesc":"cutvars",
+                                              "newTitle":"; Number of Prompt Tracks ; dijets / bin",
+                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
+                                              "stampCoords": (0.73, 0.88)
+                                              },
+                                            ], simulation = False
                                )
