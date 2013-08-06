@@ -34,12 +34,13 @@ class dijetTrue(wrappedChain.calculable):
 			self.value[i]={'avg':(val1+val2)/2.,
 						   'min':min(val1,val2),
  						   'max':max(val1,val2),
-						   'sum':(val1+val2)}[self.calc]
+						   'sum':(val1+val2)}.get(self.calc,None)
 
 #  special case
 class genqXPt(wrappedChain.calculable):
 	def update(self,ignored):
-		self.value=[self.source['XPt'][i/2] for i in range(len(self.source['genqPt']))]
+		N=len(self.source['genqPt'])
+		self.value=[self.source['XPt'][2*i/N] for i in range(N)]
 
 class genqHPt(wrappedChain.calculable):
 	def update(self,ignored):
@@ -52,8 +53,8 @@ class jetTrueNLep(jetTrue):	var='genqNLep'
 class jetTrueBlxyz(jetTrue): var='genqBlxyz'
 class jetTrueXPt(jetTrue): var='genqXPt'
 class jetTrueHPt(jetTrue): var='genqHPt'
-class jetTrueIP2d(jetTrue): var='genqIP2D'
-class jetTrueIP3d(jetTrue): var='genqIP3D'
+class jetTrueIP2d(jetTrue): var='genqIP2d'
+class jetTrueIP3d(jetTrue): var='genqIP3d'
 
 class dijetTrueLxy(dijetTrue): var='jetTrueLxy'; calc='avg'
 class dijetTrueCtau(dijetTrue):	var='jetTrueCtau'; calc='avg'
@@ -62,7 +63,7 @@ class dijetTrueNLep(dijetTrue):	var='jetTrueNLep'; calc='sum'
 class dijetTrueBlxyz(dijetTrue): var='jetTrueBlxyz'; calc='avg'
 class dijetTrueXPt(dijetTrue): var='jetTrueXPt'; calc='avg'
 class dijetTrueHPt(dijetTrue): var='jetTrueHPt'; calc='avg'
-class dijetTrueIP2dMin(dijetTrue): var='jetTrueIp2d'; calc='min'
-class dijetTrueIP2dMax(dijetTrue): var='jetTrueIp2d'; calc='max'
-class dijetTrueIP3dMin(dijetTrue): var='jetTrueIp3d'; calc='min'
-class dijetTrueIP3dMax(dijetTrue): var='jetTrueIp3d'; calc='max'
+class dijetTrueIP2dMin(dijetTrue): var='jetTrueIP2d'; calc='min'
+class dijetTrueIP2dMax(dijetTrue): var='jetTrueIP2d'; calc='max'
+class dijetTrueIP3dMin(dijetTrue): var='jetTrueIP3d'; calc='min'
+class dijetTrueIP3dMax(dijetTrue): var='jetTrueIP3d'; calc='max'
