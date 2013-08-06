@@ -38,3 +38,9 @@ sigmc.add('H_200_X_50','%s'%(fileListFromDisk(loc+"MH_200_MX_50_Ctau_20To2000/")
 sigmc.add('H_200_X_20','%s'%(fileListFromDisk(loc+"MH_200_MX_20_Ctau_7To700/")) ,xs=1) #/pb
 sigmc.add('H_120_X_50','%s'%(fileListFromDisk(loc+"MH_120_MX_50_Ctau_50To5000/")) ,xs=1) #/pb
 sigmc.add('H_120_X_20','%s'%(fileListFromDisk(loc+"MH_120_MX_20_Ctau_13To1300/")) ,xs=1) #/pb
+
+
+sigmc.add('SQ_120_CHI_48','%s'%(fileListFromDisk(loc+"MSquark_120_MChi_48/")) ,xs=1) #/pb
+sigmc.add('SQ_350_CHI_148','%s'%(fileListFromDisk(loc+"MSquark_350_MChi_148/")) ,xs=1) #/pb
+sigmc.add('SQ_1000_CHI_148','%s'%(fileListFromDisk(loc+"MSquark_1000_MChi_148/")) ,xs=1) #/pb
+sigmc.add('SQ_1500_CHI_494','%s'%(fileListFromDisk(loc+"MSquark_1500_MChi_494/")) ,xs=1) #/pb
