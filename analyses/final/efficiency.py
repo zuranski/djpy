@@ -1,4 +1,5 @@
 import supy,samples,calculables,steps,ROOT as r
+from utils.other import removeLowStats
 
 class efficiency(supy.analysis) :
 
@@ -198,31 +199,29 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
-		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_200_X_50")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
 			showStatBox=True,
-			pegMinimum=0.1,
+			pegMinimum=0.0001,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
-		#plotter.doLog=False
 		plotter.anMode=True
 	
 		#self.meanLxy(org)
 		org.lumi=None
-		#self.accPt(org,plotter)
-		self.sigPlots(plotter)	
-		self.totalEfficiencies(org,dir='eff2',flavor='')
+		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low')
+		#self.sigPlots(plotter)	
+		#self.totalEfficiencies(org,dir='eff2',flavor='')
 		#self.puEff(org,plotter)
-		#self.Efficiencies(org,plotter,flavor='b')
 
 
 	def sigPlots(self,plotter):			
@@ -288,44 +287,46 @@ class efficiency(supy.analysis) :
 		for i,sample in enumerate(org.samples):
 			print sample['name'],round(lxy0[i].GetMean(),2),round(lxy1[i].GetMean(),2),round(lxy2[i].GetMean(),2)
 
-	def accPt(self,org,plotter):
-		ptn,ptd=[],[]
+	def effPlots(self,org,plotter,denName,numName,sel):
+		nlist,dlist,names=[],[],[]
 		for step in org.steps:
-			for plotName in sorted(step.keys()):
-				if plotName.startswith('HPt'): ptd.append(step[plotName])
-				if plotName.startswith('LowHPt'): ptn.append(step[plotName])
+			if step.name==denName: 
+				for plotName in sorted(step.keys()): 
+					dlist.append(step[plotName]);names.append(plotName)
+			if step.name==numName: 
+				for plotName in sorted(step.keys()): 
+					if plotName.startswith(sel): nlist.append(step[plotName])	
+		print names
 
-		def removeLowStats(histos):
-			for histo in histos:
-				for i in range(1,histo.GetNbinsX()+1):
-					print histo.GetBinContent(i)	
-					if histo.GetBinContent(i)<1:
-						histo.SetBinContent(i,0)
-						histo.SetBinError(i,0)
+		for n in nlist: removeLowStats(n,relErrMax=0.8)
 
-		removeLowStats(ptn[0])
-
-		accpt=[ tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom) ]) for num,denom in zip(ptn,ptd) ]
-		plotter.individualPlots(simulation=True, plotSpecs = [{"plotName":"accPt",
-                                              "histos":accpt[0],
+		effs=[ tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom) ]) for num,denom in zip(nlist,dlist) ]
+		plotter.individualPlots(simulation=True, plotSpecs = [
+											  {"plotName":"HPt",
+                                              "histos":effs[names.index("HPt")],
                                               "newTitle":"; H^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
-											 {"plotName":"accPt0",
-                                              "histos":accpt[1],
+											  {"plotName":"XPt",
+                                              "histos":effs[names.index("XPt")],
                                               "newTitle":"; X^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
-											 {"plotName":"accPt1",
-                                              "histos":accpt[2],
-                                              "newTitle":"; X^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+											  {"plotName":"Lxy",
+                                              "histos":effs[names.index("Lxy")],
+                                              "newTitle":"; X^{0} L_{xy} [cm] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
-											 {"plotName":"accPt2",
-                                              "histos":accpt[3],
-                                              "newTitle":"; X^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+											  {"plotName":"IP2dMin",
+                                              "histos":effs[names.index("IP2dMin")],
+                                              "newTitle":"; X^{0} min(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),}
+                                              "stampCoords": (0.36, 0.85),},
+											  {"plotName":"IP2dMax",
+                                              "histos":effs[names.index("IP2dMax")],
+                                              "newTitle":"; X^{0} max(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),},
                                             ],
                                )
 
@@ -344,45 +345,13 @@ class efficiency(supy.analysis) :
                                             ],
                                )
 
-	def Efficiencies(sefl,org,plotter,flavor=''):
-		LxyD,LxyN,NLepN,NLepD,BlxyzN,BlxyzD=None,None,None,None,None,None
-		for step in org.steps:
-			for plotName in sorted(step.keys()):
-				if 'Lxy'+flavor == plotName : LxyD=step[plotName]
-				if 'NLep'+flavor == plotName : NLepD=step[plotName]
-				if 'Blxyz'+flavor == plotName : BlxyzD=step[plotName]
-				if 'LowLxy'+flavor == plotName : LxyN=step[plotName]
-				if 'LowNLep'+flavor == plotName : NLepN=step[plotName]
-				if 'LowBlxyz'+flavor == plotName : BlxyzN=step[plotName]
-
-		Lxy = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(LxyN,LxyD)])
-		NLep = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(NLepN,NLepD)])
-		Blxyz = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(BlxyzN,BlxyzD)])
-		plotter.individualPlots(simulation=True, plotSpecs = [{"plotName":"effLxy",
-                                              "histos":Lxy,
-                                              "newTitle":"; L_{xy} [cm]; X#rightarrow q#bar{q} (%s) efficiency #times Acceptance"%flavor,
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),},
-											  {"plotName":"effNLep",
-                                              "histos":NLep,
-                                              "newTitle":";N leptons ; X#rightarrow q#bar{q} (%s) efficiency #times Acceptance"%flavor,
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),},
-											  {"plotName":"effBlxyz",
-                                              "histos":Blxyz,
-                                              "newTitle":"; B L_{xyz} [cm]; X#rightarrow q#bar{q} (%s) efficiency #times Acceptance"%flavor,
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),}
-                                            ],
-                               )
-
 	def totalEfficiencies(self,org,dir=None,flavor='') :
 		recoLow,recoHigh,acceptance,denom=None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'NXLow'+flavor == plotName : recoLow=step[plotName]
-				if 'NXHigh'+flavor == plotName : recoHigh=step[plotName]
-				if 'NXAcc'+flavor == plotName : acceptance=step[plotName]
+				if 'LowNX'+flavor == plotName : recoLow=step[plotName]
+				if 'HighNX'+flavor == plotName : recoHigh=step[plotName]
+				if 'AccNX'+flavor == plotName : acceptance=step[plotName]
 				if 'NX'+flavor == plotName : denom=step[plotName]
 
 		acc = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(acceptance,denom)])
