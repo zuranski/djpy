@@ -38,9 +38,30 @@ class gendijetEta2(wrappedChain.calculable):
 	def update(self,ignored):
 		self.value = [self.source['genqEta'][pair[1]] for pair in self.source['gendijet']]
 
+class gendijetIP2dMin(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [min(self.source['genqIP2d'][pair[0]],self.source['genqIP2d'][pair[1]]) 
+					  for pair in self.source['gendijet']]
+
+class gendijetIP2dMax(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [max(self.source['genqIP2d'][pair[0]],self.source['genqIP2d'][pair[1]]) 
+					  for pair in self.source['gendijet']]
+
+class gendijetIP3dMin(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [min(self.source['genqIP3d'][pair[0]],self.source['genqIP3d'][pair[1]]) 
+					  for pair in self.source['gendijet']]
+
+class gendijetIP3dMax(wrappedChain.calculable):
+	def update(self,ignored):
+		self.value = [max(self.source['genqIP3d'][pair[0]],self.source['genqIP3d'][pair[1]]) 
+					  for pair in self.source['gendijet']]
+
 class gendijetFlavor(wrappedChain.calculable):
 	def update(self,ignored):
-		self.value = [self.source['genqFlavor'][pair[0]] for pair in self.source['gendijet']]
+		self.value = [(self.source['genqFlavor'][pair[0]]+self.source['genqFlavor'][pair[1]])/2. 
+                      for pair in self.source['gendijet']]
 
 class gendijetNLep(wrappedChain.calculable):
 	def update(self,ignored):
