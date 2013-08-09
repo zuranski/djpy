@@ -5,6 +5,7 @@ dir=sys.argv[1]+'/efficiencies'
 
 map={'H_1000_X_350':35,'H_1000_X_150':10,'H_1000_X_50':4,
      'H_400_X_150':40,'H_400_X_50':8,'H_200_X_50':20,
+	 'SQ_1500_CHI_494':18.1,'SQ_1000_CHI_148':5.85,'SQ_350_CHI_148':18.8,'SQ_120_CHI_48':15.5
     }
 
 files=sorted(os.listdir(dir),key=lambda file: (eval(file[:-4].split('_')[1]),
