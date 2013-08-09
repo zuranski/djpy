@@ -220,7 +220,7 @@ class efficiency(supy.analysis) :
 		org.lumi=None
 		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low')
 		#self.sigPlots(plotter)	
-		#self.totalEfficiencies(org,dir='eff2',flavor='')
+		self.totalEfficiencies(org,dir='eff2',flavor='')
 		#self.puEff(org,plotter)
 
 
@@ -298,33 +298,33 @@ class efficiency(supy.analysis) :
 					if plotName.startswith(sel): nlist.append(step[plotName])	
 		print names
 
-		for n in nlist: removeLowStats(n,relErrMax=0.8)
+		for n in nlist: removeLowStats(n,relErrMax=1)
 
 		effs=[ tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom) ]) for num,denom in zip(nlist,dlist) ]
 		plotter.individualPlots(simulation=True, plotSpecs = [
 											  {"plotName":"HPt",
                                               "histos":effs[names.index("HPt")],
-                                              "newTitle":"; H^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "newTitle":"; H^{0} p_{T} [GeV] ; X^{0}#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"XPt",
                                               "histos":effs[names.index("XPt")],
-                                              "newTitle":"; X^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "newTitle":"; X^{0} p_{T} [GeV] ; X^{0}#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"Lxy",
                                               "histos":effs[names.index("Lxy")],
-                                              "newTitle":"; X^{0} L_{xy} [cm] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "newTitle":"; X^{0} L_{xy} [cm] ; X^{0}#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMin",
                                               "histos":effs[names.index("IP2dMin")],
-                                              "newTitle":"; X^{0} min(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "newTitle":"; X^{0} min(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; X^{0}#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMax",
                                               "histos":effs[names.index("IP2dMax")],
-                                              "newTitle":"; X^{0} max(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "newTitle":"; X^{0} max(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; X^{0}#rightarrow q#bar{q} efficiency #times Acceptance",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
                                             ],
