@@ -37,7 +37,8 @@ class hltFilterWildcardUnprescaled(analysisStep):
 class hltTriggerObjectMultiplicity(analysisStep):
 
 	def __init__(self,objectName,min=1):    
-		for item in ['objectName','min']: setattr(self,item,eval(item)) 
+		for item in ['objectName','min']: setattr(self,item,eval(item))
+		self.moreName = str(min)+' <= '+objectName
 
 	def select (self,e):
 		nObjects = 0
