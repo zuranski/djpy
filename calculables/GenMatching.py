@@ -19,6 +19,7 @@ class jetTrue(wrappedChain.calculable):
 		self.value=[self.source[self.var][self.source['jetTrueMatch'][i]]
                     if self.source['jetTrueMatch'][i] is not None else None for i in self.source['jetIndices']]
 
+# computed from genjets
 class dijetTrue(wrappedChain.calculable):
 	def update(self,ignored):
 		if self.source['realData'] or len(self.source['XpdgId']) == 0: 
@@ -34,7 +35,8 @@ class dijetTrue(wrappedChain.calculable):
 			self.value[i]={'avg':(val1+val2)/2.,
 						   'min':min(val1,val2),
  						   'max':max(val1,val2),
-						   'sum':(val1+val2)}.get(self.calc,None)
+						   'sum':(val1+val2),
+						   'tuple':tuple(sorted([val1,val2]))}.get(self.calc,None)
 
 #  special case
 class genqXPt(wrappedChain.calculable):
@@ -56,6 +58,7 @@ class jetTrueHPt(jetTrue): var='genqHPt'
 class jetTrueIP2d(jetTrue): var='genqIP2d'
 class jetTrueIP3d(jetTrue): var='genqIP3d'
 
+class dijetTrueMatch(dijetTrue): var='jetTrueMatch'; calc='tuple'
 class dijetTrueLxy(dijetTrue): var='jetTrueLxy'; calc='avg'
 class dijetTrueCtau(dijetTrue):	var='jetTrueCtau'; calc='avg'
 class dijetTrueFlavor(dijetTrue): var='jetTrueFlavor'; calc='avg'
@@ -67,3 +70,20 @@ class dijetTrueIP2dMin(dijetTrue): var='jetTrueIP2d'; calc='min'
 class dijetTrueIP2dMax(dijetTrue): var='jetTrueIP2d'; calc='max'
 class dijetTrueIP3dMin(dijetTrue): var='jetTrueIP3d'; calc='min'
 class dijetTrueIP3dMax(dijetTrue): var='jetTrueIP3d'; calc='max'
+
+# computed from gendijet
+class dijetgendijet(wrappedChain.calculable):
+	def update(self,ignored):
+		if self.source['realData'] or len(self.source['XpdgId']) == 0: 
+			self.value = [True for i in self.source['dijetIndices']]
+			return
+		self.value = [None for i in self.source['dijetIndices']]
+		for i in self.source['dijetIndices']:
+			if self.source['dijetTrueMatch'][i] is None : continue
+			try:
+				idx = self.source['gendijet'].index(self.source['dijetTrueMatch'][i])
+				self.value[i] = self.source[self.var][idx]
+			except ValueError:
+				self.value[i] = -1
+
+class dijetTrueXDR(dijetgendijet): var='gendijetXDR' 
