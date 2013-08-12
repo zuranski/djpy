@@ -363,8 +363,6 @@ class efficiency(supy.analysis) :
 		effacchigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,acceptance)])
 	
 		fs = [0.4,0.6,1.,1.4]	
-		#expos = [-1.,-0.8,-0.6,-0.4,-0.2,0]
-		#fs = [pow(10,a) for a in expos]
 		allfs = [0.1*a for a in fs] 
 		allfs += fs 
 		allfs += [10*a for a in fs]
@@ -378,13 +376,13 @@ class efficiency(supy.analysis) :
 
 
 		f=0.89
-		#sysmap={'1000350':0.08,'1000150':0.08,'400150':0.11,'40050':0.10,'20050':0.23}
 		sysmap={'1000350':0.075,'1000150':0.075,'400150':0.096,'40050':0.091,'20050':0.10}
 
-		import pickle,math
+		import pickle,math,re
 		for i,sample in enumerate(org.samples):
-			name = sample['name'].split('.')[0]
-			H,X=name.split('_')[1],name.split('_')[3]
+			digits=re.findall(r'\d+',sample['name'])
+			H,X=digits[0],digits[2]
+			name='H_'+str(H)+'_X_'+str(X)
 			sys=sysmap[H+X]
 			ctau = self.ctau[self.sig_names.index(name)]
 			for j in range(N):
