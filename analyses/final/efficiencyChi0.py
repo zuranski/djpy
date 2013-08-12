@@ -221,7 +221,7 @@ class efficiencyChi0(supy.analysis) :
 	
 		self.meanLxy(org)
 		org.lumi=None
-		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='qmu')
+		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='ud')
 		#self.sigPlots(plotter)	
 		self.totalEfficiencies(org,dir='eff2Neu',flavor='qmu')
 		#self.puEff(org,plotter)
@@ -289,6 +289,7 @@ class efficiencyChi0(supy.analysis) :
 			print sample['name'],round(lxy0[i].GetMean(),2)
 
 	def effPlots(self,org,plotter,denName,numName,sel,flavor):
+		flavorMap={'ud':'q#bar{q}','qmu':'q#mu/#bar{q}#mu'}
 		nlist,dlist,names=[],[],[]
 		names2=[]
 		for step in org.steps:
@@ -307,32 +308,32 @@ class efficiencyChi0(supy.analysis) :
 		plotter.individualPlots(simulation=True, plotSpecs = [
 											  {"plotName":"HPt"+flavor,
                                               "histos":effs[names.index("HPt"+flavor)],
-                                              "newTitle":"; H^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} efficiency #times Acceptance",
+                                              "newTitle":"; H^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} (%s) #epsilon #times Acc."%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"XPt"+flavor,
                                               "histos":effs[names.index("XPt"+flavor)],
-                                              "newTitle":"; #chi^{0} p_{T} [GeV] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
+                                              "newTitle":"; #chi^{0} p_{T} [GeV] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"Lxy"+flavor,
                                               "histos":effs[names.index("Lxy"+flavor)],
-                                              "newTitle":"; #chi^{0} L_{xy} [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
+                                              "newTitle":"; #chi^{0} L_{xy} [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMin"+flavor,
                                               "histos":effs[names.index("IP2dMin"+flavor)],
-                                              "newTitle":"; #chi^{0} min(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
+                                              "newTitle":"; #chi^{0} min(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMax"+flavor,
                                               "histos":effs[names.index("IP2dMax"+flavor)],
-                                              "newTitle":"; #chi^{0} max(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
+                                              "newTitle":"; #chi^{0} max(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"XDR"+flavor,
                                               "histos":effs[names.index("XDR"+flavor)],
-                                              "newTitle":"; #Delta R (qq,#chi^{0}) ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
+                                              "newTitle":"; #Delta R (qq,#chi^{0}) ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
                                             ],
