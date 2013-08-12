@@ -3,9 +3,9 @@ from utils.other import removeLowStats
 
 class efficiencyChi0(supy.analysis) :
 
-	MSquark = [1500,1000,350,120]
-	MChi0 = [494,148,148,48]
-	ctau = [35,10,40,8,20]
+	MSquark = [350,1500,1000,120]
+	MChi0 = [148,494,148,48]
+	ctau = [18.8,18.1,5.85,15.5]
 	sig_names = ['SQ_'+str(a)+'_CHI_'+str(b) for a,b in zip(MSquark,MChi0)]
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
@@ -131,16 +131,11 @@ class efficiencyChi0(supy.analysis) :
 		+[supy.calculables.other.Target("pileupTrueNumInteractionsBX0",thisSample=config['baseSample'],
                                     target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('SQ',[])]).onlySim()] 
-		### filters
-		#+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
-		#+[steps.other.genParticleMultiplicity(pdgIds=[6002114],collection='XpdgId',min=2,max=2)]
 
 		### acceptance filters
 		+self.dijetSteps0()
 		+[steps.event.general()]
 		+[steps.efficiency.NX(pdfweights=None)]	
-		#+[steps.trigger.hltFilterWildcard("HLT_HT300_v"),
-		# supy.steps.filters.value('caloHT',min=325),]
 		+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
 	
 		+[supy.steps.filters.label('data cleanup'),
@@ -158,8 +153,14 @@ class efficiencyChi0(supy.analysis) :
 		
 		### trigger
 		+[supy.steps.filters.label("hlt trigger"),
+		#steps.trigger.hltFilterWildcard("HLT_HT300_v"),
+		#steps.trigger.hltTriggerObjectMultiplicity('hlt2DisplacedHT300L1FastJetL3Filter',min=0),
+		#steps.trigger.hltTriggerObjectMultiplicity('hlt2PFDisplacedJetsPt50',min=0),
+		#supy.steps.filters.multiplicity('TrigPromptGenQ1',min=2),
+		#supy.steps.filters.multiplicity('TrigPromptGenQ2',min=2),
 		steps.trigger.hltFilterWildcard("HLT_HT300_DoubleDisplacedPFJet60_v"),
 		supy.steps.filters.value('caloHT',min=325),
+		#supy.steps.filters.value('mycaloHT',min=325),
 		]
 
 		+self.dijetSteps1()
@@ -178,6 +179,8 @@ class efficiencyChi0(supy.analysis) :
 		supy.calculables.zeroArgs(calculables)
 		+self.calcsVars()
 		+self.calcsIndices()
+		+[calculables.TrigMatching.TrigPromptGenQ(tag='hlt2DisplacedHT300L1FastJetL3Filter',instance='1')]
+		+[calculables.TrigMatching.TrigPromptGenQ(tag='hlt2PFDisplacedJetsPt50',instance='2')]
 		)
 
 	def listOfSampleDictionaries(self) :
@@ -218,9 +221,9 @@ class efficiencyChi0(supy.analysis) :
 	
 		self.meanLxy(org)
 		org.lumi=None
-		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='ud')
+		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='qmu')
 		#self.sigPlots(plotter)	
-		self.totalEfficiencies(org,dir='eff2Neu',flavor='ud')
+		self.totalEfficiencies(org,dir='eff2Neu',flavor='qmu')
 		#self.puEff(org,plotter)
 
 
@@ -309,27 +312,27 @@ class efficiencyChi0(supy.analysis) :
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"XPt"+flavor,
                                               "histos":effs[names.index("XPt"+flavor)],
-                                              "newTitle":"; #chi^{0} p_{T} [GeV] ; #chi^{0}#rightarrow q#bar{q}#mu efficiency #times Acceptance",
+                                              "newTitle":"; #chi^{0} p_{T} [GeV] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"Lxy"+flavor,
                                               "histos":effs[names.index("Lxy"+flavor)],
-                                              "newTitle":"; #chi^{0} L_{xy} [cm] ; #chi^{0}#rightarrow q#bar{q}#mu efficiency #times Acceptance",
+                                              "newTitle":"; #chi^{0} L_{xy} [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMin"+flavor,
                                               "histos":effs[names.index("IP2dMin"+flavor)],
-                                              "newTitle":"; #chi^{0} min(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu efficiency #times Acceptance",
+                                              "newTitle":"; #chi^{0} min(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMax"+flavor,
                                               "histos":effs[names.index("IP2dMax"+flavor)],
-                                              "newTitle":"; #chi^{0} max(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu efficiency #times Acceptance",
+                                              "newTitle":"; #chi^{0} max(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"XDR"+flavor,
                                               "histos":effs[names.index("XDR"+flavor)],
-                                              "newTitle":"; #Delta R (qq,#chi^{0}) ; #chi^{0}#rightarrow q#bar{q}#mu efficiency #times Acceptance",
+                                              "newTitle":"; #Delta R (qq,#chi^{0}) ; #chi^{0}#rightarrow q#bar{q}#mu (%s) efficiency #times Acceptance"%flavor,
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
                                             ],
@@ -366,28 +369,24 @@ class efficiencyChi0(supy.analysis) :
 		effacchigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,acceptance)])
 	
 		fs = [0.4,0.6,1.,1.4]	
-		#expos = [-1.,-0.8,-0.6,-0.4,-0.2,0]
-		#fs = [pow(10,a) for a in expos]
-		allfs = fs 
-		allfs = [round(a,5) for a in allfs] 
-		N=len(allfs)
+		fs = [round(a,5) for a in fs] 
+		N=len(fs)
 
 		#for i in range(denom[0].GetNbinsX()):
 		#	n=num[0][3].GetBinContent(i+1)
 		#	d=denom[3].GetBinContent(i+1)
-		#	print n,d,n/d,allfs[i]
+		#	print n,d,n/d,fs[i]
 
 
 		f=0.89
-		#sysmap={'1000350':0.08,'1000150':0.08,'400150':0.11,'40050':0.10,'20050':0.23}
-		#sysmap={'1000350':0.075,'1000150':0.075,'400150':0.096,'40050':0.091,'20050':0.10}
 		sysmap={'1500494':0.075,'1000148':0.075,'350148':0.096,'12048':0.10}
 
 
-		import pickle,math
+		import pickle,math,re
 		for i,sample in enumerate(org.samples):
-			name = sample['name'].split('.')[0]
-			SQ,CHI=name.split('_')[1],name.split('_')[3]
+			digits = re.findall(r'\d+',sample['name'])
+			SQ,CHI=digits[0],digits[2]
+			name='SQ_'+str(SQ)+"_CHI_"+str(CHI)
 			sys=sysmap[SQ+CHI]
 			ctau = self.ctau[self.sig_names.index(name)]
 			for j in range(N):
@@ -410,7 +409,7 @@ class efficiencyChi0(supy.analysis) :
 				#else : eErr = 0.
 				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
 				#else : eaErr = 0.
-				factor=allfs[j]
+				factor=fs[j]
 				print SQ,CHI,factor,a,aErr,e,eErr,ea,eaErr
 				data=[(a,aErr),(e,eErr),[ea,eaErr]]
 				pickle.dump(data,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
