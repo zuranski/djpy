@@ -5,7 +5,7 @@ class eff(analysisStep):
 	def __init__(self,indicesAcc='',indicesRecoLow='',indicesRecoHigh='',pdfweights=None):
 		for item in ['indicesAcc','indicesRecoLow','indicesRecoHigh','pdfweights']: setattr(self,item,eval(item))
 		self.trigweights = pickle.load(open(whereami()+"/../data/trigw"))
-		self.flavorMap={1:'uds',2:'uds',3:'uds',4:'c',5:'b',11:'e',13:'mu',1.5:'ud',7:'umu',7.5:'dmu'}
+		self.flavorMap={1:'uds',2:'uds',3:'uds',4:'c',5:'b',11:'e',13:'mu',1.5:'ud',7:'qmu',7.5:'qmu'}
 		self.fs = [0.4,0.6,1.,1.4]
 
 	def ctau(self,file):
