@@ -196,7 +196,7 @@ class efficiencyChi0(supy.analysis) :
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,1,2]]
 
-		return sig_samples
+		return sig_samples[:-1]
 		#return toPlot
 
 	def conclude(self,pars) :
@@ -323,17 +323,17 @@ class efficiencyChi0(supy.analysis) :
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMin"+flavor,
                                               "histos":effs[names.index("IP2dMin"+flavor)],
-                                              "newTitle":"; #chi^{0} min(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
+                                              "newTitle":"; %s smaller IP_{xy} [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%(flavorMap[flavor],flavorMap[flavor]),
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMax"+flavor,
                                               "histos":effs[names.index("IP2dMax"+flavor)],
-                                              "newTitle":"; #chi^{0} max(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
+                                              "newTitle":"; %s larger IP_{xy} [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%(flavorMap[flavor],flavorMap[flavor]),
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"XDR"+flavor,
                                               "histos":effs[names.index("XDR"+flavor)],
-                                              "newTitle":"; #Delta R (qq,#chi^{0}) ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
+                                              "newTitle":"; #Delta R (%s,#chi^{0}) ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%(flavorMap[flavor],flavorMap[flavor]),
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
                                             ],

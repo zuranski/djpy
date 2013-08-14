@@ -42,7 +42,7 @@ class efficiency(supy.analysis) :
         {'name':'dijetVtxpt','min':8},
         {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetLxysig','min':8},
-        {'name':'dijetNoOverlaps','val':True},
+        #{'name':'dijetNoOverlaps','val':True},
     ]
 	
 	ABCDCutsLow = [
@@ -321,12 +321,12 @@ class efficiency(supy.analysis) :
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMin"+flavor,
                                               "histos":effs[names.index("IP2dMin"+flavor)],
-                                              "newTitle":"; X^{0} min(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "newTitle":"; q#bar{q} smaller IP_{xy} [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMax"+flavor,
                                               "histos":effs[names.index("IP2dMax"+flavor)],
-                                              "newTitle":"; X^{0} max(quark1_{IP_{xy}},quark2_{IP_{xy}}) [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "newTitle":"; q#bar{q} larger IP_{xy} [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
                                             ],
