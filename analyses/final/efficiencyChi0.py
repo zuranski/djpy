@@ -192,11 +192,11 @@ class efficiencyChi0(supy.analysis) :
 		sig_samples = []
 
 		for i in range(len(self.sig_names)):
-			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles, weights = ['pileupTrueNumInteractionsBX0Target']))
-			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
+			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles, weights = ['pileupTrueNumInteractionsBX0Target']))
+			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,1,2]]
 
-		return sig_samples[:-1]
+		return sig_samples
 		#return toPlot
 
 	def conclude(self,pars) :
@@ -223,7 +223,7 @@ class efficiencyChi0(supy.analysis) :
 		org.lumi=None
 		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='ud')
 		#self.sigPlots(plotter)	
-		self.totalEfficiencies(org,dir='eff2Neu',flavor='qmu')
+		self.totalEfficiencies(org,dir='eff2Neu',flavor='')
 		#self.puEff(org,plotter)
 
 
@@ -369,7 +369,8 @@ class efficiencyChi0(supy.analysis) :
 		effacclow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,acceptance)])
 		effacchigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,acceptance)])
 	
-		fs = [0.4,0.6,1.,1.4]	
+		fs = [0.4,0.6,1.,1.4]
+		fs = [0.06,0.1,0.2,0.5,1.,1.5,3.,5.]
 		fs = [round(a,5) for a in fs] 
 		N=len(fs)
 
@@ -380,7 +381,7 @@ class efficiencyChi0(supy.analysis) :
 
 
 		f=0.89
-		sysmap={'1500494':0.075,'1000148':0.075,'350148':0.096,'12048':0.10}
+		sysmap={'1500494':0.10,'1000148':0.10,'350148':0.10,'12048':0.10}
 
 
 		import pickle,math,re
@@ -392,11 +393,8 @@ class efficiencyChi0(supy.analysis) :
 			ctau = self.ctau[self.sig_names.index(name)]
 			for j in range(N):
 				x,y=r.Double(0),r.Double(0)
-				eff = effhigh
-				effacc = effacchigh
-				if j<N/3: 
-					eff = efflow
-					effacc = effacclow
+				eff = efflow
+				effacc = effacclow
 				eff[i].GetPoint(j,x,y)
 				e = f*float(y)
 				eErr = f*eff[i].GetErrorY(j)
