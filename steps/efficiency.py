@@ -6,7 +6,8 @@ class eff(analysisStep):
 		for item in ['indicesAcc','indicesRecoLow','indicesRecoHigh','pdfweights']: setattr(self,item,eval(item))
 		self.trigweights = pickle.load(open(whereami()+"/../data/trigw"))
 		self.flavorMap={1:'uds',2:'uds',3:'uds',4:'c',5:'b',11:'e',13:'mu',1.5:'ud',7:'qmu',7.5:'qmu'}
-		self.fs = [0.4,0.6,1.,1.4]
+		#self.fs = [0.4,0.6,1.,1.4] # for HV samples
+		self.fs = [0.06,0.1,0.2,0.5,1.,1.5,3.,5.] # for chi0 samples
 
 	def ctau(self,file):
 		file=os.path.basename(file)
@@ -16,7 +17,7 @@ class eff(analysisStep):
             '1000_350':35,'1000_150':10,'1000_50':4,
             '400_150':40,'400_50':8,'200_50':20,'120_50':50,
 			# Chi0 samples
-			'1500_494':18.1,'1000_148':5.85,'350_148':18.8,'120_48':15.5
+			'1500_494':18.1,'1000_148':5.85,'350_148':18.8,'120_48':16.5
         }
 		key = masses[1]+'_'+masses[3]
 		return map[key]
