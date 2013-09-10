@@ -90,11 +90,15 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 		#r.gPad.SetTicky(0)
 		r.gPad.SetTopMargin(0.07)
 		r.gPad.SetRightMargin(0.03)
+		r.gStyle.SetTextFont(42)
+		r.gStyle.SetTitleFont(42,'XYZ')
+		r.gStyle.SetLabelFont(42,'XYZ')
+		r.gStyle.SetLegendFont(42)
 		r.gStyle.SetTitleX(0.19)
 		r.gStyle.SetTitleBorderSize(0)
 
 		title=''
-		title='max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
+		#title='max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
 		xtitle = 'Vertex/Cluster Discriminant'
 		ytitle = 'Number of Candidates'
 
@@ -136,7 +140,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histoz.SetBinError(k+1,0.)
 
 			if onlyB:
-				legend = r.TLegend(0.6, 0.55, 0.95, 0.75)
+				legend = r.TLegend(0.5, 0.55, 0.95, 0.78)
 			else:
 				legend = r.TLegend(0.75, 0.45, 0.95, 0.9)
 			for i in reversed(range(n)):
@@ -191,7 +195,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 			plotter.setRanges(histos_tmp,*plotter.getExtremes(1,histos_tmp,[False]*n))
 			
 			if onlyB:
-				cmsStamp(lumi=org.lumi,coords=(0.78,0.88))
+				cmsStamp(lumi=18500,coords=(0.71,0.84),preliminary=False)
 				#cmsStamp(lumi=None,coords=(0.78,0.88))
 			else:
 				cmsStamp(lumi=org.lumi,coords=(0.45,0.85))
