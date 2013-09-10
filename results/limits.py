@@ -55,7 +55,7 @@ print files
 r.gROOT.LoadMacro('roostats_cl95.C+')
 
 # input out of nowhere
-lumi=(18600,0.044*18600)
+lumi=(18510,0.026*18510)
 bkg=[(1.60,0.58),(1.14,0.54)]
 obs=[(2,0.),(1,0)]
 
