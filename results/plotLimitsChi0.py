@@ -27,9 +27,19 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	f=r.TF1('sigma','pol0(0)',1e-5,1e5)
 	f.SetParameter(0,obj['sigma'])
 	f.SetLineColor(r.kBlue)
-	f.SetLineStyle(2)
+	f.SetLineStyle(1)
 	f.SetLineWidth(3)
 	f.SetMarkerSize(0)
+	f1=r.TF1('sigmaup','pol0(0)',1e-5,1e5)
+	f1.SetParameter(0,obj['sigma']*(1+obj['sigmaErr']))
+	f1.SetLineColor(r.kBlue)
+	f1.SetLineStyle(2)
+	f1.SetLineWidth(3)
+	f2=r.TF1('sigmaup','pol0(0)',1e-5,1e5)
+	f2.SetParameter(0,obj['sigma']*(1-obj['sigmaErr']))
+	f2.SetLineColor(r.kBlue)
+	f2.SetLineStyle(2)
+	f2.SetLineWidth(3)
 
 	stylize(g)
 	mg.Add(g[3],'F')
@@ -44,6 +54,8 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	c.SetLogx()
 	mg.Draw('A')
 	f.Draw('Lsame')
+	#f1.Draw('Lsame')
+	#f2.Draw('Lsame')
 	mg.GetXaxis().SetTitle('c#tau [cm]')
 	ctaus=sorted([obj['ctau'] for obj in list])
 	mg.GetXaxis().SetRangeUser(ctaus[0]*0.95,ctaus[-1]*2)
@@ -52,21 +64,21 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 		mg.GetYaxis().SetTitle('#sigma #times Acceptance [pb] (95% CL)')
 	else:
 		#mg.GetYaxis().SetTitle('#sigma #times BR [pb] (95% CL)')
-		mg.GetYaxis().SetTitle('#sigma_{#tilde{q}#tilde{q}} (#tilde{q}#rightarrow (q)#chi^{0} #rightarrow #muq#bar{q}) [pb] (95% CL)')
+		mg.GetYaxis().SetTitle('#sigma_{#tilde{q}#tilde{q}} B^{2}(#tilde{#chi}^{0} #rightarrow #muq#bar{q}) [pb] (95% CL)')
 
-	leg=r.TLegend(0.23,0.56,0.65,0.79)
+	leg=r.TLegend(0.23,0.52,0.6,0.79)
 	leg.SetFillColor(0)
 	gempty=r.TGraph()
 	gempty.SetMarkerColor(0)
 	leg.AddEntry(gempty,'m_{#tilde{q}} = '+str(MH)+' GeV','P')
-	leg.AddEntry(gempty,'m_{#chi^{0}} = '+str(MX)+' GeV','P')
-	leg.AddEntry(f,'PYTHIA #sigma(#tilde{q} = '+str(MH)+' GeV)','L')
+	leg.AddEntry(gempty,'m_{#tilde{#chi}^{0}} = '+str(MX)+' GeV','P')
+	leg.AddEntry(f,'#sigma_{#tilde{q}#tilde{q}} (NLO-NLL)','L')
 	if observed : leg.AddEntry(g[0],'Obs. Limit','L')
 	leg.AddEntry(g[1],'Exp. Limit','L')
 	leg.AddEntry(g[2],'Exp. \\pm 1\\sigma','F')
 	leg.AddEntry(g[3],'Exp. \\pm 2\\sigma','F')
 	leg.Draw('same')
-	cmsStamp(lumi=18600,coords=(0.45,0.89))
+	cmsStamp(lumi=18510,coords=(0.45,0.87),preliminary=False)
 	name=str(MH)+'_'+str(MX)+option
 	os.chdir(plotDir)
 	c.SaveAs(name+'.eps')
@@ -83,9 +95,10 @@ setupTdrStyle()
 MH=[1500,1000,350,120]
 MX=[494,148,148,48]
 CTAUS=[18.1,5.85,18.8,15.5]
-THS=[0.0001388,0.00268,0.994,284]
+THS=[6.27e-5,0.00424,7.98,284]
+THERRS=[0.528,0.295,0.157,0.10]
 
-for H,X,CTAU,TH in zip(MH,MX,CTAUS,THS):
+for H,X,CTAU,TH,THERR in zip(MH,MX,CTAUS,THS,THERRS):
 	data=[]
 	for f in files:
 		items=f[:-4].split('_')
@@ -95,6 +108,7 @@ for H,X,CTAU,TH in zip(MH,MX,CTAUS,THS):
 		dict=pickle.load(open(limDir+f))
 		dict['ctau']=ctau
 		dict['sigma']=TH
+		dict['sigmaErr']=THERR
 		data.append(dict)
 	from operator import itemgetter
 	data=sorted(data,key=itemgetter('ctau'))
