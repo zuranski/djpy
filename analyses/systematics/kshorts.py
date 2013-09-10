@@ -136,14 +136,14 @@ class kshorts(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":""}, allWithPrefix = "qcd",scaleFactors=[1.00/1.495]*6)
+		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.00/1.495]*6)
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.scale(lumiToUseInAbsenceOfData=11000)
 		plotter=supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			samplesForRatios = ("Data","Simulation"),
 			sampleLabelsForRatios = ("Data","Sim"),
-			doLog=False,
+			doLog=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,
 			doCorrTable=True,
@@ -152,8 +152,8 @@ class kshorts(supy.analysis) :
 		)
 		plotter.plotAll()
 		org.lumi=None
-		'''
-		plotter.individualPlots(plotSpecs = [{"plotName":"Mass_h_kscolin",
+		
+		plotter.individualPlots(preliminary=False, plotSpecs = [{"plotName":"Mass_h_kscolin",
                                               "stepName":"kshort",
                                               "stepDesc":"kshort",
                                               "newTitle":"; K_{s} mass [GeV]; K_{s} / bin",
@@ -227,7 +227,7 @@ class kshorts(supy.analysis) :
                                               "stampCoords": (0.7, 0.9),},
                                             ],
                                )
-		'''
+		
 		self.makeEfficiencyPlots(org,'den','num',plotter)
 
 	def makeEfficiencyPlots(self, org, denomName, numName, plotter):
