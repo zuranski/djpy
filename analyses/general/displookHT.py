@@ -131,9 +131,9 @@ class displookHT(supy.analysis) :
 		org = self.organizer(pars)
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.mergeSamples(targetSpec = {"name":"QCD", "color":r.kBlue,"lineWidth":3,"goptions":"E2","fillColor":r.kBlue,"fillStyle":3001,"double":True,"markerSize":0}, allWithPrefix = "qcd",scaleFactors=[0.75]*6)
-		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350",scaleFactors=[1e4])                                 
-		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150",scaleFactors=[1e4])                               
-		org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50",scaleFactors=[1e4])
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350) c#tau=35cm","markerSize":0, "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350",scaleFactors=[1e4])                                 
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150) c#tau=40cm","markerSize":0, "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150",scaleFactors=[1e4])                               
+		org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50) c#tau=20cm","markerSize":0, "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50",scaleFactors=[1e4])
 		#org.mergeSamples(targetSpec = {"name":"H#rightarrow X #rightarrow q#bar{q}", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H")
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter=supy.plotter( org,
@@ -218,7 +218,7 @@ class displookHT(supy.analysis) :
                                               {"plotName":"Posip2dFrac_h_dijetVtxNRatio",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Fraction of tracks with positive Impact Parameter; dijets / bin",
+                                              "newTitle":"; Fraction of tracks with positive IP; dijets / bin",
                                               "legendCoords": (0.18, 0.77, 0.5, 0.92),
                                               "stampCoords": (0.73, 0.88)
                                               },
@@ -226,43 +226,43 @@ class displookHT(supy.analysis) :
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Vertex Track Multiplicity ; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
-                                              "stampCoords": (0.73, 0.88)
+                                              "legendCoords": (0.18, 0.68, 0.63, 0.92),
+                                              "stampCoords": (0.78, 0.88)
                                               },
                                               {"plotName":"bestclusterN_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster Track Multiplicity; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
-                                              "stampCoords": (0.73, 0.88)
+                                              "legendCoords": (0.18, 0.68, 0.63, 0.92),
+                                              "stampCoords": (0.78, 0.88)
                                               },
                                               {"plotName":"glxyrmsclr_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Cluster RMS; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
-                                              "stampCoords": (0.73, 0.88)
+                                              "legendCoords": (0.18, 0.68, 0.63, 0.92),
+                                              "stampCoords": (0.78, 0.88)
                                               },
                                               {"plotName":"Posip2dFrac_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Fraction of tracks with positive Impact Parameter; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
-                                              "stampCoords": (0.73, 0.88)
+                                              "newTitle":"; Fraction of tracks with positive IP; dijets / bin",
+                                              "legendCoords": (0.18, 0.68, 0.63, 0.92),
+                                              "stampCoords": (0.78, 0.88)
                                               },
 											  {"plotName":"PromptEnergyFrac2_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Charged Prompt Energy Fraction; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
-                                              "stampCoords": (0.73, 0.88)
+                                              "legendCoords": (0.18, 0.68, 0.63, 0.92),
+                                              "stampCoords": (0.78, 0.88)
                                               },
                                               {"plotName":"NPromptTracks2_h_dijetNoOverlaps",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":"; Number of Prompt Tracks ; dijets / bin",
-                                              "legendCoords": (0.18, 0.72, 0.55, 0.92),
-                                              "stampCoords": (0.73, 0.88)
+                                              "legendCoords": (0.18, 0.68, 0.63, 0.92),
+                                              "stampCoords": (0.78, 0.88)
                                               },
                                             ], simulation = False
                                )
