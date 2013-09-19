@@ -1,5 +1,5 @@
 import supy,samples,calculables,steps,ROOT as r
-from utils.other import removeLowStats
+from utils.other import removeLowStats,weightedAvg
 
 class efficiency(supy.analysis) :
 
@@ -32,8 +32,6 @@ class efficiency(supy.analysis) :
         {'name':'dijetVtxN2','min':1},
         # cluster minimal
         {'name':'dijetbestclusterN','min':2},
-        #{'name':'dijetbestclusterN1','min':1},
-        #{'name':'dijetbestclusterN2','min':1},
         {'name':'dijetVtxChi2','min':0,'max':5},
     ]
 	Cuts=[
@@ -207,7 +205,7 @@ class efficiency(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=True,
+			doLog=False,
 			anMode=True,
 			showStatBox=True,
 			pegMinimum=0.0001,
@@ -362,18 +360,15 @@ class efficiency(supy.analysis) :
 		effacclow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,acceptance)])
 		effacchigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,acceptance)])
 	
-		fs = [0.4,0.6,1.,1.4]	
+		#fs = [0.4,0.6,1.,1.4]	old factors for the record if not approved
+		fs = [0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.]
 		allfs = [0.1*a for a in fs] 
 		allfs += fs 
 		allfs += [10*a for a in fs]
 		allfs = [round(a,5) for a in allfs] 
 		N=len(allfs)
 
-		#for i in range(denom[0].GetNbinsX()):
-		#	n=num[0][3].GetBinContent(i+1)
-		#	d=denom[3].GetBinContent(i+1)
-		#	print n,d,n/d,allfs[i]
-
+		forbidden=[7,8,9,16,17,18]
 
 		f=0.89
 		sysmap={'1000350':0.075,'1000150':0.075,'400150':0.096,'40050':0.091,'20050':0.10}
@@ -385,7 +380,12 @@ class efficiency(supy.analysis) :
 			name='H_'+str(H)+'_X_'+str(X)
 			sys=sysmap[H+X]
 			ctau = self.ctau[self.sig_names.index(name)]
+
+			data={}
+			for factor in set(allfs): data[factor]=[]
+
 			for j in range(N):
+				if j in forbidden : continue
 				x,y=r.Double(0),r.Double(0)
 				eff = effhigh
 				effacc = effacchigh
@@ -406,6 +406,27 @@ class efficiency(supy.analysis) :
 				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
 				#else : eaErr = 0.
 				factor=allfs[j]
+				#print H,X,factor,a,aErr,e,eErr,ea,eaErr
+				output=[(a,aErr),(e,eErr),[ea,eaErr]]
+				data[factor].append(output)
+
+				#pickle.dump(output,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'_'+str(j)+'.pkl','w'))
+
+
+			for factor in data.keys():
+				list=data[factor]
+				ac = [obj[0][0] for obj in list if obj[0][0]>0]
+				acErr = [obj[0][1] for obj in list if obj[0][0]>0]
+				ef = [obj[1][0] for obj in list if obj[1][0]>0]
+				efErr = [obj[1][1] for obj in list if obj[1][0]>0]
+				efac = [obj[2][0] for obj in list if obj[2][0]>0]
+				efacErr = [obj[2][1] for obj in list if obj[2][0]>0]
+				if len(ef)==0 : continue
+				e,eErr=weightedAvg(ef,efErr)
+				a,aErr=weightedAvg(ac,acErr)
+				ea,eaErr=weightedAvg(efac,efacErr)
+				#eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
+				#eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
 				print H,X,factor,a,aErr,e,eErr,ea,eaErr
-				data=[(a,aErr),(e,eErr),[ea,eaErr]]
-				pickle.dump(data,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
+				output=[(a,aErr),(e,eErr),[ea,eaErr]]
+				pickle.dump(output,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
