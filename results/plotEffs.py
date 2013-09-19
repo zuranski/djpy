@@ -3,6 +3,7 @@ from supy.__plotter__ import setupTdrStyle
 from supy.utils import cmsStamp
 
 def effPlot(MH = None,MX = None,list = None):
+	if len(list) == 0 : return
 	c=r.TCanvas()
 	g=r.TGraphErrors(len(list))
 	for i,obj in enumerate(list):
@@ -46,13 +47,10 @@ plotDir=sys.argv[1]+'/plots/'
 files=[f for f in os.listdir(effDir) if '.pkl' in f]
 setupTdrStyle()
 
-MH=[1000,1000,400,400,200]
-MX=[350,150,150,50,50]
-CTAUS=[35,10,4,40,8,20]
-
-MH=[1500,1000,350,120]
-MX=[494,148,148,48]
-CTAUS=[1,1,1,1]
+MH=[1000,1000,400,400,200,1500,1000,350,120]
+MX=[350,150,150,50,50,494,148,148,48]
+#CTAUS=[35,10,4,40,8,20,18.1,5.85,18.8,15.5]
+CTAUS=[1,1,1,1,1,1,1,1,1]
 
 for H,X,CTAU in zip(MH,MX,CTAUS):
 	data=[]
