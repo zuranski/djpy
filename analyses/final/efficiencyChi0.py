@@ -209,7 +209,7 @@ class efficiencyChi0(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=True,
+			doLog=False,
 			anMode=True,
 			showStatBox=True,
 			pegMinimum=0.0001,
@@ -369,16 +369,9 @@ class efficiencyChi0(supy.analysis) :
 		effacclow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,acceptance)])
 		effacchigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,acceptance)])
 	
-		fs = [0.4,0.6,1.,1.4]
-		fs = [0.06,0.1,0.2,0.5,1.,1.5,3.,5.]
+		fs = [0.01,0.02,0.03,0.06,0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.,20.,30.,60.,100.]
 		fs = [round(a,5) for a in fs] 
 		N=len(fs)
-
-		#for i in range(denom[0].GetNbinsX()):
-		#	n=num[0][3].GetBinContent(i+1)
-		#	d=denom[3].GetBinContent(i+1)
-		#	print n,d,n/d,fs[i]
-
 
 		f=0.89
 		sysmap={'1500494':0.10,'1000148':0.10,'350148':0.10,'12048':0.10}
@@ -404,10 +397,10 @@ class efficiencyChi0(supy.analysis) :
 				acc[i].GetPoint(j,x,y)
 				a = float(y)
 				aErr = acc[i].GetErrorY(j)
-				#if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
-				#else : eErr = 0.
-				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
-				#else : eaErr = 0.
+				if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
+				else : eErr = 0.
+				if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
+				else : eaErr = 0.
 				factor=fs[j]
 				print SQ,CHI,factor,a,aErr,e,eErr,ea,eaErr
 				data=[(a,aErr),(e,eErr),[ea,eaErr]]
