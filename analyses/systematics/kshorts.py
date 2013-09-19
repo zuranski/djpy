@@ -136,7 +136,7 @@ class kshorts(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"Simulation", "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.00/1.495]*6)
+		org.mergeSamples(targetSpec = {"name":"Simulation","markerSize":0, "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.00/1.495]*6)
 		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
 		org.scale(lumiToUseInAbsenceOfData=11000)
 		plotter=supy.plotter( org,
@@ -170,13 +170,13 @@ class kshorts(supy.analysis) :
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} Transverse Decay Length [cm]; K_{s} / bin",
                                               "legendCoords": (0.55, 0.6, 0.9, 0.8),
-                                              "stampCoords": (0.7, 0.9),},
+                                              "stampCoords": (0.7, 0.88),},
 											 {"plotName":"ksLxyz",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
                                               "newTitle":"; K_{s} Decay Length [cm]; K_{s} / bin",
                                               "legendCoords": (0.55, 0.6, 0.9, 0.8),
-                                              "stampCoords": (0.7, 0.9),},
+                                              "stampCoords": (0.7, 0.88),},
 											 {"plotName":"kstrkip2d",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
