@@ -54,8 +54,8 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	c.SetLogx()
 	mg.Draw('A')
 	f.Draw('Lsame')
-	#f1.Draw('Lsame')
-	#f2.Draw('Lsame')
+	f1.Draw('Lsame')
+	f2.Draw('Lsame')
 	mg.GetXaxis().SetTitle('c#tau [cm]')
 	ctaus=sorted([obj['ctau'] for obj in list])
 	mg.GetXaxis().SetRangeUser(ctaus[0]*0.95,ctaus[-1]*2)
@@ -72,8 +72,8 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	gempty.SetMarkerColor(0)
 	leg.AddEntry(gempty,'m_{#tilde{q}} = '+str(MH)+' GeV','P')
 	leg.AddEntry(gempty,'m_{#tilde{#chi}^{0}} = '+str(MX)+' GeV','P')
-	leg.AddEntry(f,'#sigma_{#tilde{q}#tilde{q}} (NLO-NLL)','L')
-	if observed : leg.AddEntry(g[0],'Obs. Limit','L')
+	leg.AddEntry(f,'#sigma_{#tilde{q}#tilde{q}} (NLO-NLL) \\pm 1\\sigma_{theory}','L')
+	if observed : leg.AddEntry(g[0],'Obs. Limit','PL')
 	leg.AddEntry(g[1],'Exp. Limit','L')
 	leg.AddEntry(g[2],'Exp. \\pm 1\\sigma','F')
 	leg.AddEntry(g[3],'Exp. \\pm 2\\sigma','F')
@@ -95,8 +95,9 @@ setupTdrStyle()
 MH=[1500,1000,350,120]
 MX=[494,148,148,48]
 CTAUS=[18.1,5.85,18.8,15.5]
-THS=[6.27e-5,0.00424,7.98,284]
-THERRS=[0.528,0.295,0.157,0.10]
+THS=[0.00067,0.0144,9.97,284]
+#THERRS=[0.15,0.13,0.16,0.10] # scale only
+THERRS=[0.38,0.24,0.16,0.10]
 
 for H,X,CTAU,TH,THERR in zip(MH,MX,CTAUS,THS,THERRS):
 	data=[]

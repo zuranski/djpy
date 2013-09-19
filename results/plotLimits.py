@@ -28,7 +28,7 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	mg.Add(g[3],'F')
 	mg.Add(g[2],'F')
 	mg.Add(g[1],'L')
-	mg.SetMaximum(30*r.TMath.MaxElement(g[3].GetN(),g[3].GetY()))
+	mg.SetMaximum(5*r.TMath.MaxElement(g[3].GetN(),g[3].GetY()))
 	if observed : mg.Add(g[0],'PL')
 	c.SetLogy()
 	c.SetLogx()
