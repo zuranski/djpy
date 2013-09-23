@@ -25,7 +25,7 @@ sigmc.add('H_200_X_50b','%s/%s/%s")'%(pnfs,loc,"MH_200_MX_50_Ctau_200b/") ,xs=50
 '''
 
 # PU
-loc='/scratch/gpfs/zuranski/data/DJTuple53x_DEV/'
+loc='/scratch/gpfs/zuranski/data/DJTuple53x_PROD/'
 
 sigmc.add('H_1000_X_350','%s'%(fileListFromDisk(loc+"MH_1000_MX_350_Ctau_35To3500/")) ,xs=1) #/pb
 sigmc.add('H_1000_X_150','%s'%(fileListFromDisk(loc+"MH_1000_MX_150_Ctau_10To1000/")) ,xs=1) #/pb
