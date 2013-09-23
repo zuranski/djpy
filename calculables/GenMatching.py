@@ -84,6 +84,6 @@ class dijetgendijet(wrappedChain.calculable):
 				idx = self.source['gendijet'].index(self.source['dijetTrueMatch'][i])
 				self.value[i] = self.source[self.var][idx]
 			except ValueError:
-				self.value[i] = -1
+				self.value[i] = 0 # this is technically incorrect, but doesn't break eff plots
 
 class dijetTrueXDR(dijetgendijet): var='gendijetXDR' 
