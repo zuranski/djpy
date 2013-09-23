@@ -205,10 +205,11 @@ class efficiency(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=False,
+			doLog=True,
 			anMode=True,
 			showStatBox=True,
 			pegMinimum=0.0001,
+			shiftUnderOverFlows=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
@@ -314,6 +315,11 @@ class efficiency(supy.analysis) :
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"Lxy"+flavor,
                                               "histos":effs[names.index("Lxy"+flavor)],
+                                              "newTitle":"; X^{0} L_{xy} [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),},
+											  {"plotName":"SmallLxy"+flavor,
+                                              "histos":effs[names.index("SmallLxy"+flavor)],
                                               "newTitle":"; X^{0} L_{xy} [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
