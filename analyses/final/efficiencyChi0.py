@@ -135,6 +135,7 @@ class efficiencyChi0(supy.analysis) :
 		### acceptance filters
 		+self.dijetSteps0()
 		+[steps.event.general()]
+		+[steps.event.genevent()]
 		+[steps.efficiency.NX(pdfweights=None)]	
 		+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
 	
@@ -196,7 +197,7 @@ class efficiencyChi0(supy.analysis) :
 			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,1,2]]
 
-		return sig_samples
+		return sig_samples[:-1]
 		#return toPlot
 
 	def conclude(self,pars) :
@@ -209,10 +210,11 @@ class efficiencyChi0(supy.analysis) :
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=False,
+			doLog=True,
 			anMode=True,
 			showStatBox=True,
 			pegMinimum=0.0001,
+			shiftUnderOverFlows=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
 		plotter.plotAll()
@@ -221,7 +223,7 @@ class efficiencyChi0(supy.analysis) :
 	
 		self.meanLxy(org)
 		org.lumi=None
-		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='ud')
+		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='qmu')
 		#self.sigPlots(plotter)	
 		self.totalEfficiencies(org,dir='eff2Neu',flavor='')
 		#self.puEff(org,plotter)
@@ -289,20 +291,28 @@ class efficiencyChi0(supy.analysis) :
 			print sample['name'],round(lxy0[i].GetMean(),2)
 
 	def effPlots(self,org,plotter,denName,numName,sel,flavor):
-		flavorMap={'ud':'q#bar{q}','qmu':'q#mu/#bar{q}#mu'}
+		flavorMap={'ud':'q#bar{q}','qmu':'q#mu/#bar{q}#mu','':''}
 		nlist,dlist,names=[],[],[]
 		names2=[]
 		for step in org.steps:
 			if step.name==denName: 
 				for plotName in sorted(step.keys()):
-					if plotName.endswith(flavor): dlist.append(step[plotName]);names.append(plotName)
+					if plotName.endswith(flavor) and 'NX' not in plotName: dlist.append(step[plotName]);names.append(plotName)
+		for step in org.steps:
 			if step.name==numName: 
 				for plotName in sorted(step.keys()): 
-					if plotName.startswith(sel) and plotName.endswith(flavor): nlist.append(step[plotName]);names2.append(plotName)
+					if plotName.startswith(sel) and plotName.endswith(flavor) and plotName[len(sel):] in names: nlist.append(step[plotName]);names2.append(plotName)
 		print names
 		print names2
 
-		for n in nlist: print n[0].GetName();removeLowStats(n,relErrMax=0.8)
+		num,denom=nlist[names2.index(sel+'XDR'+flavor)][0],dlist[names.index('XDR'+flavor)][0]
+		print num,denom
+		for i in range(0,num.GetNbinsX()):
+			n,d = num.GetBinContent(i),denom.GetBinContent(i)
+			print n,d
+
+
+		for n in nlist: print n[0].GetName();removeLowStats(n,relErrMax=1.)
 
 		effs=[ tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom) ]) for num,denom in zip(nlist,dlist) ]
 		plotter.individualPlots(simulation=True, plotSpecs = [
@@ -318,6 +328,11 @@ class efficiencyChi0(supy.analysis) :
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"Lxy"+flavor,
                                               "histos":effs[names.index("Lxy"+flavor)],
+                                              "newTitle":"; #chi^{0} L_{xy} [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
+                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "stampCoords": (0.36, 0.85),},
+											  {"plotName":"SmallLxy"+flavor,
+                                              "histos":effs[names.index("SmallLxy"+flavor)],
                                               "newTitle":"; #chi^{0} L_{xy} [cm] ; #chi^{0}#rightarrow q#bar{q}#mu (%s) #epsilon #times Acc."%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
