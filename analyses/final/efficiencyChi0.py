@@ -197,7 +197,7 @@ class efficiencyChi0(supy.analysis) :
 			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,1,2]]
 
-		return sig_samples[:-1]
+		return sig_samples
 		#return toPlot
 
 	def conclude(self,pars) :
@@ -211,7 +211,7 @@ class efficiencyChi0(supy.analysis) :
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			anMode=True,
+			anMode=False,
 			showStatBox=True,
 			pegMinimum=0.0001,
 			shiftUnderOverFlows=False,
@@ -222,6 +222,7 @@ class efficiencyChi0(supy.analysis) :
 		plotter.anMode=True
 	
 		self.meanLxy(org)
+		self.sqsqRatio(org)
 		org.lumi=None
 		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='qmu')
 		#self.sigPlots(plotter)	
@@ -281,6 +282,16 @@ class efficiencyChi0(supy.analysis) :
                                               },
                                             ]
                                )
+
+	def sqsqRatio(self,org):
+		sqsq=None
+		for step in org.steps:
+			for plotName in sorted(step.keys()):
+				if plotName=='SqSq': sqsq=step[plotName]
+
+		for i,sample in enumerate(org.samples):
+			tot=sqsq[i].Integral()
+			print sample['name'],sqsq[i].GetBinContent(1)/tot, sqsq[i].GetBinContent(2)/tot
 
 	def meanLxy(self,org):
 		lxy0,lxy1,lxy2=None,None,None
