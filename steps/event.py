@@ -19,13 +19,14 @@ class genevent(analysisStep):
 		self.book.fill(e['HMass'],'HMass',1000,100,1100,None,title=' ; H mass [GeV] ; events / bin' )
 		betagamma= 0 if e['HMass'] == 0 else e['HPt']*math.cosh(e['HEta'])/e['HMass']
 		self.book.fill(betagamma,'betagamma',100,0,10,None,title=' ; H #beta#gamma; events / bin' )
+		process='' if e['HMass']>0 else ['sb','ss'][e['SqSq']]
 		for i in range(len(e['XPt'])):
-			self.book.fill(e['XPt'][i],'XPt',100,0,800,None,title=' ; X p_{T} [GeV] ; events / bin' )
-			self.book.fill(e['XPt'][i],'XPt'+str(e['SqSq']),100,0,800,None,title=' ; X p_{T} [GeV] ; events / bin' )
+			self.book.fill(e['XPt'][i],'XPt',50,0,800,None,title=' ; X p_{T} [GeV] ; events / bin' )
+			self.book.fill(e['XPt'][i],'XPt'+process,50,0,800,None,title=' ; X p_{T} [GeV] ; events / bin' )
 			self.book.fill(e['XEta'][i],'XEta',30,-5,5,None,title=' ; X #eta ; events / bin' )
 			self.book.fill(e['gendijetDR'][i],'XDR',30,0,3,None,title=' ; q#bar{q} #Delta R ; events / bin' )
-
-		self.book.fill(e['SqSq'],'SqSq',2,-0.5,1.5,None,title=' ; squark-squark ; events/bin')
+		if e['HMass']==0:
+			self.book.fill(e['SqSq'],'SqSq',2,-0.5,1.5,None,title=' ; squark-squark ; events/bin')
 
 class runModulo(analysisStep):
 	def __init__(self,modulo,inverted=False):
