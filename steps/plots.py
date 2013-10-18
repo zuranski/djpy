@@ -45,7 +45,7 @@ class ABCDEFGHplots(analysisStep):
 	def uponAcceptance(self,e):
 		indicesDict = e[self.indices]
 		for key,value in sorted(indicesDict.iteritems()):
-			self.book.fill(key,self.collection+'ABCDEFGHcounts',8,0.5,8.5,w=len(indicesDict[key]))
+			self.book.fill(key,self.collection+'ABCDEFGHcounts',8,0.5,8.5,w=len(value))
 
 class general(plots):
 	vars = [
