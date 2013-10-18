@@ -1,5 +1,21 @@
 from supy import wrappedChain
 
+class dijetBestCand(wrappedChain.calculable):
+	def __init__(self,indices=''):
+		for item in ['indices']: setattr(self,item,eval(item))	
+
+	def update(self,ignored):
+		self.value=[-1 for i in range(len(self.source['dijetPt']))]
+		bestvtxN = max([self.source['dijetVtxN'][idx] for idx in self.source[self.indices]])
+		bestvtxNIndices = [idx for idx in self.source[self.indices] if self.source['dijetVtxN'][idx]==bestvtxN]
+		bestindex = None
+		if len(bestvtxNIndices) > 1:
+			bestchi2 = min([self.source['dijetVtxChi2'][idx] for idx in bestvtxNIndices])
+			bestchi2Indices = [idx for idx in bestvtxNIndices if self.source['dijetVtxChi2'][idx]==bestchi2]
+			bestindex = bestchi2Indices[0]
+		else: bestindex = bestvtxNIndices[0]
+		self.value[bestindex]=True
+			
 class dijetNoOverlaps(wrappedChain.calculable):
 	def __init__(self,indices=''):
 		self.indices = indices
