@@ -50,6 +50,36 @@ class eff(analysisStep):
 		weights = [tot_w*ctau_w for ctau_w in ctau_ws]
 		return weights
 
+class NE(eff):
+	def uponAcceptance(self,e):
+		if e['XpdgId'][0]>6000000:
+			bin = round((e["XpdgId"][0]-6000114)/1000.,0) - 1
+			ctau=self.ctau(self.inputFileName)*pow(10,int(bin)-1)
+			NSamples=3
+		else: bin,ctau,NSamples=0,self.ctau(self.inputFileName),1
+
+		self.fs=self.getFactors(self.inputFileName)
+		N=len(self.fs)
+		#weights = self.eweights(XCandIndices,ctau,e)
+		weights = self.eweights([],ctau,e) # do not reweight the denominator..
+
+		for i in range(len(self.fs)):
+			self.book.fill(bin*N+i,'NE',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+
+class multiplicity(eff):
+	def uponAcceptance(self,e):
+		if e['XpdgId'][0]>6000000:
+			bin = round((e["XpdgId"][0]-6000114)/1000.,0) - 1
+			ctau=self.ctau(self.inputFileName)*pow(10,int(bin)-1)
+			NSamples=3
+		else: bin,ctau,NSamples=0,self.ctau(self.inputFileName),1
+
+		indicesLow = e[self.indicesRecoLow]['H'] if type(e[self.indicesRecoLow])==dict else e[self.indicesRecoLow]
+		indicesHigh = e[self.indicesRecoHigh]['H'] if type(e[self.indicesRecoHigh])==dict else e[self.indicesRecoHigh]
+		
+		self.book.fill(len(indicesLow)+5*bin,'NXRecoLow',NSamples*5,-0.5,NSamples*5-0.5,w=None)
+		self.book.fill(len(indicesHigh)+5*bin,'NXRecoHigh',NSamples*5,-0.5,NSamples*5-0.5,w=None)
+
 class NX(eff):
 	def uponAcceptance(self,e):
 
@@ -138,6 +168,42 @@ class NXAcc(eff):
 			self.book.fill(e['gendijetNLep'][idx],'AccNLep'+self.flavorMap[XCandFlavors[idx]],5,-0.5,4.5)
 			self.book.fill(e['gendijetBlxyz'][idx],'AccBlxyz',5,-0.,5.)
 			self.book.fill(e['gendijetBlxyz'][idx],'AccBlxyz'+self.flavorMap[XCandFlavors[idx]],5,0.,5.)
+
+class NEReco(eff):
+	def uponAcceptance(self,e):
+
+		# determine the ctau of the event in the sample
+		if e['XpdgId'][0]>6000000:
+			bin = round((e["XpdgId"][0]-6000114)/1000.,0) - 1
+			ctau=self.ctau(self.inputFileName)*pow(10,int(bin)-1)
+			NSamples=3
+		else: bin,ctau,NSamples=0,self.ctau(self.inputFileName),1
+
+		# determine which Xs decay to dijets
+		XCandIndices = [i for i in e['gendijetIndices'] if e['gendijetFlavor'][i] not in [11,13]]
+
+		self.fs=self.getFactors(self.inputFileName)
+		N=len(self.fs)
+		weights = self.eweights(XCandIndices,ctau,e)
+
+		indicesLow = e[self.indicesRecoLow]['H'] if type(e[self.indicesRecoLow])==dict else e[self.indicesRecoLow]
+		indicesHigh = e[self.indicesRecoHigh]['H'] if type(e[self.indicesRecoHigh])==dict else e[self.indicesRecoHigh]
+		indices = indicesLow+indicesHigh
+
+		for i in range(len(self.fs)):
+			#categories
+			if len(indicesLow)==1:
+				self.book.fill(bin*N+i,'LowNE1',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			if len(indicesLow)>=2:
+				self.book.fill(bin*N+i,'LowNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			if len(indicesLow)>=1:
+				self.book.fill(bin*N+i,'LowNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			if len(indicesHigh)==1:
+				self.book.fill(bin*N+i,'HighNE1',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			if len(indicesHigh)>=2:
+				self.book.fill(bin*N+i,'HighNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			if len(indicesHigh)>=1:
+				self.book.fill(bin*N+i,'HighNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
 
 class NXReco(eff):
 	def uponAcceptance(self,e):
