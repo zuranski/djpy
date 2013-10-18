@@ -6,7 +6,7 @@ def stringValue(val,err,sig_figs):
         val,err=round(val,place),round(err,place)
     return "$"+str(val)+" \pm "+ str(err)+"$"
 
-def roundSig(num,sig_figs):
+def rnd(num,sig_figs):
     if num != 0:
         return round(num, -int(math.floor(math.log10(abs(num))) - (sig_figs - 1)))
     else:

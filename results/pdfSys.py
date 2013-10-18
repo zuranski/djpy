@@ -1,5 +1,5 @@
 import os,sys,pickle,math
-from utils.other import roundSig,weightedAvg
+from utils.other import rnd,weightedAvg
 
 dir1=sys.argv[1]+'/efficiencies'
 dir2=sys.argv[2]+'/efficiencies'
@@ -32,7 +32,7 @@ for file1,file2,file3 in zip(files1,files2,files3):
 	x = 50*(max(e1[0],e2[0],e3[0])+min(e1[0],e2[0],e3[0]))
 	xe = 50*(max(e1[0],e2[0],e3[0])-min(e1[0],e2[0],e3[0]))
 	diffe=1
-	e1=tuple([str(roundSig(a,2)) for a in e1])
-	e2=tuple([str(roundSig(a,2)) for a in e2])
-	print file1,e1,e2,roundSig(x,2),roundSig(xe,2),roundSig(100*xe/x,2)
+	e1=tuple([str(rnd(a,2)) for a in e1])
+	e2=tuple([str(rnd(a,2)) for a in e2])
+	print file1,e1,e2,rnd(x,2),rnd(xe,2),rnd(100*xe/x,2)
 

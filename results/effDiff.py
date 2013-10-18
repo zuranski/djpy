@@ -1,5 +1,5 @@
 import os,sys,pickle,math
-from utils.other import roundSig,weightedAvg
+from utils.other import rnd,weightedAvg
 
 dir1=sys.argv[1]+'/efficiencies'
 dir2=sys.argv[2]+'/efficiencies'
@@ -40,9 +40,9 @@ for file1,file2 in zip(files1,files2):
 	#diffe = 100* 4/pow(e1[0]+e2[0],2)*math.sqrt(pow(e2[0]*e1[1],2)+pow(e1[0]*e2[1],2))
 	x.append(diff)
 	w.append(diffe)
-	e1=tuple([str(roundSig(a,2)) for a in e1])
-	e2=tuple([str(roundSig(a,2)) for a in e2])
-	print file1,e1,e2,roundSig(diff,2),roundSig(diffe,2)
+	e1=tuple([str(rnd(a,2)) for a in e1])
+	e2=tuple([str(rnd(a,2)) for a in e2])
+	print file1,e1,e2,rnd(diff,2),rnd(diffe,2)
 
 avg,err = weightedAvg(x,w)
 print round(avg,5),round(err,5)
