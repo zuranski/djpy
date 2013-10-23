@@ -25,13 +25,14 @@ class abcdHTDouble(supy.analysis) :
         {'name':'dijetVtxpt','min':8},
         {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetLxysig','min':8},
-        {'name':'dijetNoOverlaps','val':True},
-        {'name':'dijetTrueLxy','min':0},
+        #{'name':'dijetTrueLxy','min':0},
+        #{'name':'dijetNoOverlaps','val':True},
+        {'name':'dijetBestCand','val':True},
     ]
 	ABCDCutsSets = []
-	scanPrompt = [(2,0.15),(2,0.13),(2,0.11),(2,0.09),(2,0.07),(2,0.05)]
-	scanPrompt += [(1,0.15),(1,0.13),(1,0.11),(1,0.09),(1,0.07),(1,0.05)]
-	scanPrompt += [(0,0.15),(0,0.13),(0,0.11),(0,0.09),(0,0.07),(0,0.05)]
+	#scanPrompt = [(2,0.15),(2,0.13),(2,0.11),(2,0.09),(2,0.07),(2,0.05)]
+	scanPrompt = [(1,0.15),(1,0.13),(1,0.11),(1,0.09),(1,0.07),(1,0.05)]
+	#scanPrompt += [(0,0.15),(0,0.13),(0,0.11),(0,0.09),(0,0.07),(0,0.05)]
 	scanVtx = [0.7,0.8,0.9,0.95]
 
 	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
@@ -60,7 +61,6 @@ class abcdHTDouble(supy.analysis) :
 		mysteps=[]
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
-			#mysteps.append(steps.event.effNum(indices='ABCDEFGHIndices'+str(i)).onlySim())
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
 
 	def calcsIndices(self):
@@ -69,8 +69,7 @@ class abcdHTDouble(supy.analysis) :
 		for cutPrev,cutNext in zip(cuts[:-1],cuts[1:]):
 			calcs.append(calculables.Indices.Indices(indices=cutPrev['name']+'Indices',cut=cutNext))
 		for i in range(len(self.ABCDCutsSets)) :
-			calcs.append(calculables.Indices.ABCDEFGHIndices(indices=self.Cuts[-1]['name']+'Indices',
-															 cuts=self.ABCDCutsSets[i],suffix=str(i)))
+			calcs.append(calculables.Indices.ABCDEFGHIndices(indices=self.Cuts[-1]['name']+'Indices', cuts=self.ABCDCutsSets[i],suffix=str(i)))
 		return calcs
 
 	def discs(self):
@@ -91,6 +90,8 @@ class abcdHTDouble(supy.analysis) :
 	def calcsVars(self):
 		calcs = []
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
+		#calcs.append(calculables.Overlaps.dijetBestCand('dijetNoOverlapsIndices'))
+		calcs.append(calculables.Overlaps.dijetBestCand('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -128,6 +129,8 @@ class abcdHTDouble(supy.analysis) :
 			### plots
 			+[steps.event.general()]
 			+self.dijetSteps1()
+			+[supy.steps.histos.multiplicity(self.Cuts[-2]['name']+'Indices')]
+			+[supy.steps.histos.multiplicity(self.Cuts[-1]['name']+'Indices')]
 			+self.discs()
 			+self.dijetSteps2()
 			)
@@ -174,7 +177,7 @@ class abcdHTDouble(supy.analysis) :
 			pdfFileName = self.pdfFileName(org.tag),
 			pageNumbers=False,
 			doLog=True,
-			dependence2D=True,
+			dependence2D=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
