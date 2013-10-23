@@ -1,5 +1,6 @@
 import supy,samples,calculables,steps,ROOT as r
-from utils.other import removeLowStats
+from utils.other import removeLowStats,rnd
+import math,re
 
 class efficiencyChi0(supy.analysis) :
 
@@ -43,6 +44,7 @@ class efficiencyChi0(supy.analysis) :
         {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetLxysig','min':8},
         #{'name':'dijetNoOverlaps','val':True},
+        {'name':'dijetBestCand','val':True},
     ]
 	
 	ABCDCutsLow = [
@@ -122,6 +124,7 @@ class efficiencyChi0(supy.analysis) :
 	def calcsVars(self):
 		calcs = []
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
+		calcs.append(calculables.Overlaps.dijetBestCand('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -134,10 +137,11 @@ class efficiencyChi0(supy.analysis) :
 
 		### acceptance filters
 		+self.dijetSteps0()
-		+[steps.event.general()]
+		#+[steps.event.general()]
 		+[steps.event.genevent()]
 		+[steps.efficiency.NX(pdfweights=None)]	
-		+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
+		#+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
+		+[steps.efficiency.NE(pdfweights=None)]	
 	
 		+[supy.steps.filters.label('data cleanup'),
 		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
@@ -173,6 +177,16 @@ class efficiencyChi0(supy.analysis) :
 			  indicesRecoLow='ABCDEFGHIndices0',
 			  indicesRecoHigh='ABCDEFGHIndices1')
 		 ]
+		+[
+          steps.efficiency.multiplicity(pdfweights=None,
+              indicesRecoLow='ABCDEFGHIndices0',
+              indicesRecoHigh='ABCDEFGHIndices1')
+         ]
+		+[
+          steps.efficiency.NEReco(pdfweights=None,
+              indicesRecoLow='ABCDEFGHIndices0',
+              indicesRecoHigh='ABCDEFGHIndices1')
+         ]
 		)
 
 	def listOfCalculables(self,config) :
@@ -221,12 +235,13 @@ class efficiencyChi0(supy.analysis) :
 		#plotter.doLog=False
 		plotter.anMode=True
 	
-		self.meanLxy(org)
-		self.sqsqRatio(org)
+		#self.meanLxy(org)
+		#self.sqsqRatio(org)
 		org.lumi=None
-		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='qmu')
+		#self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='qmu')
 		#self.sigPlots(plotter)	
-		self.totalEfficiencies(org,dir='eff2Neu',flavor='')
+		self.totEvtEff(org,dir='')
+		#self.totalEfficiencies(org,dir='eff2Neu',flavor='')
 		#self.puEff(org,plotter)
 
 
@@ -379,6 +394,54 @@ class efficiencyChi0(supy.analysis) :
                                               "stampCoords": (0.36, 0.85),}
                                             ],
                                )
+
+	def totEvtEff(self,org,dir=None):
+		low1p,low1,low2p,denom,lowNX,denomX=None,None,None,None,None,None
+		for step in org.steps:
+			for plotName in sorted(step.keys()):
+				if 'LowNE1+' == plotName : low1p=step[plotName]
+				if 'LowNE1' == plotName : low1=step[plotName]
+				if 'LowNE2+' == plotName : low2p=step[plotName]
+				if 'NE' == plotName : denom=step[plotName]
+				if 'LowNX' == plotName: lowNX=step[plotName]
+				if 'NX' == plotName: denomX=step[plotName]
+
+		efflow1p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1p,denom)])
+		efflow1 = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1,denom)])
+		efflow2p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1p,denom)])
+		effX = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(lowNX,denomX)])
+
+		fs = [0.01,0.02,0.03,0.06,0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.,20.,30.,60.,100.]
+		fs = [round(a,5) for a in fs] 
+		N=len(fs)
+
+		f=0.89
+
+		for i,sample in enumerate(org.samples):
+			digits=re.findall(r'\d+',sample['name'])
+			H,X=digits[0],digits[2]
+			name='SQ_'+str(H)+'_CHI_'+str(X)
+			ctau = self.ctau[self.sig_names.index(name)]
+
+			for j in range(N):
+				x,y=r.Double(0),r.Double(0)
+				efflow1p[i].GetPoint(j,x,y)
+				e1p = f*float(y)
+				e1pErr = f*efflow1p[i].GetErrorY(j)
+				efflow1[i].GetPoint(j,x,y)
+				e1 = f*float(y)
+				e1Err = f*efflow1[i].GetErrorY(j)
+				efflow2p[i].GetPoint(j,x,y)
+				e2p = f*float(y)
+				e2pErr = f*efflow2p[i].GetErrorY(j)
+				effX[i].GetPoint(j,x,y)
+				eX = f*float(y)
+				eXErr = f*effX[i].GetErrorY(j)
+				factor=fs[j]
+				eXexp=2*eX-eX*eX
+				if factor == 1:
+					objects=[ H,X,factor*ctau,rnd(100*e1,3),rnd(100*e2p,3),rnd(100*e1p,3),rnd(600*eX,3)]
+					print " & ".join(str(a) for a in objects ) + ' \\\\'
 
 	def totalEfficiencies(self,org,dir=None,flavor='') :
 		recoLow,recoHigh,acceptance,denom=None,None,None,None

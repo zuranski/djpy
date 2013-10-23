@@ -1,11 +1,13 @@
 import supy,samples,calculables,steps,ROOT as r
-from utils.other import removeLowStats,weightedAvg
+from utils.other import removeLowStats,weightedAvg,rnd
+import math,pickle,re
 
 class efficiency(supy.analysis) :
 
 	MH = [1000,1000,400,400,200]
 	MX = [350,150,150,50,50]
 	ctau = [35,10,40,8,20]
+	MH.reverse();MX.reverse();ctau.reverse()
 	sig_names = ['H_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
@@ -41,6 +43,7 @@ class efficiency(supy.analysis) :
         {'name':'dijetNAvgMissHitsAfterVert','max':2},
         {'name':'dijetLxysig','min':8},
         #{'name':'dijetNoOverlaps','val':True},
+        {'name':'dijetBestCand','val':True},
     ]
 	
 	ABCDCutsLow = [
@@ -84,7 +87,7 @@ class efficiency(supy.analysis) :
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
 		for cut in self.ABCDCutsLow:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
+			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
 			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.observables(indices=cut['name']+'Indices'))
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
@@ -120,6 +123,8 @@ class efficiency(supy.analysis) :
 	def calcsVars(self):
 		calcs = []
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
+		#calcs.append(calculables.Overlaps.dijetBestCand('dijetNoOverlapsIndices'))
+		calcs.append(calculables.Overlaps.dijetBestCand('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -135,11 +140,10 @@ class efficiency(supy.analysis) :
 
 		### acceptance filters
 		+self.dijetSteps0()
-		+[steps.event.general()]
+		#+[steps.event.general()]
 		+[steps.efficiency.NX(pdfweights=None)]	
-		#+[steps.trigger.hltFilterWildcard("HLT_HT300_v"),
-		# supy.steps.filters.value('caloHT',min=325),]
-		+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
+		+[steps.efficiency.NE(pdfweights=None)]	
+		#+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
 	
 		+[supy.steps.filters.label('data cleanup'),
 		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
@@ -166,6 +170,16 @@ class efficiency(supy.analysis) :
 		+[steps.event.general(tag='1')]
 		+[
 		  steps.efficiency.NXReco(pdfweights=None,
+			  indicesRecoLow='ABCDEFGHIndices0',
+			  indicesRecoHigh='ABCDEFGHIndices1')
+		 ]
+		+[
+		  steps.efficiency.multiplicity(pdfweights=None,
+			  indicesRecoLow='ABCDEFGHIndices0',
+			  indicesRecoHigh='ABCDEFGHIndices1')
+		 ]
+		+[
+		  steps.efficiency.NEReco(pdfweights=None,
 			  indicesRecoLow='ABCDEFGHIndices0',
 			  indicesRecoHigh='ABCDEFGHIndices1')
 		 ]
@@ -206,9 +220,9 @@ class efficiency(supy.analysis) :
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			anMode=True,
+			anMode=False,
 			showStatBox=True,
-			pegMinimum=0.0001,
+			pegMinimum=0.1,
 			shiftUnderOverFlows=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
@@ -217,9 +231,10 @@ class efficiency(supy.analysis) :
 	
 		#self.meanLxy(org)
 		org.lumi=None
-		self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='')
+		#self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='')
 		#self.sigPlots(plotter)	
-		self.totalEfficiencies(org,dir='eff2',flavor='')
+		#self.totalEfficiencies(org,dir='eff2',flavor='')
+		self.totEvtEff(org,dir='')
 		#self.puEff(org,plotter)
 
 
@@ -351,6 +366,58 @@ class efficiency(supy.analysis) :
                                             ],
                                )
 
+	def totEvtEff(self,org,dir=None):
+		low1p,low1,low2p,denom,lowNX,denomX=None,None,None,None,None,None
+		for step in org.steps:
+			for plotName in sorted(step.keys()):
+				if 'LowNE1+' == plotName : low1p=step[plotName]
+				if 'LowNE1' == plotName : low1=step[plotName]
+				if 'LowNE2+' == plotName : low2p=step[plotName]
+				if 'NE' == plotName : denom=step[plotName]
+				if 'LowNX' == plotName: lowNX=step[plotName]
+				if 'NX' == plotName: denomX=step[plotName]
+
+		efflow1p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1p,denom)])
+		efflow1 = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1,denom)])
+		efflow2p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1p,denom)])
+		effX = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(lowNX,denomX)])
+
+		fs = [0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.]
+		allfs = [0.1*a for a in fs] + fs + [10*a for a in fs]
+		allfs = [round(a,5) for a in allfs] 
+		N=len(allfs)
+		forbidden=[7,8,9,16,17,18]
+
+		f=0.89
+
+		for i,sample in enumerate(org.samples):
+			digits=re.findall(r'\d+',sample['name'])
+			H,X=digits[0],digits[2]
+			name='H_'+str(H)+'_X_'+str(X)
+			ctau = self.ctau[self.sig_names.index(name)]
+
+			for j in range(N):
+				if j in forbidden: continue
+				x,y=r.Double(0),r.Double(0)
+				efflow1p[i].GetPoint(j,x,y)
+				e1p = f*float(y)
+				e1pErr = f*efflow1p[i].GetErrorY(j)
+				efflow1[i].GetPoint(j,x,y)
+				e1 = f*float(y)
+				e1Err = f*efflow1[i].GetErrorY(j)
+				efflow2p[i].GetPoint(j,x,y)
+				e2p = f*float(y)
+				e2pErr = f*efflow2p[i].GetErrorY(j)
+				effX[i].GetPoint(j,x,y)
+				eX = f*float(y)
+				eXErr = f*effX[i].GetErrorY(j)
+				factor=allfs[j]
+				eXexp=2*eX-eX*eX
+				if factor in [0.1,1,10]:
+					objects=[ H,X,factor*ctau,rnd(100*e1,3),rnd(100*e2p,3),rnd(100*e1p,3),rnd(200*eX,3)]
+					print " & ".join(str(a) for a in objects ) + ' \\\\'
+
+
 	def totalEfficiencies(self,org,dir=None,flavor='') :
 		recoLow,recoHigh,acceptance,denom=None,None,None,None
 		for step in org.steps:
@@ -379,7 +446,6 @@ class efficiency(supy.analysis) :
 		f=0.89
 		sysmap={'1000350':0.075,'1000150':0.075,'400150':0.096,'40050':0.091,'20050':0.10}
 
-		import pickle,math,re
 		for i,sample in enumerate(org.samples):
 			digits=re.findall(r'\d+',sample['name'])
 			H,X=digits[0],digits[2]
