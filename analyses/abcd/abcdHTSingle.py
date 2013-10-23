@@ -25,7 +25,8 @@ class abcdHTSingle(supy.analysis) :
         {'name':'dijetVtxpt','min':8},
         {'name':'dijetVtxNRatio','min':0.1},
         {'name':'dijetLxysig','min':8},
-        {'name':'dijetNoOverlaps','val':True},
+        #{'name':'dijetNoOverlaps','val':True},
+        {'name':'dijetBestCand','val':True},
         {'name':'dijetTrueLxy','min':0},
     ]
 	ABCDCutsSets = []
@@ -88,6 +89,7 @@ class abcdHTSingle(supy.analysis) :
 	def calcsVars(self):
 		calcs = []
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
+		calcs.append(calculables.Overlaps.dijetBestCand('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :
