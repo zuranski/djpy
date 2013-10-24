@@ -28,7 +28,8 @@ class ctrlRegions(supy.analysis) :
         {'name':'dijetVtxpt','min':8},
         {'name':'dijetNAvgMissHitsAfterVert','min':2.0001},
         {'name':'dijetLxysig','min':8},
-        {'name':'dijetNoOverlaps','val':True},
+        #{'name':'dijetNoOverlaps','val':True},
+        {'name':'dijetBestCand','val':True},
         {'name':'dijetTrueLxy','min':0},
     ]
 	ABCDCutsSets = []
@@ -91,6 +92,7 @@ class ctrlRegions(supy.analysis) :
 	def calcsVars(self):
 		calcs = []
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
+		calcs.append(calculables.Overlaps.dijetBestCand('dijetLxysigIndices'))
 		return calcs
 
 	def listOfSteps(self,config) :
@@ -175,4 +177,4 @@ class ctrlRegions(supy.analysis) :
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 		)
 		plotter.plotAll()
-		plotABCDscan(self,org,plotter,8,blind=False,onlyB=True)
+		plotABCDscan(self,org,plotter,8,blind=False,onlyB=False)
