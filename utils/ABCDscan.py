@@ -103,7 +103,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 		title=''
 		#title='max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
 		xtitle = 'Vertex/Cluster Discriminant'
-		ytitle = 'Number of Candidates'
+		ytitle = 'Number of Events'
 
 		indices = [i for i,cuts in enumerate(analysis.scan) if len(listdiff(cuts,scan))<=1]
 		labels = [string(cuts[scan.index(None)]) for i,cuts in enumerate(analysis.scan) if i in indices]
@@ -143,9 +143,9 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histoz.SetBinError(k+1,0.)
 
 			if onlyB:
-				legend = r.TLegend(0.5, 0.55, 0.93, 0.78)
+				legend = r.TLegend(0.5, 0.6, 0.93, 0.78)
 			else:
-				legend = r.TLegend(0.75, 0.45, 0.95, 0.9)
+				legend = r.TLegend(0.7, 0.55, 0.93, 0.93)
 			for i in reversed(range(n)):
 				if blind and 'Data' in sample['name'] and i==0: continue
 				for k,idx in enumerate(indices):
@@ -201,7 +201,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				cmsStamp(lumi=18500,coords=(0.71,0.84),preliminary=False)
 				#cmsStamp(lumi=None,coords=(0.78,0.88))
 			else:
-				cmsStamp(lumi=org.lumi,coords=(0.45,0.85))
+				cmsStamp(lumi=org.lumi,coords=(0.45,0.88),simulation=True)
 				#cmsStamp(lumi=None,coords=(0.45,0.85))
 			
 			pad = r.TPad("pad2","",0,0,1,1)
