@@ -234,7 +234,7 @@ class efficiency(supy.analysis) :
 		#self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='')
 		#self.sigPlots(plotter)	
 		#self.totalEfficiencies(org,dir='eff2',flavor='')
-		self.totEvtEff(org,dir='')
+		self.totEvtEff(org,dir='eff2')
 		#self.puEff(org,plotter)
 
 
@@ -367,10 +367,11 @@ class efficiency(supy.analysis) :
                                )
 
 	def totEvtEff(self,org,dir=None):
-		low1p,low1,low2p,denom,lowNX,denomX=None,None,None,None,None,None
+		low1p,high1p,low1,low2p,denom,lowNX,denomX=None,None,None,None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
 				if 'LowNE1+' == plotName : low1p=step[plotName]
+				if 'HighNE1+' == plotName : high1p=step[plotName]
 				if 'LowNE1' == plotName : low1=step[plotName]
 				if 'LowNE2+' == plotName : low2p=step[plotName]
 				if 'NE' == plotName : denom=step[plotName]
@@ -378,30 +379,38 @@ class efficiency(supy.analysis) :
 				if 'NX' == plotName: denomX=step[plotName]
 
 		efflow1p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1p,denom)])
+		effhigh1p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(high1p,denom)])
 		efflow1 = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1,denom)])
 		efflow2p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1p,denom)])
 		effX = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(lowNX,denomX)])
 
-		fs = [0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.]
+		fs = [0.4,0.6,1.,1.4]#	old factors for the record if not approved
+		#fs = [0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.]
 		allfs = [0.1*a for a in fs] + fs + [10*a for a in fs]
 		allfs = [round(a,5) for a in allfs] 
 		N=len(allfs)
 		forbidden=[7,8,9,16,17,18]
 
+		sysmap={'1000350':0.075,'1000150':0.075,'400150':0.096,'40050':0.091,'20050':0.10}
 		f=0.89
 
 		for i,sample in enumerate(org.samples):
 			digits=re.findall(r'\d+',sample['name'])
 			H,X=digits[0],digits[2]
+			sys=sysmap[H+X]
 			name='H_'+str(H)+'_X_'+str(X)
 			ctau = self.ctau[self.sig_names.index(name)]
 
 			for j in range(N):
-				if j in forbidden: continue
+				#if j in forbidden: continue
 				x,y=r.Double(0),r.Double(0)
 				efflow1p[i].GetPoint(j,x,y)
 				e1p = f*float(y)
 				e1pErr = f*efflow1p[i].GetErrorY(j)
+				#if j>N/3:
+				#	effhigh1p[i].GetPoint(j,x,y)
+				#	e1p = f*float(y)
+				#	e1pErr = f*effhigh1p[i].GetErrorY(j)
 				efflow1[i].GetPoint(j,x,y)
 				e1 = f*float(y)
 				e1Err = f*efflow1[i].GetErrorY(j)
@@ -411,11 +420,14 @@ class efficiency(supy.analysis) :
 				effX[i].GetPoint(j,x,y)
 				eX = f*float(y)
 				eXErr = f*effX[i].GetErrorY(j)
+
+				if e1p > 0. : e1pErr = e1p*math.sqrt(sys*sys+pow(e1pErr/e1p,2))
 				factor=allfs[j]
-				eXexp=2*eX-eX*eX
-				if factor in [0.1,1,10]:
-					objects=[ H,X,factor*ctau,rnd(100*e1,3),rnd(100*e2p,3),rnd(100*e1p,3),rnd(200*eX,3)]
-					print " & ".join(str(a) for a in objects ) + ' \\\\'
+				#if factor in [0.1,1,10]:
+				objects=[ H,X,factor*ctau,rnd(100*e1,3),rnd(100*e2p,3),rnd(100*e1p,3),rnd(200*eX,3)]
+				print " & ".join(str(a) for a in objects ) + ' \\\\'
+				output=[(e1p,e1pErr),(e1p,e1pErr),[e1p,e1pErr]]
+				pickle.dump(output,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
 
 
 	def totalEfficiencies(self,org,dir=None,flavor='') :
