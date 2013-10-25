@@ -8,7 +8,8 @@ class eff(analysisStep):
 		self.flavorMap={1:'uds',2:'uds',3:'uds',4:'c',5:'b',11:'e',13:'mu',1.5:'ud',7:'qmu',7.5:'qmu'}
 	
 	def getFactors(self,file):
-		return [0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.] if 'H_' in file else \
+		#return [0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.] if 'H_' in file else \
+		return [0.4,0.6,1.,1.4] if 'H_' in file else \
         [0.01,0.02,0.03,0.06,0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.,20.,30.,60.,100.]
 
 	def ctau(self,file):
