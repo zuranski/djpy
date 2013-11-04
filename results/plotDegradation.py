@@ -47,7 +47,7 @@ def limitPlot(list = None):
 	mg.GetXaxis().SetRangeUser(ctaus[0]*0.95,ctaus[-1]*2)
 	mg.GetYaxis().SetTitle('Limit / Limit (no uncertainty)')
 
-	leg=r.TLegend(0.2,0.61,0.6,0.79)
+	leg=r.TLegend(0.2,0.61,0.7,0.8)
 	leg.SetFillColor(0)
 	gempty=r.TGraph()
 	gempty.SetMarkerColor(0)
