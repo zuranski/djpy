@@ -70,7 +70,8 @@ class jetmerging(supy.analysis) :
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 
-		toPlot=[sig_samples[i] for i in [1,2,5]]
+		toPlot=[sig_samples[i] for i in [1,2,5]] 
+		#toPlot=[sig_samples[i] for i in [7,8]] 
 
 		#return sig_samples
 		return toPlot
@@ -80,28 +81,34 @@ class jetmerging(supy.analysis) :
 		org = self.organizer(pars)
 
 		# analysis samples
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")                                 
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150")                               
-		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")                               
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350)(X^{0}#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")                                 
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150)(X^{0}#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150")                               
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150)(X^{0}#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")                               
 		
 
 		# gen plots samples
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")
-		#org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
-		#org.mergeSamples(targetSpec = {"name":"H(120)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_120_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150)(X^{0}#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(120)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_120_X_50")
 
 		# dR samples
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_50")
-		#org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(20)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_20")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350)(X^{0}#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150)(X^{0}#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_150")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_50")
+		#org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(20)(X^{0}#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_20")
+
+		# effDijetSamples [1,2,5]
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150)(X^{0}#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_1000_X_50")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":2}, allWithPrefix = "H_400_X_50")
+		
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
-			doLog=True,
+			doLog=False,
 			anMode=True,
 			showStatBox=True,
 			pegMinimum=0.5,
@@ -111,7 +118,7 @@ class jetmerging(supy.analysis) :
 		plotter.plotAll()
 		org.lumi=None
 
-		'''
+		'''	
 		plotter.individualPlots(simulation=True, plotSpecs = [
                                               {"plotName":"caloHT",
                                               "stepName":"general",

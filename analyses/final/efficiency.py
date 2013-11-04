@@ -87,7 +87,7 @@ class efficiency(supy.analysis) :
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
 		for cut in self.ABCDCutsLow:
-			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=0))
+			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
 			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			if cut == self.ABCDCutsLow[-1]: mysteps.append(steps.plots.observables(indices=cut['name']+'Indices'))
 		return ([supy.steps.filters.label('dijet ABCD cuts filters')]+mysteps)
@@ -135,13 +135,13 @@ class efficiency(supy.analysis) :
                                     target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('H',[])]).onlySim()] 
 		### filters
-		+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
-		#+[steps.other.genParticleMultiplicity(pdgIds=[6002114],collection='XpdgId',min=2,max=2)]
+		#+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
+		+[steps.other.genParticleMultiplicity(pdgIds=[6002114],collection='XpdgId',min=2,max=2)]
 
 		### acceptance filters
 		+self.dijetSteps0()
-		#+[steps.event.general()]
-		+[steps.efficiency.NX(pdfweights=None)]	
+		+[steps.event.general()]
+		#+[steps.efficiency.NX(pdfweights=None)]	
 		+[steps.efficiency.NE(pdfweights=None)]	
 		#+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
 	
@@ -168,11 +168,11 @@ class efficiency(supy.analysis) :
 		+self.discs()
 		+self.dijetSteps2()
 		+[steps.event.general(tag='1')]
-		+[
-		  steps.efficiency.NXReco(pdfweights=None,
-			  indicesRecoLow='ABCDEFGHIndices0',
-			  indicesRecoHigh='ABCDEFGHIndices1')
-		 ]
+		#+[
+		#  steps.efficiency.NXReco(pdfweights=None,
+		#	  indicesRecoLow='ABCDEFGHIndices0',
+		#	  indicesRecoHigh='ABCDEFGHIndices1')
+		# ]
 		+[
 		  steps.efficiency.multiplicity(pdfweights=None,
 			  indicesRecoLow='ABCDEFGHIndices0',
@@ -211,16 +211,16 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
-		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
-			anMode=False,
+			anMode=True,
 			showStatBox=True,
 			pegMinimum=0.1,
 			shiftUnderOverFlows=False,
@@ -231,8 +231,8 @@ class efficiency(supy.analysis) :
 	
 		#self.meanLxy(org)
 		org.lumi=None
-		#self.effPlots(org,plotter,denName='NX',numName='NXReco',sel='Low',flavor='')
-		#self.sigPlots(plotter)	
+		#self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
+		self.sigPlots(plotter)	
 		#self.totalEfficiencies(org,dir='eff2',flavor='')
 		self.totEvtEff(org,dir='eff2')
 		#self.puEff(org,plotter)
@@ -310,42 +310,49 @@ class efficiency(supy.analysis) :
 					if plotName.endswith(flavor): dlist.append(step[plotName]);names.append(plotName)
 			if step.name==numName: 
 				for plotName in sorted(step.keys()): 
-					if plotName.startswith(sel) and plotName.endswith(flavor): nlist.append(step[plotName]); names2.append(plotName)	
+					if plotName.startswith(sel) and plotName.endswith(flavor) and '+' not in plotName: nlist.append(step[plotName]); names2.append(plotName)	
 		print names
 		print names2
 
-		for n in nlist: removeLowStats(n,relErrMax=1)
+		for n in nlist: removeLowStats(n,relErrMax=1.)
 
-		effs=[ tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom) ]) for num,denom in zip(nlist,dlist) ]
+		effs = []
+		for num,denom in zip(nlist,dlist):
+			print num[0],denom[0]
+			print num[0].GetNbinsX(),denom[0].GetNbinsX()
+			eff = [r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom)]
+			effs.append(tuple(eff))
+
+		#effs=[ tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom) ]) for num,denom in zip(nlist,dlist) ]
 		plotter.individualPlots(simulation=True, plotSpecs = [
 											  {"plotName":"HPt"+flavor,
                                               "histos":effs[names.index("HPt"+flavor)],
-                                              "newTitle":"; H^{0} p_{T} [GeV] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "newTitle":"; H^{0} p_{T} [GeV] ; efficiency",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"XPt"+flavor,
                                               "histos":effs[names.index("XPt"+flavor)],
-                                              "newTitle":"; X^{0} p_{T} [GeV] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "newTitle":"; best X^{0} p_{T} [GeV] ; efficiency",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"Lxy"+flavor,
                                               "histos":effs[names.index("Lxy"+flavor)],
-                                              "newTitle":"; X^{0} L_{xy} [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "newTitle":"; best X^{0} L_{xy} [cm] ; efficiency",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"SmallLxy"+flavor,
                                               "histos":effs[names.index("SmallLxy"+flavor)],
-                                              "newTitle":"; X^{0} L_{xy} [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "newTitle":"; best X^{0} L_{xy} [cm] ; efficiency",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMin"+flavor,
                                               "histos":effs[names.index("IP2dMin"+flavor)],
-                                              "newTitle":"; q#bar{q} smaller IP_{xy} [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "newTitle":"; best X^{0} min(IP^{xy}(q),IP^{xy}(#bar{q})) [cm] ; efficiency",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
 											  {"plotName":"IP2dMax"+flavor,
                                               "histos":effs[names.index("IP2dMax"+flavor)],
-                                              "newTitle":"; q#bar{q} larger IP_{xy} [cm] ; X^{0}#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "newTitle":"; best X^{0} max(IP^{xy}(q),IP^{xy}(#bar{q})) [cm] ; efficiency",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),},
                                             ],
@@ -360,29 +367,22 @@ class efficiency(supy.analysis) :
 		eff=tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom)])
 		plotter.individualPlots(simulation=True, plotSpecs = [{"plotName":"effPU",
                                               "histos":eff,
-                                              "newTitle":"; pile-up vertices; X#rightarrow q#bar{q} #epsilon #times Acc.",
+                                              "newTitle":"; pile-up vertices; efficiency",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.36, 0.85),}
                                             ],
                                )
 
 	def totEvtEff(self,org,dir=None):
-		low1p,high1p,low1,low2p,denom,lowNX,denomX=None,None,None,None,None,None,None
+		high1,low1,denom=None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'LowNE1+' == plotName : low1p=step[plotName]
-				if 'HighNE1+' == plotName : high1p=step[plotName]
+				if 'HighNE1' == plotName : high1=step[plotName]
 				if 'LowNE1' == plotName : low1=step[plotName]
-				if 'LowNE2+' == plotName : low2p=step[plotName]
 				if 'NE' == plotName : denom=step[plotName]
-				if 'LowNX' == plotName: lowNX=step[plotName]
-				if 'NX' == plotName: denomX=step[plotName]
 
-		efflow1p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1p,denom)])
-		effhigh1p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(high1p,denom)])
 		efflow1 = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1,denom)])
-		efflow2p = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(low1p,denom)])
-		effX = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(lowNX,denomX)])
+		effhigh1 = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(high1,denom)])
 
 		fs = [0.4,0.6,1.,1.4]#	old factors for the record if not approved
 		#fs = [0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.]
@@ -396,7 +396,7 @@ class efficiency(supy.analysis) :
 
 		for i,sample in enumerate(org.samples):
 			digits=re.findall(r'\d+',sample['name'])
-			H,X=digits[0],digits[2]
+			H,X=digits[1],digits[4]
 			sys=sysmap[H+X]
 			name='H_'+str(H)+'_X_'+str(X)
 			ctau = self.ctau[self.sig_names.index(name)]
@@ -404,29 +404,20 @@ class efficiency(supy.analysis) :
 			for j in range(N):
 				#if j in forbidden: continue
 				x,y=r.Double(0),r.Double(0)
-				efflow1p[i].GetPoint(j,x,y)
-				e1p = f*float(y)
-				e1pErr = f*efflow1p[i].GetErrorY(j)
-				#if j>N/3:
-				#	effhigh1p[i].GetPoint(j,x,y)
-				#	e1p = f*float(y)
-				#	e1pErr = f*effhigh1p[i].GetErrorY(j)
 				efflow1[i].GetPoint(j,x,y)
 				e1 = f*float(y)
 				e1Err = f*efflow1[i].GetErrorY(j)
-				efflow2p[i].GetPoint(j,x,y)
-				e2p = f*float(y)
-				e2pErr = f*efflow2p[i].GetErrorY(j)
-				effX[i].GetPoint(j,x,y)
-				eX = f*float(y)
-				eXErr = f*effX[i].GetErrorY(j)
+				if j>N/3:
+					effhigh1[i].GetPoint(j,x,y)
+					e1p = f*float(y)
+					e1pErr = f*effhigh1[i].GetErrorY(j)
 
-				if e1p > 0. : e1pErr = e1p*math.sqrt(sys*sys+pow(e1pErr/e1p,2))
+				if e1 > 0. : e1Err = e1*math.sqrt(sys*sys+pow(e1Err/e1,2))
 				factor=allfs[j]
 				#if factor in [0.1,1,10]:
-				objects=[ H,X,factor*ctau,rnd(100*e1,3),rnd(100*e2p,3),rnd(100*e1p,3),rnd(200*eX,3)]
+				objects=[ H,X,factor*ctau,rnd(100*e1,3)]
 				print " & ".join(str(a) for a in objects ) + ' \\\\'
-				output=[(e1p,e1pErr),(e1p,e1pErr),[e1p,e1pErr]]
+				output=[(e1,e1Err),(e1,e1Err),[e1,e1Err]]
 				pickle.dump(output,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
 
 
