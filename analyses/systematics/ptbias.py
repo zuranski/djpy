@@ -86,7 +86,7 @@ class ptbias(supy.analysis) :
 
 		merged_samples=[sig_samples[i] for i in [2,3,6,8,10]]
 		nonmerged_samples=[sig_samples[i] for i in [0,1,4,5,7,9]]
-		toPlot=[nonmerged_samples[i] for i in [1]]
+		toPlot=[nonmerged_samples[i] for i in [0,1,2,3,4]]
 
 		#return merged_samples
 		#return nonmerged_samples
@@ -95,17 +95,17 @@ class ptbias(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(350)(X#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
-		org.mergeSamples(targetSpec = {"name":"H(200)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_200_X_50")
-		org.mergeSamples(targetSpec = {"name":"H(1000)#rightarrow 2X(150)(X#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H(400)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
-		org.mergeSamples(targetSpec = {"name":"H(120)#rightarrow 2X(50)(X#rightarrow q#bar{q})", "color":r.kYellow,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_120_X_50")                              
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350)(X^{0}#rightarrow q#bar{q})", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150)(X^{0}#rightarrow q#bar{q})", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150)(X^{0}#rightarrow q#bar{q})", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H^{0}(120)#rightarrow 2X^{0}(50)(X^{0}#rightarrow q#bar{q})", "color":r.kYellow,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_120_X_50")                              
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=False,
-			anMode=True,
+			#anMode=True,
 			showStatBox=True,
 			pegMinimum=10,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
@@ -177,13 +177,13 @@ class ptbias(supy.analysis) :
 		def removeLowStats(histos):
 			for histo in histos:
 				for i in range(1,histo.GetNbinsX()+1):
-					if histo.GetBinEntries(i)<50: 
+					if histo.GetBinEntries(i)<30: 
 						histo.SetBinContent(i,0)		
 						histo.SetBinError(i,0)		
 
 
 		for profile,isX in zip(profiles,XorY):
-			#plotter.canvas.Divide(3,2)
+			plotter.canvas.Divide(3,2)
 			histosX = [h.ProfileX('',1,-1,'s').Clone() for h in profile]
 			histosY = [h.ProfileY('',1,-1,'s').Clone() for h in profile]
 			removeLowStats(histosX)
@@ -191,20 +191,24 @@ class ptbias(supy.analysis) :
 			histos = histosX if isX else histosY
 			latex=r.TLatex()
 			latex.SetNDC()
-			latex.SetTextSize(0.035)
+			latex.SetTextSize(0.05)
 			for i,sample in enumerate(org.samples):
 				name=sample['name']
 				plotter.canvas.cd(i+1)
 				r.gPad.SetTopMargin(0.08)
 				r.gPad.SetLeftMargin(0.2)
 				r.gPad.SetRightMargin(0.05)
-				histos[i].SetMarkerStyle(20)
-				histos[i].SetMarkerSize(2)
+				histos[i].SetMarkerStyle(8)
+				#histos[i].SetMarkerSize(2)
 				histos[i].SetStats(False)
 				histos[i].SetName(name)
 				histos[i].SetTitle(name)
 				histos[i].GetYaxis().SetTitle('(jet p_{T} - true p_{T} )/ true p_{T}')
 				histos[i].GetYaxis().SetTitleOffset(2.)
+				histos[i].GetXaxis().SetTitleFont(42)
+				histos[i].GetXaxis().SetLabelFont(42)
+				histos[i].GetXaxis().SetLabelSize(0.045)
+				histos[i].GetXaxis().SetTitleSize(0.055)
 				histos[i].Draw()
 				latex.DrawLatex(0.22,0.95,name)
 			plotter.printCanvas()

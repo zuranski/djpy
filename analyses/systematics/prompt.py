@@ -139,7 +139,7 @@ class prompt(supy.analysis) :
                                               "stepDesc":"cutvars",
                                               "newTitle":";Missing Hits per track after Vertex;di-jets / bin",
                                               "legendCoords": (0.55, 0.55, 0.9, 0.75),
-                                              "stampCoords": (0.7, 0.88)
+                                              "stampCoords": (0.67, 0.88)
                                               },
                                             ]
                                )
