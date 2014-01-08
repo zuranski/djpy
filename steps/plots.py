@@ -127,7 +127,7 @@ class observables(plots):
 	vars = [
             {'name':'Mass','bins':50,'low':0,'high':500,'label':'Dijet Invariant Mass [GeV]'},
             {'name':'Lxy','bins':50,'low':0,'high':60,'label':'L_{xy}[GeV]'},
-            {'name':'TrkAvgPt','bins':30,'low':0,'high':20,'label':'average track p_{T} [GeV]'},
+            #{'name':'TrkAvgPt','bins':30,'low':0,'high':20,'label':'average track p_{T} [GeV]'},
             {'name':'VtxNRatio','bins':20,'low':0,'high':1,'label':'fraction of tracks in the Vertex'},
             {'name':'ClrNRatio','bins':20,'low':0,'high':1,'label':'fraction of tracks in the Cluster'},
 	       ]
