@@ -9,7 +9,7 @@ class general(analysisStep):
 		self.book.fill(e['pfHT'],self.tag+'pfHT',100,0,1e3,None,title = 'PfJets ; pfHT [GeV] ; events / bin')
 		self.book.fill(e['caloHT'],self.tag+'caloHT',50,0,1.5e3,None,title = 'CaloJets ; caloHT [GeV] ; events / bin')
 		self.book.fill(e['nPfJets'],self.tag+'nPfJets',16,-0.5,15.5,None,title='nPfJets ; nPfJets ; events / bin')
-		self.book.fill(e['nPV'],self.tag+'nPV',26,4.5,30.5,None,title='nPV ; nPV ; events / bin')
+		self.book.fill(e['nPV'],self.tag+'nPV',13,4.5,30.5,None,title='nPV ; nPV ; events / bin')
 		self.book.fill(e['nTrks'],self.tag+'nTrks',100,0,2500,None, title='nTrks ; nTrks ; events / bin')
 
 class genevent(analysisStep):
