@@ -58,7 +58,7 @@ class finSelection(supy.analysis) :
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
 			if cut is self.Cuts[-1]:
 				mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
-				mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices',plot2D=True,plot1D=False))
+				#mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices',plot2D=True,plot1D=False))
 		return ([supy.steps.filters.label('dijet multiplicity filters')]+mysteps)
 
 	def dijetSteps2(self):
@@ -66,8 +66,10 @@ class finSelection(supy.analysis) :
 		for i in range(len(self.ABCDCutsSets)) :
 			mysteps.append(steps.plots.ABCDEFGHplots(indices='ABCDEFGHIndices'+str(i)))
 		for cutSet in self.ABCDCutsSets:
-			mysteps.append(steps.plots.cutvars(indices=cutSet[-1]['name']+'Indices'))
-			mysteps.append(steps.plots.observables(indices=cutSet[-1]['name']+'Indices'))
+			#mysteps.append(steps.plots.cutvars(indices=cutSet[-1]['name']+'Indices'))
+			for cut in cutSet:
+				mysteps.append(steps.plots.observables(indices=cut['name']+'Indices'))
+				mysteps.append(supy.steps.histos.multiplicity(cut['name']+'Indices'))
 			mysteps.append(steps.other.collector(indices=cutSet[-1]['name']+'Indices',
             vars=['dijetDiscriminant',
 				  'dijetNPromptTracks1',
@@ -118,8 +120,8 @@ class finSelection(supy.analysis) :
 
 	def calcsVars(self):
 		calcs = []
-		for calc in self.ToCalculate:
-			calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
+		#for calc in self.ToCalculate:
+		#	calcs.append(getattr(calculables.Vars,calc)('dijetVtxChi2Indices'))
 		calcs.append(calculables.Overlaps.dijetNoOverlaps('dijetLxysigIndices'))
 		return calcs
 

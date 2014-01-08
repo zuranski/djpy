@@ -135,8 +135,8 @@ class efficiency(supy.analysis) :
                                     target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('H',[])]).onlySim()] 
 		### filters
-		#+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
-		+[steps.other.genParticleMultiplicity(pdgIds=[6002114],collection='XpdgId',min=2,max=2)]
+		+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
+		#+[steps.other.genParticleMultiplicity(pdgIds=[6002114],collection='XpdgId',min=2,max=2)]
 
 		### acceptance filters
 		+self.dijetSteps0()
@@ -211,18 +211,18 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
-		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
-		org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_200_X_50")
-		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
 			showStatBox=True,
-			pegMinimum=0.1,
+			pegMinimum=0.0001,
 			shiftUnderOverFlows=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
@@ -231,10 +231,10 @@ class efficiency(supy.analysis) :
 	
 		#self.meanLxy(org)
 		org.lumi=None
-		#self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
-		self.sigPlots(plotter)	
+		self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
+		#self.sigPlots(plotter)	
 		#self.totalEfficiencies(org,dir='eff2',flavor='')
-		self.totEvtEff(org,dir='eff2')
+		self.totEvtEff(org,dir='eff2HV')
 		#self.puEff(org,plotter)
 
 
