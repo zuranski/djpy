@@ -27,6 +27,7 @@ for file in files:
 	if int(ctau)==ctau: ctau=int(ctau)
 	data = pickle.load(open(dir+'/'+file))
 	string = " & ".join(stringValue(100*a[0],100*a[1],1) for a in data)
+	string = stringValue(100*data[0][0],100*data[0][1],1)
 	print "%s & %s & %s & %s \\\\"%(H,X,ctau,string)
 
 print "\hline"

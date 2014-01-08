@@ -54,7 +54,7 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	leg.AddEntry(g[2],'Exp. \\pm 1\\sigma','F')
 	leg.AddEntry(g[3],'Exp. \\pm 2\\sigma','F')
 	leg.Draw('same')
-	cmsStamp(lumi=18510,coords=(0.45,0.87),preliminary=False)
+	cmsStamp(lumi=18510,coords=(0.45,0.89),preliminary=True)
 	name=str(MH)+'_'+str(MX)+option
 	os.chdir(plotDir)
 	c.SaveAs(name+'.eps')
