@@ -9,8 +9,10 @@ class eff(analysisStep):
 	
 	def getFactors(self,file):
 		#return [0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.] if 'H_' in file else \
-		return [0.4,0.6,1.,1.4] if 'H_' in file else \
-        [0.01,0.02,0.03,0.06,0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.,20.,30.,60.,100.]
+        #[0.01,0.02,0.03,0.06,0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.,20.,30.,60.,100.]
+		#return [0.4,0.6,1.,1.4] if 'H_' in file else \
+        #[0.01,0.02,0.03,0.06,0.1,0.2,0.3,0.6,1.,2.,3.,6.,10.,20.,30.,60.,100.]
+		return [0.4,0.6,1.,1.4]
 
 	def ctau(self,file):
 		file=os.path.basename(file)
@@ -64,8 +66,29 @@ class NE(eff):
 		#weights = self.eweights(XCandIndices,ctau,e)
 		weights = self.eweights([],ctau,e) # do not reweight the denominator..
 
+		# for computing the overall efficiencies
 		for i in range(len(self.fs)):
 			self.book.fill(bin*N+i,'NE',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+
+		# determine which Xs decay with at least one jet
+		XCandIndices = [i for i in e['gendijetIndices'] if e['gendijetFlavor'][i] < 6] # only qq candidates
+		XCandFlavors = [e['gendijetFlavor'][i] for i in XCandIndices]
+
+		assert len(XCandIndices)==2
+		#weight=e['weight']/math.sqrt(len(XCandIndices))
+		weight=e['weight']/2./0.89
+
+		for idx in XCandIndices:
+			self.book.fill(e['HPt'],'HPt',10,0,500,w=weight)
+			self.book.fill(e['gendijetXDR'][idx],'XDR',10,0,1,w=weight)
+			self.book.fill(e['gendijetXPt'][idx],'XPt',20,0,700,w=weight)
+			self.book.fill(e['gendijetLxy'][idx],'Lxy',10,0,50,w=weight)
+			self.book.fill(e['gendijetLxy'][idx],'SmallLxy',10,0,0.5,w=weight)
+			self.book.fill(e['gendijetIP2dMin'][idx],'IP2dMin',10,0,30,w=weight)
+			self.book.fill(e['gendijetIP2dMax'][idx],'IP2dMax',10,0,30,w=weight)
+			self.book.fill(e['gendijetNLep'][idx],'NLep',5,-0.5,4.5,w=weight)
+			self.book.fill(e['gendijetBlxyz'][idx],'Blxyz',5,-0.,5.,w=weight)
+			
 
 class multiplicity(eff):
 	def uponAcceptance(self,e):
@@ -190,21 +213,35 @@ class NEReco(eff):
 		indicesLow = e[self.indicesRecoLow]['H'] if type(e[self.indicesRecoLow])==dict else e[self.indicesRecoLow]
 		indicesHigh = e[self.indicesRecoHigh]['H'] if type(e[self.indicesRecoHigh])==dict else e[self.indicesRecoHigh]
 		indices = indicesLow+indicesHigh
+		names = ['Low']*len(indicesLow) + ['High']*len(indicesHigh)		
 
 		for i in range(len(self.fs)):
 			#categories
 			if len(indicesLow)==1:
 				self.book.fill(bin*N+i,'LowNE1',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
-			if len(indicesLow)>=2:
-				self.book.fill(bin*N+i,'LowNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
-			if len(indicesLow)>=1:
-				self.book.fill(bin*N+i,'LowNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			#if len(indicesLow)>=2:
+			#	self.book.fill(bin*N+i,'LowNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			#if len(indicesLow)>=1:
+			#	self.book.fill(bin*N+i,'LowNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
 			if len(indicesHigh)==1:
 				self.book.fill(bin*N+i,'HighNE1',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
-			if len(indicesHigh)>=2:
-				self.book.fill(bin*N+i,'HighNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
-			if len(indicesHigh)>=1:
-				self.book.fill(bin*N+i,'HighNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			#if len(indicesHigh)>=2:
+			#	self.book.fill(bin*N+i,'HighNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			#if len(indicesHigh)>=1:
+			#	self.book.fill(bin*N+i,'HighNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+
+		for idx,name in zip(indices,names):
+			self.book.fill(e['dijetTrueLxy'][idx],name+'Lxy',10,0,50)
+			#self.book.fill(e['dijetTrueLxy'][idx],name+'Lxy'+self.flavorMap[e['dijetTrueFlavor'][idx]],10,0,50)
+			self.book.fill(e['dijetTrueLxy'][idx],name+'SmallLxy',10,0,0.5)
+			self.book.fill(e['dijetTrueXDR'][idx],name+'XDR',10,0,1)
+			self.book.fill(e['dijetTrueXPt'][idx],name+'XPt',20,0,700)
+			self.book.fill(e['dijetTrueHPt'][idx],name+'HPt',10,0,500)
+			self.book.fill(e['dijetTrueIP2dMin'][idx],name+'IP2dMin',10,0,30)
+			self.book.fill(e['dijetTrueIP2dMax'][idx],name+'IP2dMax',10,0,30)
+
+			self.book.fill(e['dijetTrueNLep'][idx],name+'NLep',5,-0.5,4.5)
+			self.book.fill(e['dijetTrueBlxyz'][idx],name+'Blxyz',5,0.,5.)
 
 class NXReco(eff):
 	def uponAcceptance(self,e):
