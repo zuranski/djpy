@@ -33,7 +33,7 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	c.SetLogy()
 	c.SetLogx()
 	mg.Draw('A')
-	mg.GetXaxis().SetTitle('c#tau [cm]')
+	mg.GetXaxis().SetTitle('X^{0} c#tau [cm]')
 	ctaus=sorted([obj['ctau'] for obj in list])
 	mg.GetXaxis().SetRangeUser(ctaus[0]*0.95,ctaus[-1]*2)
 	if option=='ea':
@@ -41,7 +41,7 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 		mg.GetYaxis().SetTitle('#sigma B^{2} #times Acceptance [pb] (95% CL)')
 	else:
 		#mg.GetYaxis().SetTitle('#sigma #times BR [pb] (95% CL)')
-		mg.GetYaxis().SetTitle('#sigma B^{2} [pb] (95% CL)')
+		mg.GetYaxis().SetTitle('#sigma(H^{0} #rightarrow X^{0}X^{0}) B^{2}(X^{0} #rightarrow q#bar{q}) [pb]')
 
 	leg=r.TLegend(0.23,0.56,0.55,0.79)
 	leg.SetFillColor(0)
@@ -54,7 +54,7 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	leg.AddEntry(g[2],'Exp. \\pm 1\\sigma','F')
 	leg.AddEntry(g[3],'Exp. \\pm 2\\sigma','F')
 	leg.Draw('same')
-	cmsStamp(lumi=18510,coords=(0.45,0.89),preliminary=True)
+	cmsStamp(lumi=18510,coords=(0.45,0.87),preliminary=False)
 	name=str(MH)+'_'+str(MX)+option
 	os.chdir(plotDir)
 	c.SaveAs(name+'.eps')
