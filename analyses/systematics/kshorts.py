@@ -153,7 +153,7 @@ class kshorts(supy.analysis) :
 		plotter.plotAll()
 		org.lumi=None
 		
-		plotter.individualPlots(preliminary=True, plotSpecs = [{"plotName":"Mass_h_kscolin",
+		plotter.individualPlots(preliminary=False, plotSpecs = [{"plotName":"Mass_h_kscolin",
                                               "stepName":"kshort",
                                               "stepDesc":"kshort",
                                               "newTitle":"; K_{s}^{0} mass [GeV]; K_{s}^{0} / bin",

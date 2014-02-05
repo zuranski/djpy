@@ -182,7 +182,7 @@ class abcdHTSingle(supy.analysis) :
                                               {"plotName":"Discriminant_h_dijetTrueLxy",
                                               "stepName":"ABCDvars",
                                               "stepDesc":"ABCDvars",
-                                              "newTitle":"; Vertex-Cluster discriminant; di-jets / bin",
+                                              "newTitle":"; Vertex-Cluster discriminant; dijets / bin",
                                               "legendCoords": (0.7, 0.75, 0.9, 0.9),
                                               "stampCoords": (0.45, 0.88)
                                               },

@@ -6,6 +6,10 @@ class systematics(supy.analysis) :
 	MX = [350,150,150,50,50]
 	ctau = [35,10,40,8,20]
 	sig_names = ['H_'+str(a)+'_X_'+str(b) for a,b in zip(MH,MX)]
+	MSquark = [350,1500,1000,120]
+	MChi0 = [148,494,148,48]
+	sig_names += ['SQ_'+str(a)+'_CHI_'+str(b) for a,b in zip(MSquark,MChi0)]
+	ctau += [18.8,18.1,5.85,15.5]
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
@@ -22,8 +26,8 @@ class systematics(supy.analysis) :
 	IniCuts=[
         {'name':'dijet'},
 		{'name':'dijetTrueLxy','min':0},
-        {'name':'dijetPt1','min':40},
-        {'name':'dijetPt2','min':40},
+        {'name':'dijetPt1Bias','min':60},
+        {'name':'dijetPt2Bias','min':60},
     ]
 	
 	def dijetSteps0(self):
@@ -56,13 +60,14 @@ class systematics(supy.analysis) :
                                     target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
                                     groups=[('H',[])]).onlySim()] 
 		### filters
-		+[steps.other.genParticleMultiplicity(pdgIds=[6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
+		+[steps.other.genParticleMultiplicity(pdgIds=[1000022,6001114,6002114,6003114],collection='XpdgId',min=2,max=2)]
 		### acceptance filters
 		#+[supy.steps.filters.value('mygenHT',min=180)]
 		+self.dijetSteps0()
 
-		+[steps.efficiency.NX(pdfweights=None)]
-		+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
+		#+[steps.efficiency.NX(pdfweights=None)]
+		+[steps.efficiency.NE(pdfweights=None)]
+		#+[steps.efficiency.NXAcc(indicesAcc=self.AccCuts[-1]['name']+'Indices',pdfweights=None)]	
 	
 		+[supy.steps.filters.label('data cleanup'),
 		supy.steps.filters.value('primaryVertexFilterFlag',min=1),
@@ -87,8 +92,13 @@ class systematics(supy.analysis) :
 
 		+self.dijetSteps1()
 		#+[steps.event.general()]
+		#+[
+        #  steps.efficiency.NXReco(pdfweights=None,
+        #      indicesRecoLow=self.IniCuts[-1]['name']+'Indices',
+        #      indicesRecoHigh=self.IniCuts[-1]['name']+'Indices')
+        # ]	
 		+[
-          steps.efficiency.NXReco(pdfweights=None,
+          steps.efficiency.NEReco(pdfweights=None,
               indicesRecoLow=self.IniCuts[-1]['name']+'Indices',
               indicesRecoHigh=self.IniCuts[-1]['name']+'Indices')
          ]	
@@ -128,22 +138,20 @@ class systematics(supy.analysis) :
 		plotter.plotAll()
 		plotter.anMode=True
 		
-		self.totalEfficiencies(org,dir='ref')
+		self.totalEfficiencies(org,dir='ptbias')
 
 	def totalEfficiencies(self,org,dir=None,flavor='') :
 		recoLow,recoHigh,acceptance,denom=None,None,None,None
 		for step in org.steps:
 			for plotName in sorted(step.keys()):
-				if 'NXLow'+flavor == plotName : recoLow=step[plotName]
-				if 'NXHigh'+flavor == plotName : recoHigh=step[plotName]
-				if 'NXAcc'+flavor == plotName : acceptance=step[plotName]
-				if 'NX'+flavor == plotName : denom=step[plotName]
+				if 'LowNE1+'+flavor == plotName : recoLow=step[plotName]
+				if 'HighNE1+'+flavor == plotName : recoHigh=step[plotName]
+				if 'NE'+flavor == plotName : denom=step[plotName]
+		print recoLow
+		print denom
 
-		acc = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(acceptance,denom)])
 		efflow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,denom)])
 		effhigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,denom)])
-		effacclow = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoLow,acceptance)])
-		effacchigh = tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(recoHigh,acceptance)])
 	
 		fs = [0.4,0.6,1.,1.4]	
 		allfs = [0.1*a for a in fs] 
@@ -153,35 +161,21 @@ class systematics(supy.analysis) :
 		N=len(allfs)
 
 		f=1.
-		sysmap={'1000350':0.08,'1000150':0.08,'400150':0.1,'40050':0.08,'20050':0.22}
 
 		import pickle,math
 		for i,sample in enumerate(org.samples):
 			name = sample['name'].split('.')[0]
 			H,X=name.split('_')[1],name.split('_')[3]
-			sys=sysmap[H+X]
 			ctau = self.ctau[self.sig_names.index(name)]
 			for j in range(N):
 				x,y=r.Double(0),r.Double(0)
 				eff = effhigh
-				effacc = effacchigh
 				if j<N/3: 
 					eff = efflow
-					effacc = effacclow
 				eff[i].GetPoint(j,x,y)
 				e = f*float(y)
 				eErr = f*eff[i].GetErrorY(j)
-				effacc[i].GetPoint(j,x,y)
-				ea = f*float(y)
-				eaErr = f*effacc[i].GetErrorY(j)
-				acc[i].GetPoint(j,x,y)
-				a = float(y)
-				aErr = acc[i].GetErrorY(j)
-				#if e > 0. : eErr = e*math.sqrt(sys*sys+pow(eErr/e,2))
-				#else : eErr = 0.
-				#if ea > 0. : eaErr = ea*math.sqrt(sys*sys+pow(eaErr/ea,2))
-				#else : eaErr = 0.
 				factor=allfs[j]
-				print H,X,factor,a,aErr,e,eErr,ea,eaErr
-				data=[(a,aErr),(e,eErr),[ea,eaErr]]
+				print H,X,factor,e,eErr
+				data=[(e,eErr),(e,eErr),[e,eErr]]
 				pickle.dump(data,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))

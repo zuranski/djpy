@@ -118,10 +118,10 @@ class displookHT(supy.analysis) :
 			sig_samples+=(supy.samples.specify(names = sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
 
 		return (
-		    #supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.04) +
-			#supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=0.4437) +
-			#supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=5.769) +
-			#supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6.427) +
+		    supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4.04) +
+			supy.samples.specify(names = "dataC1", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=0.4437) +
+			supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=5.769) +
+			supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6.427) +
 			
 			qcd_samples 
 			+[sig_samples[i] for i in [0,2,4]]
@@ -141,13 +141,13 @@ class displookHT(supy.analysis) :
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
-			#samplesForRatios = ("Data","QCD"),
-			#sampleLabelsForRatios = ("Data","QCD"),
+			samplesForRatios = ("Data","QCD"),
+			sampleLabelsForRatios = ("Data","QCD"),
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,
 			doCorrTable=True,
-			#pegMinimum=0.3,
-			pegMinimum=1000,
+			pegMinimum=0.3,
+			#pegMinimum=1000,
 		)
 		plotter.plotAll()
 
@@ -265,5 +265,5 @@ class displookHT(supy.analysis) :
                                               "legendCoords": (0.18, 0.68, 0.63, 0.92),
                                               "stampCoords": (0.78, 0.88)
                                               },
-                                            ], simulation = True
+                                            ]
                                )

@@ -211,18 +211,18 @@ class efficiency(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
-		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
-		org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_200_X_50")
-		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_1000_X_150")
-		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350) c#tau=35cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_350")                                 
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150) c#tau=40cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_150")                               
+		org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50) c#tau=20cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_200_X_50")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(150) c#tau=10cm", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_1000_X_150")
+		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(50) c#tau=8cm", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "H_400_X_50")                               
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
 			showStatBox=True,
-			pegMinimum=0.0001,
+			pegMinimum=0.1,
 			shiftUnderOverFlows=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
@@ -231,8 +231,8 @@ class efficiency(supy.analysis) :
 	
 		#self.meanLxy(org)
 		org.lumi=None
-		self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
-		#self.sigPlots(plotter)	
+		#self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
+		self.sigPlots(plotter)	
 		#self.totalEfficiencies(org,dir='eff2',flavor='')
 		self.totEvtEff(org,dir='eff2HV')
 		#self.puEff(org,plotter)
@@ -242,49 +242,49 @@ class efficiency(supy.analysis) :
 		plotter.individualPlots(simulation=True, plotSpecs = [{"plotName":"Mass_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
-                                              "newTitle":";Mass [GeV];di-jets / bin",
+                                              "newTitle":";Invariant Mass [GeV];dijets / bin",
                                               "legendCoords": (0.5, 0.6, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
 											  {"plotName":"Lxy_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
-                                              "newTitle":";L_{xy} [cm];di-jets / bin",
+                                              "newTitle":";L_{xy} [cm];dijets / bin",
                                               "legendCoords": (0.5, 0.6, 0.9, 0.85),
                                               "stampCoords": (0.7, 0.88)
                                               },
-											  {"plotName":"TrkAvgPt_h_Disc",
-                                              "stepName":"observables",
-                                              "stepDesc":"observables",
-                                              "newTitle":";Average Track p_{T} [GeV];di-jets / bin",
-                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
-                                              "stampCoords": (0.35, 0.88)
-                                              },
+											  #{"plotName":"TrkAvgPt_h_Disc",
+                                              #"stepName":"observables",
+                                              #"stepDesc":"observables",
+                                              #"newTitle":";Average Track p_{T} [GeV];dijets / bin",
+                                              #"legendCoords": (0.55, 0.72, 0.85, 0.92),
+                                              #"stampCoords": (0.35, 0.88)
+                                              #},
 											  {"plotName":"VtxNRatio_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
-                                              "newTitle":";Fraction of displaced tracks in the Vertex;di-jets / bin",
+                                              "newTitle":";Fraction of displaced tracks in the Vertex;dijets / bin",
                                               "legendCoords": (0.55, 0.72, 0.85, 0.92),
                                               "stampCoords": (0.35, 0.88)
                                               },
 											  {"plotName":"ClrNRatio_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
-                                              "newTitle":";Fraction of displaced tracks in the Cluster;di-jets / bin",
+                                              "newTitle":";Fraction of displaced tracks in the Cluster;dijets / bin",
                                               "legendCoords": (0.55, 0.72, 0.85, 0.92),
                                               "stampCoords": (0.35, 0.88)
                                               },
 											  {"plotName":"VtxN_h_Disc",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":";Vertex Track Multiplicity;di-jets / bin",
+                                              "newTitle":";Vertex Track Multiplicity;dijets / bin",
                                               "legendCoords": (0.55, 0.72, 0.85, 0.92),
                                               "stampCoords": (0.35, 0.88)
                                               },
 											  {"plotName":"bestclusterN_h_Disc",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":";Cluster Track Multiplicity;di-jets / bin",
+                                              "newTitle":";Cluster Track Multiplicity;dijets / bin",
                                               "legendCoords": (0.55, 0.72, 0.85, 0.92),
                                               "stampCoords": (0.35, 0.88)
                                               },

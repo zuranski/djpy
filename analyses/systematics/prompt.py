@@ -137,7 +137,7 @@ class prompt(supy.analysis) :
 		plotter.individualPlots(plotSpecs = [{"plotName":"NAvgMissHitsAfterVert_h_dijetVtxpt",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":";Missing Hits per track after Vertex;di-jets / bin",
+                                              "newTitle":";Missing Hits per track after Vertex;dijets / bin",
                                               "legendCoords": (0.55, 0.55, 0.9, 0.75),
                                               "stampCoords": (0.67, 0.88)
                                               },
