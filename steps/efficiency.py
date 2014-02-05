@@ -219,16 +219,16 @@ class NEReco(eff):
 			#categories
 			if len(indicesLow)==1:
 				self.book.fill(bin*N+i,'LowNE1',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
-			#if len(indicesLow)>=2:
-			#	self.book.fill(bin*N+i,'LowNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
-			#if len(indicesLow)>=1:
-			#	self.book.fill(bin*N+i,'LowNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			if len(indicesLow)>=2:
+				self.book.fill(bin*N+i,'LowNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			if len(indicesLow)>=1:
+				self.book.fill(bin*N+i,'LowNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
 			if len(indicesHigh)==1:
 				self.book.fill(bin*N+i,'HighNE1',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
-			#if len(indicesHigh)>=2:
-			#	self.book.fill(bin*N+i,'HighNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
-			#if len(indicesHigh)>=1:
-			#	self.book.fill(bin*N+i,'HighNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			if len(indicesHigh)>=2:
+				self.book.fill(bin*N+i,'HighNE2+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
+			if len(indicesHigh)>=1:
+				self.book.fill(bin*N+i,'HighNE1+',NSamples*N,-0.5,NSamples*N-0.5,w=weights[i])
 
 		for idx,name in zip(indices,names):
 			self.book.fill(e['dijetTrueLxy'][idx],name+'Lxy',10,0,50)
