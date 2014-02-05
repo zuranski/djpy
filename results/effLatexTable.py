@@ -13,8 +13,9 @@ files=sorted(os.listdir(dir),key=lambda file: (eval(file[:-4].split('_')[1]),
 					       eval(file[:-4].split('_')[4]))
             )
 
-print "\\begin{table}[!h] \n\centering \n\\begin{tabular}{llllll} \n\hline"
-print "$H^{0}$ [GeV] & $X$ [GeV] & c$\\tau$ [cm] & Acceptance [\%] & $\epsilon$ [\%] & $\epsilon_{InAcceptance}$ [\%] \\\\"
+print "\\begin{table}[!h] \n\centering \n\\begin{tabular}{llll} \n\hline"
+#print "$H^{0}$ [GeV] & $X$ [GeV] & c$\\tau$ [cm] & Acceptance [\%] & $\epsilon$ [\%] & $\epsilon_{InAcceptance}$ [\%] \\\\"
+print "$H^{0}$ [GeV] & $X$ [GeV] & c$\\tau$ [cm] & $\epsilon$ [\%]\\\\"
 H,X=0,0
 
 for file in files:
@@ -26,7 +27,7 @@ for file in files:
 	ctau=main_ctau*eval(factor)
 	if int(ctau)==ctau: ctau=int(ctau)
 	data = pickle.load(open(dir+'/'+file))
-	string = " & ".join(stringValue(100*a[0],100*a[1],1) for a in data)
+	#string = " & ".join(stringValue(100*a[0],100*a[1],1) for a in data)
 	string = stringValue(100*data[0][0],100*data[0][1],1)
 	print "%s & %s & %s & %s \\\\"%(H,X,ctau,string)
 
