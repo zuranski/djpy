@@ -13,6 +13,7 @@ def rnd(num,sig_figs):
         return 0
 
 def weightedAvg(x,w):
+    if len(x)==0 or len(w)==0 or len(x)!=len(w) : return 0,0
     err2 = 1./sum([1/pow(wi,2) for wi in w])
     avg = sum(xi/pow(wi,2) for xi,wi in zip(x,w))*err2
     return avg,math.sqrt(err2)
