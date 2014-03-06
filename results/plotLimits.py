@@ -43,7 +43,7 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 		#mg.GetYaxis().SetTitle('#sigma #times BR [pb] (95% CL)')
 		mg.GetYaxis().SetTitle('#sigma(H^{0} #rightarrow X^{0}X^{0}) B^{2}(X^{0} #rightarrow q#bar{q}) [pb]')
 
-	leg=r.TLegend(0.23,0.56,0.55,0.79)
+	leg=r.TLegend(0.23,0.51,0.60,0.79)
 	leg.SetFillColor(0)
 	gempty=r.TGraph()
 	gempty.SetMarkerColor(0)
@@ -70,7 +70,7 @@ setupTdrStyle()
 
 MH=[1000,1000,400,400,200]
 MX=[350,150,150,50,50]
-CTAUS=[35,10,4,40,8,20]
+CTAUS=[35,10,40,8,20]
 
 for H,X,CTAU in zip(MH,MX,CTAUS):
 	data=[]
