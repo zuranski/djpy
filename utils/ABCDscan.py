@@ -102,8 +102,8 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 
 		title=''
 		#title='max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
-		xtitle = 'Vertex/Cluster Discriminant'
-		ytitle = 'Number of Events'
+		xtitle = 'Vertex/cluster discriminant'
+		ytitle = 'Number of events'
 
 		indices = [i for i,cuts in enumerate(analysis.scan) if len(listdiff(cuts,scan))<=1]
 		labels = [string(cuts[scan.index(None)]) for i,cuts in enumerate(analysis.scan) if i in indices]
@@ -178,13 +178,13 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histos[i].SetLabelSize(0.07)
 				if onlyB: 
 					if i==0:
-						legend.AddEntry(histos[i],'observed background')
+						legend.AddEntry(histos[i],'Observed background')
 				else:
 					legend.AddEntry(histos[i],histNames[i])
 				option='EX0' if i==(n-1) else 'EX0same'
 				histos[i].Draw(option)
 			if onlyB:
-				legend.AddEntry(histob,'predicted background')
+				legend.AddEntry(histob,'Predicted background')
 				histob.SetFillColor(r.kBlue)
 				histob0.SetFillColor(r.kWhite)
 				histob.SetFillStyle(3001)
