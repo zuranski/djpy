@@ -151,7 +151,7 @@ class kshorts(supy.analysis) :
 			anMode=True,
 		)
 		plotter.plotAll()
-		org.lumi=None
+		#org.lumi=None
 		
 		plotter.individualPlots(preliminary=False, plotSpecs = [{"plotName":"Mass_h_kscolin",
                                               "stepName":"kshort",
@@ -168,15 +168,15 @@ class kshorts(supy.analysis) :
 											 {"plotName":"ksLxy",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
-                                              "newTitle":"; K_{s}^{0} Transverse Decay Length [cm]; K_{s}^{0} / bin",
-                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
-                                              "stampCoords": (0.67, 0.88),},
+                                              "newTitle":"; K_{s}^{0} Transverse Decay Length [cm]; K_{s}^{0} candidates / 0.6 cm",
+                                              "legendCoords": (0.55, 0.55, 0.9, 0.75),
+                                              "stampCoords": (0.63, 0.86),},
 											 {"plotName":"ksLxyz",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
-                                              "newTitle":"; K_{s}^{0} Decay Length [cm]; K_{s}^{0} / bin",
-                                              "legendCoords": (0.55, 0.6, 0.9, 0.8),
-                                              "stampCoords": (0.67, 0.88),},
+                                              "newTitle":"; K_{s}^{0} Decay Length [cm]; K_{s}^{0} candidates / 1.2 cm",
+                                              "legendCoords": (0.55, 0.55, 0.9, 0.75),
+                                              "stampCoords": (0.63, 0.86),},
 											 {"plotName":"kstrkip2d",
                                               "stepName":"efftrk",
                                               "stepDesc":"efftrk",
