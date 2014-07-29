@@ -20,11 +20,10 @@ class abcdHTDouble(supy.analysis) :
     ]
 	Cuts=[
         # clean up cuts 
-        #{'name':'dijetVtxNRatio','min':0.1},
+        {'name':'dijetLxysig','min':8},
         {'name':'dijetVtxmass','min':4},
         {'name':'dijetVtxpt','min':8},
         {'name':'dijetNAvgMissHitsAfterVert','max':2},
-        {'name':'dijetLxysig','min':8},
         #{'name':'dijetTrueLxy','min':0},
         #{'name':'dijetNoOverlaps','val':True},
         {'name':'dijetBestCand','val':True},
@@ -52,8 +51,9 @@ class abcdHTDouble(supy.analysis) :
 		mysteps = []
 		for cut in self.IniCuts+self.Cuts:
 			mysteps.append(supy.steps.filters.multiplicity(cut['name']+'Indices',min=1))
+			mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 			if cut is self.Cuts[-1]:
-				mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
+				#mysteps.append(steps.plots.cutvars(indices=cut['name']+'Indices'))
 				mysteps.append(steps.plots.ABCDvars(indices=cut['name']+'Indices',plot2D=True))
 		return ([supy.steps.filters.label('dijet multiplicity filters')]+mysteps)
 
@@ -147,15 +147,16 @@ class abcdHTDouble(supy.analysis) :
 
 	def listOfSamples(self,config) :
 		nFiles = None # or None for all
-		nEvents = None # or None for all
+		nEvents = 300000 # or None for all
 
+		
 		qcd_samples = []
 		sig_samples = []
 		for i in range(len(self.qcd_names)):
 			qcd_samples+=(supy.samples.specify(names = self.qcd_names[i] ,nFilesMax = nFiles, nEventsMax = nEvents, color = i+3, weights=['pileupTrueNumInteractionsBX0Target']))
 		for i in range(len(self.sig_names)):
 			sig_samples+=(supy.samples.specify(names = self.sig_names[i], color=i+1, markerStyle=20, nEventsMax=nEvents, nFilesMax=nFiles, weights=['pileupTrueNumInteractionsBX0Target']))
-
+	
 		factor=1
 
 		return (supy.samples.specify(names = "dataB", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=4430*factor) 
