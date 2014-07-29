@@ -71,7 +71,7 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 
 	
 	if observed : leg.AddEntry(g[0],'Observed','PL')
-	leg.SetHeader("95% CL Limits:")
+	leg.SetHeader("95% CL limits:")
 	leg.AddEntry(g[1],'Expected','L')
 	leg.AddEntry(g[2],'Expected \\pm 1\\sigma','F')
 	leg.AddEntry(g[3],'Expected \\pm 2\\sigma','F')
