@@ -109,6 +109,7 @@ class ABCDvars(plots):
 class cutvars(plots):
 	vars = [
             {'name':'Lxy','bins':50,'low':0,'high':60,'label':'L_{xy} [cm]'},
+            {'name':'LxyErr','bins':50,'low':0,'high':60,'label':'L_{xy} Error [cm]'},
             {'name':'PromptEnergyFrac1','bins':20,'low':0.,'high':1,'label':'Prompt Energy Fraction 1'},
             {'name':'PromptEnergyFrac2','bins':20,'low':0.,'high':1,'label':'Prompt Energy Fracion 2'},
             {'name':'NPromptTracks1','bins':11,'low':-0.5,'high':10.5,'label':'N Prompt Tracks 1'},
