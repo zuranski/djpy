@@ -217,10 +217,10 @@ class efficiencyChi0(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"#tilde{q}(1500)#rightarrow#tilde{#chi}^{0}(494) c#tau=18.1cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1500_CHI_494")                
-		org.mergeSamples(targetSpec = {"name":"#tilde{q}(1000)#rightarrow#tilde{#chi}^{0}(148) c#tau=5.9cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1000_CHI_148")                
-		org.mergeSamples(targetSpec = {"name":"#tilde{q}(350)#rightarrow#tilde{#chi}^{0}(148) c#tau=18.8cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_350_CHI_148")                
-		org.mergeSamples(targetSpec = {"name":"#tilde{q}(120)#rightarrow#tilde{#chi}^{0}(48) c#tau=15.5cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_120_CHI_48")                
+		org.mergeSamples(targetSpec = {"name":"#tilde{q}(1500)#rightarrow#tilde{#chi}^{0}_{1}(500) c#tau=18.1cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1500_CHI_494")                
+		org.mergeSamples(targetSpec = {"name":"#tilde{q}(1000)#rightarrow#tilde{#chi}^{0}_{1}(150) c#tau=5.9cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1000_CHI_148")                
+		org.mergeSamples(targetSpec = {"name":"#tilde{q}(350)#rightarrow#tilde{#chi}^{0}_{1}(150) c#tau=18.8cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_350_CHI_148")                
+		org.mergeSamples(targetSpec = {"name":"#tilde{q}(120)#rightarrow#tilde{#chi}^{0}_{1}(50) c#tau=15.5cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_120_CHI_48")                
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
@@ -359,37 +359,37 @@ class efficiencyChi0(supy.analysis) :
                                               "histos":effs[names.index("HPt"+flavor)],
                                               "newTitle":"; H^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} (%s) #epsilon #times Acc."%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),},
+                                              "stampCoords": (0.37, 0.85),},
 											  {"plotName":"XPt"+flavor,
                                               "histos":effs[names.index("XPt"+flavor)],
-                                              "newTitle":"; best #tilde{#chi}^{0} p_{T} [GeV] ; efficiency %s"%flavorMap[flavor],
+                                              "newTitle":"; best #tilde{#chi}^{0}_{1} p_{T} [GeV] ; efficiency %s"%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),},
+                                              "stampCoords": (0.37, 0.85),},
 											  {"plotName":"Lxy"+flavor,
                                               "histos":effs[names.index("Lxy"+flavor)],
-                                              "newTitle":"; best #tilde{#chi}^{0} L_{xy} [cm] ; efficiency %s"%flavorMap[flavor],
+                                              "newTitle":"; best #tilde{#chi}^{0}_{1} L_{xy} [cm] ; efficiency %s"%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),},
+                                              "stampCoords": (0.37, 0.85),},
 											  {"plotName":"SmallLxy"+flavor,
                                               "histos":effs[names.index("SmallLxy"+flavor)],
-                                              "newTitle":"; best #tilde{#chi}^{0} L_{xy} [cm] ; efficiency %s"%flavorMap[flavor],
+                                              "newTitle":"; best #tilde{#chi}^{0}_{1} L_{xy} [cm] ; efficiency %s"%flavorMap[flavor],
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),},
+                                              "stampCoords": (0.37, 0.85),},
 											  {"plotName":"IP2dMin"+flavor,
                                               "histos":effs[names.index("IP2dMin"+flavor)],
-                                              "newTitle":"; best #tilde{#chi}^{0} min(IP^{xy}(q),IP^{xy}(#bar{q})) [cm] ; efficiency %s%s"%(flavorMap[flavor],flavorMap[flavor]),
+                                              "newTitle":"; best #tilde{#chi}^{0}_{1} min(IP^{xy}(q),IP^{xy}(#bar{q})) [cm] ; efficiency %s%s"%(flavorMap[flavor],flavorMap[flavor]),
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),},
+                                              "stampCoords": (0.37, 0.85),},
 											  {"plotName":"IP2dMax"+flavor,
                                               "histos":effs[names.index("IP2dMax"+flavor)],
-                                              "newTitle":"; best #tilde{#chi}^{0} max(IP^{xy}(q),IP^{xy}(#bar{q})) [cm] ; efficiency %s%s"%(flavorMap[flavor],flavorMap[flavor]),
+                                              "newTitle":"; best #tilde{#chi}^{0}_{1} max(IP^{xy}(q),IP^{xy}(#bar{q})) [cm] ; efficiency %s%s"%(flavorMap[flavor],flavorMap[flavor]),
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),},
+                                              "stampCoords": (0.37, 0.85),},
 											  {"plotName":"XDR"+flavor,
                                               "histos":effs[names.index("XDR"+flavor)],
-                                              "newTitle":"; best #tilde{#chi}^{0} #Delta R (q#bar{q},#tilde{#chi}^{0}) ; efficiency %s%s"%(flavorMap[flavor],flavorMap[flavor]),
+                                              "newTitle":"; best #tilde{#chi}^{0}_{1} #Delta R (q#bar{q},#tilde{#chi}^{0}_{1}) ; efficiency %s%s"%(flavorMap[flavor],flavorMap[flavor]),
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),},
+                                              "stampCoords": (0.37, 0.85),},
                                             ],
                                )
 
@@ -404,7 +404,7 @@ class efficiencyChi0(supy.analysis) :
                                               "histos":eff,
                                               "newTitle":"; pile-up vertices; efficiency",
                                               "legendCoords": (0.55, 0.75, 0.9, 0.9),
-                                              "stampCoords": (0.36, 0.85),}
+                                              "stampCoords": (0.37, 0.85),}
                                             ],
                                )
 
