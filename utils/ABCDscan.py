@@ -127,6 +127,9 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 			histob0 = r.TH1F('predicted bkg.',title,len(indices),0,1)
 			histoz = r.TH1F('','',len(indices),0,1)
 
+			for h in histos: h.GetXaxis().SetNdivisions(len(indices)*100+10,False)
+			histoz.GetXaxis().SetNdivisions(len(indices)*100+10,False)
+
 			for k,idx in enumerate(indices):
 				b,berr = getBkg(counts[j][idx],None)
 				histob.SetBinContent(k+1,b)
