@@ -68,3 +68,7 @@ class Ctau(dijetVar):
 		m=self.source['dijetMass'][idx]
 		R=math.sqrt(x*x+y*y+z*z)
 		return R*m/(pt*math.cosh(eta))
+
+class LxyErr(dijetVar):
+	def calculate(self,idx):
+		return self.source['dijetLxy'][idx]/self.source['dijetLxysig'][idx]
