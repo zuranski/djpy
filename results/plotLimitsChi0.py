@@ -9,12 +9,19 @@ def stylize(g):
 	g[2].SetFillColor(3)
 	g[3].SetFillColor(5)
 	g[0].SetMarkerStyle(8)
+	g[4].SetLineWidth(3)
+	g[4].SetLineColor(r.kBlue)
+	g[4].SetFillStyle(3003)
+	g[4].SetFillColor(r.kBlue)
 	for graph in g: graph.SetDrawOption('L')
 
 def limitPlot(MH = None,MX = None,list = None,observed=False):
+	if MX==148: MX=150
+	elif MX==494: MX=500
+	print MX
 	c=r.TCanvas()
 	n=len(list)
-	g=[r.TGraph(n),r.TGraph(n),r.TGraph(2*n),r.TGraph(2*n)]
+	g=[r.TGraph(n),r.TGraph(n),r.TGraph(2*n),r.TGraph(2*n),r.TGraphErrors(n)]
 	mg=r.TMultiGraph()
 	for i,obj in enumerate(list):
 		if observed : g[0].SetPoint(i,obj['ctau'],obj['obs'])
@@ -23,28 +30,14 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 		g[2].SetPoint(2*n-1-i,obj['ctau'],obj['1ms'])
 		g[3].SetPoint(i,obj['ctau'],obj['2ms'])
 		g[3].SetPoint(2*n-1-i,obj['ctau'],obj['2ps'])
-
-	f=r.TF1('sigma','pol0(0)',1e-5,1e5)
-	f.SetParameter(0,obj['sigma'])
-	f.SetLineColor(r.kBlue)
-	f.SetLineStyle(1)
-	f.SetLineWidth(3)
-	f.SetMarkerSize(0)
-	f1=r.TF1('sigmaup','pol0(0)',1e-5,1e5)
-	f1.SetParameter(0,obj['sigma']*(1+obj['sigmaErr']))
-	f1.SetLineColor(r.kBlue)
-	f1.SetLineStyle(3)
-	f1.SetLineWidth(3)
-	f2=r.TF1('sigmaup','pol0(0)',1e-5,1e5)
-	f2.SetParameter(0,obj['sigma']*(1-obj['sigmaErr']))
-	f2.SetLineColor(r.kBlue)
-	f2.SetLineStyle(3)
-	f2.SetLineWidth(3)
+		g[4].SetPoint(i,obj['ctau'],obj['sigma'])
+		g[4].SetPointError(i,0,obj['sigmaErr']*obj['sigma'])
 
 	stylize(g)
 	mg.Add(g[3],'F')
 	mg.Add(g[2],'F')
 	mg.Add(g[1],'L')
+	mg.Add(g[4],'LE3')
 	maxg=r.TMath.MaxElement(g[3].GetN(),g[3].GetY())
 	ming=r.TMath.MinElement(g[3].GetN(),g[3].GetY())
 	mg.SetMaximum(10*max(maxg,obj['sigma']))
@@ -53,10 +46,7 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	c.SetLogy()
 	c.SetLogx()
 	mg.Draw('A')
-	f.Draw('Lsame')
-	f1.Draw('Lsame')
-	f2.Draw('Lsame')
-	mg.GetXaxis().SetTitle('#tilde{#chi}^{0} c#tau [cm]')
+	mg.GetXaxis().SetTitle('#tilde{#chi}^{0}_{1} c#tau [cm]')
 	mg.GetXaxis().SetMoreLogLabels()
 	mg.GetXaxis().SetNdivisions(303)
 	ctaus=sorted([obj['ctau'] for obj in list])
@@ -66,7 +56,8 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 		mg.GetYaxis().SetTitle('#sigma #times Acceptance [pb] (95% CL)')
 	else:
 		#mg.GetYaxis().SetTitle('#sigma #times BR [pb] (95% CL)')
-		mg.GetYaxis().SetTitle('#sigma(#tilde{q}#bar{#tilde{q}}+#tilde{q}#tilde{q}) B^{2}(#tilde{q} #rightarrow #tilde{#chi}^{0} #rightarrow q#bar{q}#mu) [pb]')
+		mg.GetYaxis().SetTitle("#sigma(#tilde{q}#tilde{q}*+#tilde{q}#tilde{q}) \
+		B^{2}(#tilde{#chi}^{0}_{1} #rightarrow u#bar{d}#mu) [pb]")
 
 	leg=r.TLegend(0.23,0.65 - (0.1 if MH==350 else 0),0.6,0.82 - (0.1 if MH==350 else 0))
 	leg.SetFillColor(0)
@@ -75,16 +66,18 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	gempty=r.TGraph()
 	gempty.SetMarkerColor(0)
 	leg2.AddEntry(gempty,'m_{#tilde{q}} = '+str(MH)+' GeV','P')
-	leg2.AddEntry(gempty,'m_{#tilde{#chi}^{0}} = '+str(MX)+' GeV','P')
-	leg2.AddEntry(f,'#sigma_{#tilde{q}#bar{#tilde{q}}+#tilde{q}#tilde{q}} (NLO-NLL) \\pm 1\\sigma_{theory}','L')
+	leg2.AddEntry(gempty,'m_{#tilde{#chi}^{0}_{1}} = '+str(MX)+' GeV','P')
+	leg2.AddEntry(g[4],'#sigma_{#tilde{q}#tilde{q}*+#tilde{q}#tilde{q}} (NLO-NLL) \\pm 1\\sigma_{theory}','LF')
+
 	
-	if observed : leg.AddEntry(g[0],'Obs. Limit','PL')
-	leg.AddEntry(g[1],'Exp. Limit','L')
-	leg.AddEntry(g[2],'Exp. \\pm 1\\sigma','F')
-	leg.AddEntry(g[3],'Exp. \\pm 2\\sigma','F')
+	if observed : leg.AddEntry(g[0],'Observed','PL')
+	leg.SetHeader("95% CL Limits:")
+	leg.AddEntry(g[1],'Expected','L')
+	leg.AddEntry(g[2],'Expected \\pm 1\\sigma','F')
+	leg.AddEntry(g[3],'Expected \\pm 2\\sigma','F')
 	leg.Draw('same')
 	leg2.Draw('same')
-	cmsStamp(lumi=18510,coords=(0.45,0.87),preliminary=False)
+	cmsStamp(lumi=18510,coords=(0.5,0.87),preliminary=False)
 	name=str(MH)+'_'+str(MX)+option
 	os.chdir(plotDir)
 	c.SaveAs(name+'.eps')
