@@ -234,8 +234,8 @@ class efficiency(supy.analysis) :
 		#self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
 		#self.sigPlots(plotter)	
 		#self.totalEfficiencies(org,dir='eff2',flavor='')
-		#self.totEvtEff(org,dir='eff2HV')
-		self.puEff(org,plotter)
+		self.totEvtEff(org,dir='eff2HV')
+		#self.puEff(org,plotter)
 
 
 	def sigPlots(self,plotter):			

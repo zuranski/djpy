@@ -3,8 +3,8 @@ from utils.ABCDscan import plotABCDscan,plotExpLimit
 
 class abcdHTDouble(supy.analysis) :
     
-	MH = [1000,1000,1000,400,400,200]
-	MX = [350,150,50,150,50,50]
+	MH = [1000,1000,400,400,200]
+	MX = [350,150,150,50,50]
 	sig_names = ["H_"+str(a)+"_X_"+str(b) for a,b in zip(MH,MX)]
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
@@ -29,9 +29,9 @@ class abcdHTDouble(supy.analysis) :
         {'name':'dijetBestCand','val':True},
     ]
 	ABCDCutsSets = []
-	#scanPrompt = [(2,0.15),(2,0.13),(2,0.11),(2,0.09),(2,0.07),(2,0.05)]
-	scanPrompt = [(1,0.15),(1,0.13),(1,0.11),(1,0.09),(1,0.07),(1,0.05)]
-	#scanPrompt += [(0,0.15),(0,0.13),(0,0.11),(0,0.09),(0,0.07),(0,0.05)]
+	scanPrompt = [(2,0.15),(2,0.13),(2,0.11),(2,0.09),(2,0.07),(2,0.05)]
+	scanPrompt += [(1,0.15),(1,0.13),(1,0.11),(1,0.09),(1,0.07),(1,0.05)]
+	scanPrompt += [(0,0.15),(0,0.13),(0,0.11),(0,0.09),(0,0.07),(0,0.05)]
 	scanVtx = [0.7,0.8,0.9,0.95]
 
 	scan = [(obj[0],obj[0],obj[1]) for obj in itertools.product(scanPrompt,scanVtx)]
@@ -103,7 +103,9 @@ class abcdHTDouble(supy.analysis) :
 				target=(supy.whereami()+"/../data/pileup/HT300_Double_R12BCD_true.root","pileup"),
 				groups=[('qcd',[]),('H',[])]).onlySim()] 
 
-			#+[steps.event.effDenom().onlySim()]
+			### signal filters
+			+[steps.other.genParticleMultiplicity(pdgIds=[6002114],collection='XpdgId',min=2,max=2).onlySim()]
+			+[steps.efficiency.NE(pdfweights=None).onlySim()]	
 
 			### filters
 			+[supy.steps.filters.label('data cleanup'),
@@ -147,7 +149,7 @@ class abcdHTDouble(supy.analysis) :
 
 	def listOfSamples(self,config) :
 		nFiles = None # or None for all
-		nEvents = 300000 # or None for all
+		nEvents = None # or None for all
 
 		
 		qcd_samples = []
@@ -164,7 +166,7 @@ class abcdHTDouble(supy.analysis) :
 			+ supy.samples.specify(names = "dataC2", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=6401.3*factor) 
 			+ supy.samples.specify(names = "dataD", color = r.kBlack, markerStyle = 20, nFilesMax = nFiles, nEventsMax = nEvents, overrideLumi=7274*factor)
 			#+ qcd_samples
-			#+sig_samples 
+			+sig_samples 
 		) 
 
 	def conclude(self,pars) :
