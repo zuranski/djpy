@@ -1,5 +1,4 @@
-import ROOT as r
-import math
+import supy,math,ROOT as r
 from supy.utils import cmsStamp
 
 def getCounts(histo):
@@ -244,7 +243,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 			histoz.GetXaxis().SetLabelOffset(0.02)
 			histoz.GetYaxis().SetTitle('Significance ')
 			#histoz.GetYaxis().CenterTitle()
-			histoz.GetYaxis().SetRangeUser(-3.99,3.99)
+			histoz.GetYaxis().SetRangeUser(-2.99,2.99)
 			histoz.Draw('P')
 			plotter.printCanvas()
 			#plotter.canvas.Clear()
@@ -268,55 +267,28 @@ def getBkg(counts,cuts):
 
 def plotExpLimit(analysis,n,org):
 
+	denom = []
+	for step in org.steps: 
+		for plotName in sorted(step.keys()):
+			if plotName == 'NE': denom=step[plotName]
+
 	data={'bkg':[],'obs':[]}
-	for j,sample in enumerate(org.samples):
-		if 'Data' in sample['name']: # get background estimate
-			for step in org.steps:
-				for plotName in sorted(step.keys()):
-					if 'ABCDEFGHcounts' not in plotName : continue
-					cutsidx=eval(plotName[:plotName.find('ABCDEFGH')])
-					counts = getCounts(step[plotName][j])
+	for step in org.steps:
+		for plotName in sorted(step.keys()):
+			if 'ABCDEFGHcounts' not in plotName : continue
+			cutsidx=eval(plotName[:plotName.find('ABCDEFGH')])
+			for j,sample in enumerate(org.samples):
+				counts = getCounts(step[plotName][j])
+				name=sample['name'].split('.')[0]
+				if 'Data' in name: # get background estimate
+					print cutsidx
 					data['bkg'].append(getBkg(counts[:n],(analysis.scan[cutsidx],cutsidx)))
 					data['obs'].append(counts[0])
-		if 'H' in sample['name']: # get efficiencies
-			name=sample['name'].split('.')[0]
-			num=[]
-			denom=None
-			for step in org.steps:
-				num_i=[False,False,False]
-				for plotName in sorted(step.keys()):
-					if 'effDenom' in plotName : denom=step[plotName][j]
-					if 'effNumm' in plotName: num_i[0]=step[plotName][j]
-					if 'effNum0' in plotName: num_i[1]=step[plotName][j]
-					if 'effNump' in plotName: num_i[2]=step[plotName][j]
-				if all(num_i): 
-					num.append(num_i)
+				elif 'H' in name:
+					if name not in data.keys(): 
+						data[name] = []
+						nEvents = float(sample['nEvents'])*0.09
+					data[name].append((counts[0][0]/(denom[j].Integral()/4.),counts[0][1]/(denom[j].Integral()/4.)))
 
-			ctau_factors=[pow(10,i/float(3)) for i in range(-4,5)]
-			eff=[[r.TGraphAsymmErrors(n[i],denom,"cl=0.683 n") for i in range(3)] for n in num]
-			sample_data={}
-			#print sample['name']
-			for factor in ctau_factors : sample_data[factor]=[]
-			for i in range(len(analysis.scan)):
-				for j,factor in enumerate(ctau_factors):
-					x,y=r.Double(0),r.Double(0)
-					eff[i][j%3].GetPoint(j/3,x,y)
-					val=float(y)
-					err=eff[i][j/3].GetErrorY(j%3)
-					#if j==4: print round(100*val,1),round(100*err/val,1)
-					if val>0: err=val*math.sqrt(0.15*0.15+err*err/val/val)
-					else: err=0.0
-					sample_data[factor].append((val,err))
-
-			data[name]=sample_data
-
-			'''
-			print '\n'
-			print name
-			print '\n'
-			for key in sorted(sample_data.keys()):
-				print key, sample_data[key][4]
-				print '\n'
-			'''
 	import pickle
-	pickle.dump(data,open('results/data/data.pkl','w'))
+	pickle.dump(data,open(supy.whereami()+'/../results/data/data.pkl','w'))
