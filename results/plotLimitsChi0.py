@@ -40,7 +40,7 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	mg.Add(g[4],'LE3')
 	maxg=r.TMath.MaxElement(g[3].GetN(),g[3].GetY())
 	ming=r.TMath.MinElement(g[3].GetN(),g[3].GetY())
-	mg.SetMaximum(10*max(maxg,obj['sigma']))
+	mg.SetMaximum((10 if MH==350 else 20)*max(maxg,obj['sigma']))
 	mg.SetMinimum(0.6*min(ming,obj['sigma']))
 	if observed : mg.Add(g[0],'PL')
 	c.SetLogy()
@@ -59,15 +59,15 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 		mg.GetYaxis().SetTitle("#sigma(#tilde{q}#tilde{q}*+#tilde{q}#tilde{q}) \
 		B^{2}(#tilde{#chi}^{0}_{1} #rightarrow u#bar{d}#mu) [pb]")
 
-	leg=r.TLegend(0.23,0.65 - (0.1 if MH==350 else 0),0.6,0.82 - (0.1 if MH==350 else 0))
+	leg=r.TLegend(0.23,0.6 - (0.1 if MH==350 else 0),0.55,0.82 - (0.1 if MH==350 else 0))
 	leg.SetFillColor(0)
-	leg2=r.TLegend(0.5,0.65 - (0.1 if MH==350 else 0),0.9,0.82 - (0.1 if MH==350 else 0))
+	leg2=r.TLegend(0.58,0.6 - (0.1 if MH==350 else 0),0.9,0.82 - (0.1 if MH==350 else 0))
 	leg2.SetFillColor(0)
 	gempty=r.TGraph()
 	gempty.SetMarkerColor(0)
 	leg2.AddEntry(gempty,'m_{#tilde{q}} = '+str(MH)+' GeV','P')
 	leg2.AddEntry(gempty,'m_{#tilde{#chi}^{0}_{1}} = '+str(MX)+' GeV','P')
-	leg2.AddEntry(g[4],'#sigma_{#tilde{q}#tilde{q}*+#tilde{q}#tilde{q}} (NLO-NLL) \\pm 1\\sigma_{theory}','LF')
+	leg2.AddEntry(g[4],'#sigma_{#tilde{q}#tilde{q}*+#tilde{q}#tilde{q}} \\pm 1\\sigma_{theory}','LF')
 
 	
 	if observed : leg.AddEntry(g[0],'Observed','PL')
