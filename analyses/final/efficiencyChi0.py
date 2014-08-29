@@ -6,8 +6,12 @@ class efficiencyChi0(supy.analysis) :
 
 	MSquark = [350,1500,1000,120]
 	MChi0 = [148,494,148,48]
-	ctau = [18.8,18.1,5.85,15.5]
+	ctau = [17.8,17.3,5.9,15.5]
+	MSquark_p = [1500,1500,1000,700,700]
+	MChi0_p = [494,150,500,150,500]
+	ctau += [17.3,4.5,22.7,8.1,27.9]
 	sig_names = ['SQ_'+str(a)+'_CHI_'+str(b) for a,b in zip(MSquark,MChi0)]
+	sig_names += ['SQ_'+str(a)+'_CHI_'+str(b)+'_priv' for a,b in zip(MSquark_p,MChi0_p)]
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
 	qcd_names = ["qcd_%s_%s" %(low,high) for low,high in zip(qcd_bins[:-1],qcd_bins[1:])]
 
@@ -211,16 +215,16 @@ class efficiencyChi0(supy.analysis) :
 			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,1,2]]
 
-		#return sig_samples
-		return toPlot
+		return sig_samples[:3]+sig_samples[5:]
+		#return toPlot
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"#tilde{q}(1500)#rightarrow#tilde{#chi}^{0}_{1}(500) c#tau=18.1cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1500_CHI_494")                
-		org.mergeSamples(targetSpec = {"name":"#tilde{q}(1000)#rightarrow#tilde{#chi}^{0}_{1}(150) c#tau=5.9cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1000_CHI_148")                
-		org.mergeSamples(targetSpec = {"name":"#tilde{q}(350)#rightarrow#tilde{#chi}^{0}_{1}(150) c#tau=18.8cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_350_CHI_148")                
-		org.mergeSamples(targetSpec = {"name":"#tilde{q}(120)#rightarrow#tilde{#chi}^{0}_{1}(50) c#tau=15.5cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_120_CHI_48")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(1500)#rightarrow#tilde{#chi}^{0}_{1}(500) c#tau=18.1cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1500_CHI_494")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(1000)#rightarrow#tilde{#chi}^{0}_{1}(150) c#tau=5.9cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1000_CHI_148")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(350)#rightarrow#tilde{#chi}^{0}_{1}(150) c#tau=18.8cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_350_CHI_148")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(120)#rightarrow#tilde{#chi}^{0}_{1}(50) c#tau=15.5cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_120_CHI_48")                
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
@@ -239,9 +243,9 @@ class efficiencyChi0(supy.analysis) :
 		#self.sqsqRatio(org)
 		org.lumi=None
 		#self.flavors(org)
-		#self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
-		#self.sigPlots(plotter)	
-		#self.totEvtEff(org,dir='eff2Neu')
+		self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
+		self.sigPlots(plotter)	
+		self.totEvtEff(org,dir='eff2Neu')
 		#self.totalEfficiencies(org,dir='eff2Neu',flavor='')
 		self.puEff(org,plotter)
 
@@ -428,9 +432,11 @@ class efficiencyChi0(supy.analysis) :
 
 		for i,sample in enumerate(org.samples):
 			digits=re.findall(r'\d+',sample['name'])
-			SQ,CHI=digits[0],digits[2]
-			name='SQ_'+str(SQ)+"_CHI_"+str(CHI)
-			sys=sysmap[SQ+CHI]
+			SQ,CHI=digits[0],digits[1]
+			name='SQ_'+str(SQ)+"_CHI_"+str(CHI) + ('_priv' if 'priv' in sample['name'] else '')
+			sys=0.1
+
+			print sample['name'],name,self.sig_names
 			ctau = self.ctau[self.sig_names.index(name)]
 
 			for j in range(N):
@@ -441,7 +447,7 @@ class efficiencyChi0(supy.analysis) :
 				#if e1 > 0. : e1Err = e1*math.sqrt(sys*sys+pow(e1Err/e1,2))
 				factor=fs[j]
 				#if factor in [0.1,1,10]:
-				objects=[ SQ,CHI,factor*ctau,rnd(100*e1,3)]
+				objects=[ SQ,CHI,factor*ctau,rnd(100*e1,3),rnd(100*e1Err,3)]
 				print " & ".join(str(a) for a in objects ) + ' \\\\'
 				output=[(e1,e1Err),(e1,e1Err),[e1,e1Err]]
 				pickle.dump(output,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
@@ -474,7 +480,7 @@ class efficiencyChi0(supy.analysis) :
 			digits = re.findall(r'\d+',sample['name'])
 			SQ,CHI=digits[0],digits[2]
 			name='SQ_'+str(SQ)+"_CHI_"+str(CHI)
-			sys=sysmap[SQ+CHI]
+			sys=0.10
 			ctau = self.ctau[self.sig_names.index(name)]
 			for j in range(N):
 				x,y=r.Double(0),r.Double(0)
