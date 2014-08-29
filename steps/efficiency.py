@@ -22,7 +22,8 @@ class eff(analysisStep):
             '1000_350':35,'1000_150':10,'1000_50':4,
             '400_150':40,'400_50':8,'200_50':20,'120_50':50,
 			# Chi0 samples
-			'1500_494':18.1,'1000_148':5.85,'350_148':18.8,'120_48':15.5
+			'1500_494':17.2,'1000_148':5.9,'350_148':17.8,'120_48':15.5,
+			'700_150':8.1, '700_500':27.9, '1000_500':22.7, '1500_150':4.5
         }
 		key = masses[1]+'_'+masses[3]
 		return map[key]
@@ -74,9 +75,9 @@ class NE(eff):
 		XCandIndices = [i for i in e['gendijetIndices'] if e['gendijetFlavor'][i] < 6] # only qq candidates
 		XCandFlavors = [e['gendijetFlavor'][i] for i in XCandIndices]
 
-		assert len(XCandIndices)==2
+		#assert len(XCandIndices)==2
 		#weight=e['weight']/math.sqrt(len(XCandIndices))
-		weight=e['weight']/2./0.89
+		weight=e['weight']/len(XCandIndices)/0.89
 
 		for idx in XCandIndices:
 			self.book.fill(e['HPt'],'HPt',10,0,500,w=weight)
