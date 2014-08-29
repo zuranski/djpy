@@ -44,3 +44,10 @@ sigmc.add('SQ_120_CHI_48','%s'%(fileListFromDisk(loc+"MSquark_120_MChi_48/")) ,x
 sigmc.add('SQ_350_CHI_148','%s'%(fileListFromDisk(loc+"MSquark_350_MChi_148/")) ,xs=1) #/pb
 sigmc.add('SQ_1000_CHI_148','%s'%(fileListFromDisk(loc+"MSquark_1000_MChi_148/")) ,xs=1) #/pb
 sigmc.add('SQ_1500_CHI_494','%s'%(fileListFromDisk(loc+"MSquark_1500_MChi_494/")) ,xs=1) #/pb
+
+# private generation
+sigmc.add('SQ_1500_CHI_494_priv','%s'%(fileListFromDisk(loc+"MSquark_1500_MChi_494_priv/")) ,xs=1) #/pb
+sigmc.add('SQ_1500_CHI_150_priv','%s'%(fileListFromDisk(loc+"MSquark_1500_MChi_150_priv/")) ,xs=1) #/pb
+sigmc.add('SQ_700_CHI_150_priv','%s'%(fileListFromDisk(loc+"MSquark_700_MChi_150_priv/")) ,xs=1) #/pb
+sigmc.add('SQ_700_CHI_500_priv','%s'%(fileListFromDisk(loc+"MSquark_700_MChi_500_priv/")) ,xs=1) #/pb
+sigmc.add('SQ_1000_CHI_500_priv','%s'%(fileListFromDisk(loc+"MSquark_1000_MChi_500_priv/")) ,xs=1) #/pb
