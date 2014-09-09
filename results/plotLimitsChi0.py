@@ -1,4 +1,5 @@
 import pickle,os,sys,ROOT as r
+from operator import itemgetter
 from supy.__plotter__ import setupTdrStyle
 from supy.utils import cmsStamp
 
@@ -40,8 +41,8 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 	mg.Add(g[4],'LE3')
 	maxg=r.TMath.MaxElement(g[3].GetN(),g[3].GetY())
 	ming=r.TMath.MinElement(g[3].GetN(),g[3].GetY())
-	mg.SetMaximum((10 if MH==350 else 20)*max(maxg,obj['sigma']))
-	mg.SetMinimum(0.6*min(ming,obj['sigma']))
+	mg.SetMaximum((6 if MH in [350,700] else 40)*max(maxg,obj['sigma']))
+	mg.SetMinimum(0.5*min(ming,obj['sigma']))
 	if observed : mg.Add(g[0],'PL')
 	c.SetLogy()
 	c.SetLogx()
@@ -59,9 +60,9 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 		mg.GetYaxis().SetTitle("#sigma(#tilde{q}#tilde{q}*+#tilde{q}#tilde{q}) \
 		B^{2}(#tilde{#chi}^{0}_{1} #rightarrow u#bar{d}#mu) [pb]")
 
-	leg=r.TLegend(0.23,0.6 - (0.1 if MH==350 else 0),0.55,0.82 - (0.1 if MH==350 else 0))
+	leg=r.TLegend(0.23,0.6 - (0.13 if MH in [350,700] else 0),0.55,0.82 - (0.13 if MH in [350,700] else 0))
 	leg.SetFillColor(0)
-	leg2=r.TLegend(0.58,0.6 - (0.1 if MH==350 else 0),0.9,0.82 - (0.1 if MH==350 else 0))
+	leg2=r.TLegend(0.58,0.6 - (0.13 if MH in [350,700] else 0),0.9,0.82 - (0.13 if MH in [350,700] else 0))
 	leg2.SetFillColor(0)
 	gempty=r.TGraph()
 	gempty.SetMarkerColor(0)
@@ -87,33 +88,38 @@ def limitPlot(MH = None,MX = None,list = None,observed=False):
 
 option=sys.argv[3]
 limDir=sys.argv[1]+'/limits'+option+'/'
+files = [f for f in os.listdir(limDir)]
 plotDir=sys.argv[1]+'/plots/'
-files=[f for f in os.listdir(limDir) if '.pkl' in f]
 setupTdrStyle()
 
-MH=[1500,1000,350,120]
-MX=[494,148,148,48]
-CTAUS=[18.1,5.85,18.8,15.5]
-THS=[0.00067,0.0144,9.97,284]
-#THERRS=[0.15,0.13,0.16,0.10] # scale only
-THERRS=[0.38,0.24,0.16,0.10]
+CTAUS={(1500,500):17.3,(1000,150):5.9,(350,150):17.8, \
+	  (700,150):8.1, (700,500):27.9, (1000,500):22.7, (1500,150):4.5}
+MH = [1500, 1000, 700, 350]
+THS = [0.00067, 0.0144, 0.139, 9.97]
+THERRS = [0.38, 0.24, 0.2, 0.16]
+MX = [150, 500]
 
-for H,X,CTAU,TH,THERR in zip(MH,MX,CTAUS,THS,THERRS):
-	data=[]
-	for f in files:
-		items=f[:-4].split('_')
-		h,x,factor=eval(items[1]),eval(items[3]),eval(items[4])
-		if h!=H or x!=X : continue
-		ctau=factor*CTAU
-		dict=pickle.load(open(limDir+f))
-		dict['ctau']=ctau
-		dict['sigma']=TH
-		dict['sigmaErr']=THERR
-		data.append(dict)
-	from operator import itemgetter
-	data=sorted(data,key=itemgetter('ctau'))
-	for obj in data:
-		print obj['ctau']
-	limitPlot(H,X,data,eval(sys.argv[2]))	
-
+for i,H in enumerate(MH):
+	TH=THS[i]
+	THERR=THERRS[i]
+	for X in MX:
+		if X>H : continue
+		print H,X
+		CTAU = CTAUS[(H,X)]	
+		data=[]
+		for f in files:
+			items=f[:-4].split('_')
+			h,x,factor=eval(items[1]),eval(items[3]),eval(items[4])
+			if h!=H or x!=X : continue
+			ctau=factor*CTAU
+			dict=pickle.load(open(limDir+f))
+			dict['ctau']=ctau
+			dict['sigma']=TH
+			dict['sigmaErr']=THERR
+			data.append(dict)
+		from operator import itemgetter
+		data=sorted(data,key=itemgetter('ctau'))
+		for obj in data:
+			print obj['ctau']
+		limitPlot(H,X,data,eval(sys.argv[2]))	
 
