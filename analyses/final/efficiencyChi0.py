@@ -4,12 +4,12 @@ import math,re,pickle
 
 class efficiencyChi0(supy.analysis) :
 
-	MSquark = [350,1500,1000,120]
-	MChi0 = [148,494,148,48]
-	ctau = [17.8,17.3,5.9,15.5]
-	MSquark_p = [1500,1500,1000,700,700]
-	MChi0_p = [494,150,500,150,500]
-	ctau += [17.3,4.5,22.7,8.1,27.9]
+	MSquark = [1500,1000,350]
+	MChi0 = [494,148,148]
+	ctau = [17.3,5.9,17.8]
+	MSquark_p = [1500,1000,700,700]
+	MChi0_p = [150,500,500,150]
+	ctau += [4.5,22.7,8.1,27.9]
 	sig_names = ['SQ_'+str(a)+'_CHI_'+str(b) for a,b in zip(MSquark,MChi0)]
 	sig_names += ['SQ_'+str(a)+'_CHI_'+str(b)+'_priv' for a,b in zip(MSquark_p,MChi0_p)]
 	qcd_bins = [str(q) for q in [80,120,170,300,470,600,800]]
@@ -215,23 +215,27 @@ class efficiencyChi0(supy.analysis) :
 			#sig_samples+=(supy.samples.specify(names = self.sig_names[i], markerStyle=20, color=i+1,  nEventsMax=nEvents, nFilesMax=nFiles))
 		toPlot=[sample for i,sample in enumerate(sig_samples) if i in [0,1,2]]
 
-		return sig_samples[:3]+sig_samples[5:]
+		return [sig_samples[i] for i in [2,6,5,1,4,3,0]]
+
 		#return toPlot
 
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(1500)#rightarrow#tilde{#chi}^{0}_{1}(500) c#tau=18.1cm", "color":r.kRed,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1500_CHI_494")                
-		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(1000)#rightarrow#tilde{#chi}^{0}_{1}(150) c#tau=5.9cm", "color":r.kBlack,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_1000_CHI_148")                
-		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(350)#rightarrow#tilde{#chi}^{0}_{1}(150) c#tau=18.8cm", "color":r.kGreen,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_350_CHI_148")                
-		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(120)#rightarrow#tilde{#chi}^{0}_{1}(50) c#tau=15.5cm", "color":r.kBlue,"lineWidth":3,"goptions":"","lineStyle":1}, allWithPrefix = "SQ_120_CHI_48")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(1500)#rightarrow#tilde{#chi}(500) c#tau=18.1cm", "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "SQ_1500_CHI_494")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(1500)#rightarrow#tilde{#chi}(150) c#tau=4.5cm", "color":r.kYellow,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "SQ_1500_CHI_150")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(1000)#rightarrow#tilde{#chi}(150) c#tau=5.9cm", "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "SQ_1000_CHI_148")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(1000)#rightarrow#tilde{#chi}(500) c#tau=22.7cm", "color":r.kOrange,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "SQ_1000_CHI_500")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(350)#rightarrow#tilde{#chi}(150) c#tau=18.8cm", "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "SQ_350_CHI_148")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(700)#rightarrow#tilde{#chi}(150) c#tau=8.1cm", "color":r.kBlue,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "SQ_700_CHI_150")                
+		#org.mergeSamples(targetSpec = {"name":"#tilde{q}(700)#rightarrow#tilde{#chi}(500) c#tau=27.9cm", "color":r.kMagenta,"lineWidth":3,"goptions":"hist","lineStyle":1}, allWithPrefix = "SQ_700_CHI_500")                
 		org.scale(lumiToUseInAbsenceOfData=18600)
 		plotter = supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
 			showStatBox=True,
-			pegMinimum=0.0001,
+			pegMinimum=0.1,
 			shiftUnderOverFlows=False,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			)
@@ -243,11 +247,11 @@ class efficiencyChi0(supy.analysis) :
 		#self.sqsqRatio(org)
 		org.lumi=None
 		#self.flavors(org)
-		self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
-		self.sigPlots(plotter)	
+		#self.effPlots(org,plotter,denName='NE',numName='NEReco',sel='Low',flavor='')
+		#self.sigPlots(plotter)	
 		self.totEvtEff(org,dir='eff2Neu')
 		#self.totalEfficiencies(org,dir='eff2Neu',flavor='')
-		self.puEff(org,plotter)
+		#self.puEff(org,plotter)
 
 
 	def sigPlots(self,plotter):			
@@ -255,50 +259,50 @@ class efficiencyChi0(supy.analysis) :
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";Invariant Mass [GeV];dijets / bin",
-                                              "legendCoords": (0.5, 0.72, 0.9, 0.85),
-                                              "stampCoords": (0.7, 0.88)
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
+                                              "stampCoords": (0.37, 0.85),
                                               },
 											  {"plotName":"Lxy_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";L_{xy} [cm];dijets / bin",
-                                              "legendCoords": (0.5, 0.72, 0.9, 0.85),
-                                              "stampCoords": (0.7, 0.88)
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
+                                              "stampCoords": (0.37, 0.85),
                                               },
 											  #{"plotName":"TrkAvgPt_h_Disc",
                                               #"stepName":"observables",
                                               #"stepDesc":"observables",
                                               #"newTitle":";Average Track p_{T} [GeV];dijets / bin",
-                                              #"legendCoords": (0.55, 0.72, 0.85, 0.92),
-                                              #"stampCoords": (0.35, 0.88)
+                                              #"legendCoords": (0.55, 0.7, 0.9, 0.92),
+                                              #"stampCoords": (0.37, 0.85),},
                                               #},
 											  {"plotName":"VtxNRatio_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";Fraction of displaced tracks in the Vertex;dijets / bin",
-                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
-                                              "stampCoords": (0.35, 0.88)
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
+                                              "stampCoords": (0.37, 0.85),
                                               },
 											  {"plotName":"ClrNRatio_h_Disc",
                                               "stepName":"observables",
                                               "stepDesc":"observables",
                                               "newTitle":";Fraction of displaced tracks in the Cluster;dijets / bin",
-                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
-                                              "stampCoords": (0.35, 0.88)
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
+                                              "stampCoords": (0.37, 0.85),
                                               },
 											  {"plotName":"VtxN_h_Disc",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":";Vertex Track Multiplicity;dijets / bin",
-                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
-                                              "stampCoords": (0.35, 0.88)
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
+                                              "stampCoords": (0.37, 0.85),
                                               },
 											  {"plotName":"bestclusterN_h_Disc",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
                                               "newTitle":";Cluster Track Multiplicity;dijets / bin",
-                                              "legendCoords": (0.55, 0.72, 0.85, 0.92),
-                                              "stampCoords": (0.35, 0.88)
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
+                                              "stampCoords": (0.37, 0.85),
                                               },
                                             ]
                                )
@@ -355,44 +359,44 @@ class efficiencyChi0(supy.analysis) :
 			print n,d
 		'''
 
-		for n in nlist: print n[0].GetName();removeLowStats(n,relErrMax=1.)
+		for n in nlist: print n[0].GetName();removeLowStats(n,relErrMax=0.7)
 
 		effs=[ tuple([r.TGraphAsymmErrors(n,d,"cl=0.683 n") for n,d in zip(num,denom) ]) for num,denom in zip(nlist,dlist) ]
 		plotter.individualPlots(simulation=True, plotSpecs = [
 											  {"plotName":"HPt"+flavor,
                                               "histos":effs[names.index("HPt"+flavor)],
-                                              "newTitle":"; H^{0} p_{T} [GeV] ; X#rightarrow q#bar{q} (%s) #epsilon #times Acc."%flavorMap[flavor],
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "newTitle":"; H^{0} p_{T} [GeV] ; efficiency %s."%flavorMap[flavor],
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
                                               "stampCoords": (0.37, 0.85),},
 											  {"plotName":"XPt"+flavor,
                                               "histos":effs[names.index("XPt"+flavor)],
                                               "newTitle":"; best #tilde{#chi}^{0}_{1} p_{T} [GeV] ; efficiency %s"%flavorMap[flavor],
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
                                               "stampCoords": (0.37, 0.85),},
 											  {"plotName":"Lxy"+flavor,
                                               "histos":effs[names.index("Lxy"+flavor)],
                                               "newTitle":"; best #tilde{#chi}^{0}_{1} L_{xy} [cm] ; efficiency %s"%flavorMap[flavor],
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
                                               "stampCoords": (0.37, 0.85),},
 											  {"plotName":"SmallLxy"+flavor,
                                               "histos":effs[names.index("SmallLxy"+flavor)],
                                               "newTitle":"; best #tilde{#chi}^{0}_{1} L_{xy} [cm] ; efficiency %s"%flavorMap[flavor],
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
                                               "stampCoords": (0.37, 0.85),},
 											  {"plotName":"IP2dMin"+flavor,
                                               "histos":effs[names.index("IP2dMin"+flavor)],
                                               "newTitle":"; best #tilde{#chi}^{0}_{1} min(IP^{xy}(q),IP^{xy}(#bar{q})) [cm] ; efficiency %s%s"%(flavorMap[flavor],flavorMap[flavor]),
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
                                               "stampCoords": (0.37, 0.85),},
 											  {"plotName":"IP2dMax"+flavor,
                                               "histos":effs[names.index("IP2dMax"+flavor)],
                                               "newTitle":"; best #tilde{#chi}^{0}_{1} max(IP^{xy}(q),IP^{xy}(#bar{q})) [cm] ; efficiency %s%s"%(flavorMap[flavor],flavorMap[flavor]),
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
                                               "stampCoords": (0.37, 0.85),},
 											  {"plotName":"XDR"+flavor,
                                               "histos":effs[names.index("XDR"+flavor)],
                                               "newTitle":"; best #tilde{#chi}^{0}_{1} #Delta R (q#bar{q},#tilde{#chi}^{0}_{1}) ; efficiency %s%s"%(flavorMap[flavor],flavorMap[flavor]),
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
                                               "stampCoords": (0.37, 0.85),},
                                             ],
                                )
@@ -407,7 +411,7 @@ class efficiencyChi0(supy.analysis) :
 		plotter.individualPlots(simulation=True, plotSpecs = [{"plotName":"effPU",
                                               "histos":eff,
                                               "newTitle":"; pile-up vertices; efficiency",
-                                              "legendCoords": (0.55, 0.75, 0.9, 0.9),
+                                              "legendCoords": (0.55, 0.7, 0.9, 0.92),
                                               "stampCoords": (0.37, 0.85),}
                                             ],
                                )
@@ -436,7 +440,6 @@ class efficiencyChi0(supy.analysis) :
 			name='SQ_'+str(SQ)+"_CHI_"+str(CHI) + ('_priv' if 'priv' in sample['name'] else '')
 			sys=0.1
 
-			print sample['name'],name,self.sig_names
 			ctau = self.ctau[self.sig_names.index(name)]
 
 			for j in range(N):
@@ -444,12 +447,13 @@ class efficiencyChi0(supy.analysis) :
 				efflow1[i].GetPoint(j,x,y)
 				e1 = f*float(y)
 				e1Err = f*efflow1[i].GetErrorY(j)
-				#if e1 > 0. : e1Err = e1*math.sqrt(sys*sys+pow(e1Err/e1,2))
+				if e1 > 0. : e1Err = e1*math.sqrt(sys*sys+pow(e1Err/e1,2))
 				factor=fs[j]
 				#if factor in [0.1,1,10]:
 				objects=[ SQ,CHI,factor*ctau,rnd(100*e1,3),rnd(100*e1Err,3)]
 				print " & ".join(str(a) for a in objects ) + ' \\\\'
 				output=[(e1,e1Err),(e1,e1Err),[e1,e1Err]]
+				name = name.replace('_priv','')
 				pickle.dump(output,open(supy.whereami()+'/../results/'+dir+'/efficiencies/'+name+'_'+str(factor)+'.pkl','w'))
 
 	def totalEfficiencies(self,org,dir=None,flavor='') :
