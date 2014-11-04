@@ -11,6 +11,9 @@ def stylize(obs,exp):
 
 def makePlot(data):
 	c=r.TCanvas();c.SetLogx();c.SetLogy()
+	r.gPad.SetTopMargin(0.06)
+	r.gPad.SetBottomMargin(0.15)
+	r.gPad.SetLeftMargin(0.2)
 	mg=r.TMultiGraph()
 	obs=[r.TGraph() for i in range(len(data['graphs']))]
 	exp=[r.TGraph() for i in range(len(data['graphs']))]
@@ -43,6 +46,8 @@ def makePlot(data):
 	mg.SetMaximum(40*max([r.TMath.MaxElement(e.GetN(),e.GetY()) for e in exp]))
 	mg.GetYaxis().SetTitle('#sigma(H^{0} #rightarrow X^{0}X^{0}) B^{2}(X^{0} #rightarrow q#bar{q}) [pb]')
 	mg.GetXaxis().SetTitle('X^{0} c#tau [cm]')
+	mg.GetXaxis().SetTitleOffset(1.4)
+	mg.GetYaxis().SetTitleOffset(1.8)
 	leg.Draw('same')
 	leg2.Draw('same')
 

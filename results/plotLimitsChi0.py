@@ -13,6 +13,9 @@ def stylize(gs,obs,exp):
 
 def makePlot(data):
 	c=r.TCanvas();c.SetLogx();c.SetLogy()
+	r.gPad.SetTopMargin(0.06)
+	r.gPad.SetBottomMargin(0.15)
+	r.gPad.SetLeftMargin(0.2)
 	mg=r.TMultiGraph()
 	gs=r.TGraphErrors()
 	obs=[r.TGraph() for i in range(len(data['graphs']))]
@@ -55,6 +58,8 @@ def makePlot(data):
 	mg.GetYaxis().SetTitle("#sigma(#tilde{q}#tilde{q}*+#tilde{q}#tilde{q}) \
     B^{2}(#tilde{#chi}^{0}_{1} #rightarrow u#bar{d}#mu) [pb]")
 	mg.GetXaxis().SetTitle('#tilde{#chi}^{0}_{1} c#tau [cm]')
+	mg.GetXaxis().SetTitleOffset(1.4)
+	mg.GetYaxis().SetTitleOffset(1.8)
 	leg.Draw('same')
 	leg2.Draw('same')
 

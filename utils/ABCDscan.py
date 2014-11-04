@@ -1,4 +1,5 @@
 import supy,math,ROOT as r
+from supy.__plotter__ import setupTdrStyle
 from supy.utils import cmsStamp
 
 def getCounts(histo):
@@ -53,6 +54,10 @@ def lumistring(lumi):
 	else : return str(round(lumi,1))+' pb^{-1}'
 
 def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
+
+	setupTdrStyle()
+
+
 	plotter.pdfFileName = plotter.pdfFileName.replace(analysis.name+'.pdf','Scans_'+analysis.name+'.pdf')
 	plotter.canvas.Clear()
 	plotter.printCanvas("[")
@@ -80,25 +85,15 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 		plotter.canvas=r.TCanvas("c","c",600,600)
 		plotter.canvas.Divide(1,2)
 		plotter.canvas.cd(1).SetPad(0.01,0.30+0.0,0.99,0.99)
-		plotter.canvas.cd(1).SetTopMargin(0.05)
+		plotter.canvas.cd(1).SetTopMargin(0.07)
 		plotter.canvas.cd(1).SetBottomMargin(0.)
-		plotter.canvas.cd(1).SetLeftMargin(0.16)
-		plotter.canvas.cd(1).SetRightMargin(0.06)
-		plotter.canvas.cd(2).SetLeftMargin(0.16)
-		plotter.canvas.cd(2).SetRightMargin(0.06)
 		plotter.canvas.cd(2).SetPad(0.01,0.01,0.99,0.30)
 		plotter.canvas.cd(2).SetTopMargin(0.)
 		plotter.canvas.cd(2).SetBottomMargin(0.35)
 		plotter.canvas.cd(1)
 		r.gPad.SetLogy()
 		#r.gPad.SetTicky(0)
-		r.gStyle.SetTextFont(42)
-		r.gStyle.SetTitleFont(42,'XYZ')
-		r.gStyle.SetLabelFont(42,'XYZ')
-		r.gStyle.SetLegendFont(42)
-		r.gStyle.SetTitleX(0.19)
-		r.gStyle.SetTitleBorderSize(0)
-
+	
 		title=''
 		#title='max Prompt Tracks = %s, max Prompt Energy Fraction = %s'%(scan[0][0],scan[0][1])
 		xtitle = 'Vertex/cluster discriminant'
@@ -145,7 +140,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histoz.SetBinError(k+1,0.)
 
 			if onlyB:
-				legend = r.TLegend(0.5, 0.6, 0.93, 0.78)
+				legend = r.TLegend(0.5, 0.65, 0.93, 0.83)
 			else:
 				legend = r.TLegend(0.7, 0.55, 0.93, 0.93)
 			for i in reversed(range(n)):
@@ -170,6 +165,7 @@ def plotABCDscan(analysis,org,plotter,n,blind=True,onlyB=False):
 				histoz.SetStats(0)
 				histoz.SetMarkerStyle(8)
 				histob.SetMarkerSize(0)
+				histob0.SetMarkerSize(0)
 				histos[i].SetMarkerStyle(25 if i!=0 else 8)
 				if i==(n-1):histos[i].SetMarkerStyle(21)
 				histos[i].SetMarkerColor(i+1)

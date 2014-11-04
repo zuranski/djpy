@@ -137,12 +137,12 @@ class kshorts(supy.analysis) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
 		org.mergeSamples(targetSpec = {"name":"Simulation","markerSize":0, "color":r.kBlue,"lineWidth":3,"goptions":"hist"}, allWithPrefix = "qcd",scaleFactors=[1.00/1.495]*6)
-		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
+		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20,"goptions":"EX0","legendOpt":"p"}, allWithPrefix = "data")
 		org.scale(lumiToUseInAbsenceOfData=11000)
 		plotter=supy.plotter( org,
 			pdfFileName = self.pdfFileName(org.tag),
 			samplesForRatios = ("Data","Simulation"),
-			sampleLabelsForRatios = ("Data","Sim"),
+			sampleLabelsForRatios = ("Data "," Sim"),
 			doLog=True,
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,

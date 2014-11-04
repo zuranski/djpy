@@ -130,8 +130,8 @@ class displookHT(supy.analysis) :
 	def conclude(self,pars) :
 		#make a pdf file with plots from the histograms created above
 		org = self.organizer(pars)
-		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20}, allWithPrefix = "data")
-		org.mergeSamples(targetSpec = {"name":"SM Background", "color":r.kBlue,"lineWidth":3,"goptions":"E2","fillColor":r.kBlue,"fillStyle":3001,"double":True,"markerSize":0}, allWithPrefix = "qcd",scaleFactors=[0.75]*6)
+		org.mergeSamples(targetSpec = {"name":"Data", "color":r.kBlack, "markerStyle":20, "goptions":"EX0", "legendOpt":"p"}, allWithPrefix = "data")
+		org.mergeSamples(targetSpec = {"name":"SM background", "color":r.kBlue,"lineWidth":3,"goptions":"E2","fillColor":r.kBlue,"fillStyle":3001,"double":True,"markerSize":0}, allWithPrefix = "qcd",scaleFactors=[0.75]*6)
 		org.mergeSamples(targetSpec = {"name":"H^{0}(1000)#rightarrow 2X^{0}(350) c#tau=35cm #sigma=10#mub","markerSize":0, "color":r.kRed,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_1000_X_350",scaleFactors=[1e4])                                 
 		org.mergeSamples(targetSpec = {"name":"H^{0}(400)#rightarrow 2X^{0}(150) c#tau=40cm #sigma=10#mub","markerSize":0, "color":r.kGreen,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_400_X_150",scaleFactors=[1e4])                               
 		org.mergeSamples(targetSpec = {"name":"H^{0}(200)#rightarrow 2X^{0}(50) c#tau=20cm #sigma=10#mub","markerSize":0, "color":r.kBlack,"lineWidth":3,"goptions":"hist","lineStyle":2}, allWithPrefix = "H_200_X_50",scaleFactors=[1e4])
@@ -141,8 +141,8 @@ class displookHT(supy.analysis) :
 			pdfFileName = self.pdfFileName(org.tag),
 			doLog=True,
 			anMode=True,
-			samplesForRatios = ("Data","SM Background"),
-			sampleLabelsForRatios = ("Data","SM"),
+			samplesForRatios = ("Data","SM background"),
+			sampleLabelsForRatios = ("Data "," SM"),
 			blackList = ["lumiHisto","xsHisto","nJobsHisto"],
 			#dependence2D=True,
 			doCorrTable=True,
@@ -226,44 +226,44 @@ class displookHT(supy.analysis) :
                                               {"plotName":"VtxN_h_dijetBestCand",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Vertex track multiplicity ; Dijets/bin",
-                                              "legendCoords": (0.18, 0.68, 0.68, 0.92),
-                                              "stampCoords": (0.8, 0.88)
+                                              "newTitle":"; Vertex track multiplicity ; Dijets / 1 unit",
+                                              "legendCoords": (0.18, 0.65, 0.75, 0.9),
+                                              "stampCoords": (0.8, 0.95)
                                               },
                                               {"plotName":"bestclusterN_h_dijetBestCand",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Cluster track multiplicity; Dijets/bin",
-                                              "legendCoords": (0.18, 0.68, 0.68, 0.92),
-                                              "stampCoords": (0.8, 0.88)
+                                              "newTitle":"; Cluster track multiplicity; Dijets / 1 unit",
+                                              "legendCoords": (0.18, 0.65, 0.75, 0.9),
+                                              "stampCoords": (0.8, 0.95)
                                               },
                                               {"plotName":"glxyrmsclr_h_dijetBestCand",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Cluster RMS; Dijets/bin",
-                                              "legendCoords": (0.18, 0.68, 0.68, 0.92),
-                                              "stampCoords": (0.8, 0.88)
+                                              "newTitle":"; Cluster RMS; Dijets / 0.1 units",
+                                              "legendCoords": (0.18, 0.65, 0.75, 0.9),
+                                              "stampCoords": (0.8, 0.95)
                                               },
                                               {"plotName":"Posip2dFrac_h_dijetBestCand",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Fraction of tracks with positive SIP; Dijets/bin",
-                                              "legendCoords": (0.18, 0.68, 0.68, 0.92),
-                                              "stampCoords": (0.8, 0.88)
+                                              "newTitle":"; Fraction of tracks with positive SIP; Dijets / 0.1 units",
+                                              "legendCoords": (0.18, 0.65, 0.75, 0.9),
+                                              "stampCoords": (0.8, 0.95)
                                               },
 											  {"plotName":"PromptEnergyFrac2_h_dijetBestCand",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Charged prompt energy fraction; Dijets/bin",
-                                              "legendCoords": (0.18, 0.68, 0.68, 0.92),
-                                              "stampCoords": (0.8, 0.88)
+                                              "newTitle":"; Charged prompt energy fraction; Dijets / 0.05 units",
+                                              "legendCoords": (0.18, 0.65, 0.75, 0.9),
+                                              "stampCoords": (0.8, 0.95)
                                               },
                                               {"plotName":"NPromptTracks2_h_dijetBestCand",
                                               "stepName":"cutvars",
                                               "stepDesc":"cutvars",
-                                              "newTitle":"; Number of prompt tracks ; Dijets/bin",
-                                              "legendCoords": (0.18, 0.68, 0.68, 0.92),
-                                              "stampCoords": (0.8, 0.88)
+                                              "newTitle":"; Number of prompt tracks ; Dijets / 1 unit",
+                                              "legendCoords": (0.18, 0.65, 0.75, 0.9),
+                                              "stampCoords": (0.8, 0.95)
                                               },
                                             ]
                                )
